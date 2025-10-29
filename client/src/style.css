@@ -1,0 +1,107 @@
+
+/* Import de la police Roboto */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+/* Styles de base pour l'application */
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Desktop layout constraints */
+@media (min-width: 1200px) {
+  .v-application {
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+  
+  .v-main {
+    max-width: 1600px !important;
+    min-width: 960px !important; /* Prevent shrink-wrapping */
+    width: 100% !important;
+    margin: 0 auto;
+  }
+  
+  .container {
+    max-width: 1600px !important; /* Updated from 1320px */
+    min-width: 960px !important; /* Prevent shrink-wrapping */
+    width: 100% !important;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .v-application {
+    max-width: 1800px;
+  }
+  
+  .v-main {
+    max-width: 1600px !important;
+    min-width: 1200px !important;
+  }
+  
+  .container {
+    max-width: 1600px !important;
+    min-width: 1200px !important;
+  }
+}
+
+@media (min-width: 1904px) {
+  .v-application {
+    max-width: 1800px;
+  }
+  .v-main {
+    max-width: 1600px !important;
+    min-width: 1536px !important;
+  }
+  .container {
+    max-width: 1600px !important;
+    min-width: 1536px !important;
+  }
+}
+
+/* Ensure tags-container stretches */
+.tags-container {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0; /* Allows container to shrink to content or parent width */
+  box-sizing: border-box; /* Ensures padding/borders don't add to width */
+}
+
+/* Styles pour les composants */
+.chart-container {
+  position: relative;
+  width: 100%;
+}
+
+/* Styles pour les animations de chargement */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Styles pour les transitions */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.transition-shadow {
+  transition-property: box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}

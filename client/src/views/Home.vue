@@ -1,0 +1,498 @@
+<template>
+  <div class="home">
+    <v-row>
+      <!-- First Column: Location selectors, map, and data -->
+      <v-col cols="12" lg="6">
+        <v-row>
+          <!-- Location Selector -->
+          <v-col cols="12">
+            <LocationSelector 
+              :location="currentLocation"
+            />
+          </v-col>
+
+          <!-- Map -->
+          <v-col cols="12">
+            <MapComponent 
+              ref="mapComponent"
+              :location="currentLocation"
+            />
+          </v-col>
+
+          <!-- Articles -->
+          <v-col cols="12">
+            <ArticleList 
+              :location="currentLocation"
+              :articles="articles"
+            />
+          </v-col>
+
+          <!-- Names Graph -->
+          <v-col cols="12">
+            <NamesGraph 
+              v-if='namesData && currentLocation'
+              :data="namesData"
+              :location="currentLocation"
+            />
+          </v-col>
+
+          <!-- Centres Migrants -->
+          <v-col cols="12">
+            <CentresMigrants 
+              :location="currentLocation"
+              :data="migrantsData"
+            />
+          </v-col>
+
+          <!-- QPV Data -->
+          <v-col cols="12">
+            <QpvData 
+              :location="currentLocation"
+              :data="qpvData"
+            />
+          </v-col>
+
+        </v-row>
+      </v-col>
+
+      <!-- Second Column: Score table and crime graphs -->
+      <v-col cols="12" lg="6">
+        <v-row>
+          <!-- Score Table -->
+          <v-col cols="12">
+            <ScoreTable 
+              :location="currentLocation"
+              :scores="scores"
+            />
+          </v-col>
+
+          <!-- Executive Details -->
+          <v-col cols="12">
+            <ExecutiveDetails 
+              :location="currentLocation"
+            />
+          </v-col>
+
+          <v-col cols="12">
+            <CrimeGraphs 
+              v-if="currentLocation"
+              :location="currentLocation"
+              :data="crimeSeries.data"
+              :labels="crimeSeries.labels"
+            />
+          </v-col>
+
+          <!-- Subventions -->
+          <v-col cols="12">
+            <Subventions
+              :location="currentLocation"
+              :countryData="dataStore.country"
+              :departementData="dataStore.departement"
+              :communeData="dataStore.commune"
+            />
+          </v-col>
+
+          <!-- Mosque Table -->
+          <v-col cols="12">
+            <MosqueTable
+              :location="currentLocation"
+              :data="mosquesData"
+              @load-more="handleLoadMoreMosques"
+            />
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
+  </div>
+</template>
+
+<script>
+import { mapStores } from 'pinia'
+import { useDataStore } from '../services/store.js'
+import LocationSelector from '../components/Home/LocationSelector.vue'
+import MapComponent from '../components/Home/MapComponent.vue'
+import ArticleList from '../components/Home/ArticleList.vue'
+import NamesGraph from '../components/Home/NamesGraph.vue'
+import QpvData from '../components/Home/QpvData.vue'
+import CentresMigrants from '../components/Home/CentresMigrants.vue'
+import ExecutiveDetails from '../components/Home/ExecutiveDetails.vue'
+import ScoreTable from '../components/Home/ScoreTable.vue'
+import CrimeGraphs from '../components/Home/CrimeGraphs.vue'
+import Graph from '../components/Home/Graph.vue'
+import Subventions from '../components/Home/Subventions.vue'
+import MosqueTable from '../components/Home/MosqueTable.vue'
+
+export default {
+  name: 'Home',
+  components: {
+    LocationSelector,
+    MapComponent,
+    ArticleList,
+    NamesGraph,
+    QpvData,
+    CentresMigrants,
+    ExecutiveDetails,
+    ScoreTable,
+    CrimeGraphs,
+    Graph,
+    Subventions,
+    MosqueTable,
+  },
+  computed: {
+    ...mapStores(useDataStore),
+    currentLocation(){
+      let location = {
+        name: '',
+        code: null,
+        type: '',
+      }
+
+      switch(this.dataStore.currentLevel){
+        case 'country':
+          location = {
+            name: 'France',
+            code: null,
+            type: this.dataStore.currentLevel,
+            number_of_mosques: this.dataStore.country?.details?.number_of_mosques || 0,
+          }
+        break
+        case 'departement':
+          location = {
+            name: this.dataStore.levels.departement,
+            code: this.dataStore.getDepartementCode(),
+            type: this.dataStore.currentLevel,
+            number_of_mosques: this.dataStore.departement?.details?.number_of_mosques || 0,
+          }
+        break
+        case 'commune':
+          location = {
+            name: this.dataStore.levels.commune,
+            code: this.dataStore.getCommuneCode(),
+            type: this.dataStore.currentLevel,
+            number_of_mosques: this.dataStore.commune?.details?.number_of_mosques || 0,
+          }
+        break
+      }
+
+      return location
+    },
+
+    namesData(){
+      const level = this.dataStore.currentLevel
+      if(level === 'commune') return null
+
+      return this.dataStore[level]?.namesSeries
+    },
+
+    crimeSeries(){ // retourne les données des stats groupées par clef/niveaux pour les graphs
+      const result = {}
+
+      let allYears = null
+
+      for (const level of this.levels) {
+        const years = this.dataStore[level]?.crimeSeries?.labels || []
+        if (allYears === null){
+          allYears = new Set(years)
+        }
+        else {
+          allYears = new Set([...allYears, ...years])
+        }
+
+        if (level === this.dataStore.currentLevel) break
+      }
+
+      const labels = Array.from(allYears).sort()
+      // console.log('labels', labels)
+
+      for (const level of this.levels) {
+        const data = this.dataStore[level]?.crimeSeries?.data || {}
+
+        for(let k in data) {
+          if(!result.hasOwnProperty(k)) result[k] = {}
+          result[k][level] = data[k]
+        }
+
+        if (level === this.dataStore.currentLevel) break
+      }
+
+      return {
+        labels,
+        data: result
+      }
+    },
+
+    articles(){
+      const level = this.dataStore.currentLevel
+      const articlesData = this.dataStore[level]?.articles || { 
+        list: [], 
+        counts: {},
+        pagination: {
+          hasMore: false,
+          nextCursor: null,
+          limit: 20
+        }
+      }
+
+      return {
+        list: articlesData.list || [],
+        counts: articlesData.counts || {},
+        pagination: articlesData.pagination || {
+          hasMore: false,
+          nextCursor: null,
+          limit: 20
+        }
+      }
+    },
+
+    qpvData(){
+      switch(this.dataStore.currentLevel){
+        case 'country':
+          return this.dataStore.country.qpv || { list: [], pagination: { hasMore: false, nextCursor: null, limit: 20 } }
+        case 'departement':
+          return this.dataStore.departement.qpv
+        case 'commune':
+          return this.dataStore.commune.qpv
+      }
+
+      return []
+    },
+
+    scores(){
+      switch(this.dataStore.currentLevel){
+        case 'country':
+          return []
+        case 'departement':
+          return [{
+            label: this.dataStore.getDepartementCode()+' - '+this.dataStore.levels.departement,
+            data: this.dataStore?.departement?.details,
+          },{
+            label: "France",
+            data: this.dataStore?.country?.details,
+          }]
+        break
+        case 'commune':
+          return [{
+            label: this.dataStore.getDepartementCode()+' - '+this.dataStore.levels.commune,
+            data: this.dataStore?.commune?.details
+          },{
+            label: this.dataStore.levels.departement,
+            data: this.dataStore?.departement?.details,
+          }]
+        break  
+      }
+
+      return []
+    },
+
+    migrantsData(){
+      return this.dataStore.getCurrentMigrants
+    },
+
+    mosquesData(){
+      return this.dataStore.getCurrentMosques
+    },
+
+    mosqueTotal(){
+      const level = this.dataStore.currentLevel
+      return this.dataStore[level]?.details?.number_of_mosques || 0
+    },
+
+    currentSubventions() {
+      return this.dataStore.getCurrentSubventions
+    },
+
+    
+
+  },
+  data() {
+    return {
+      levels: ['country', 'departement', 'commune'],
+      crimeData: null
+    }
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      // When navigating to Home from another route, ensure map refreshes
+      if (from.name && from.name !== 'Home') {
+        vm.$nextTick(() => {
+          // Trigger map update after component is ready
+          const mapComponent = vm.$refs.mapComponent;
+          if (mapComponent && typeof mapComponent.updateData === 'function') {
+            mapComponent.updateData();
+          }
+        });
+      }
+    });
+  },
+  mounted() {
+
+    this.dataStore.setCountry()
+
+  },
+  methods: {
+    getCountryScores(){
+
+      // arrGetLast
+      return {
+        label: "Fance",
+        data: this.dataStore?.country?.details,
+      }
+    },
+    getDepartmentScores(){
+
+    },
+    getCommuneScores(){
+
+    },
+
+    getComposites(level){
+
+      const result = {}
+      const data = this.dataStore.country.crimeAggreg
+
+      for(let k in data) {
+
+      }
+    },
+
+    async loadLocationData(location) {
+      if (!location || !location.code && location.type !== 'country') {
+        console.warn('loadLocationData called with invalid location:', location)
+        return
+      }
+
+      const level = location.type
+
+      // Fetch data based on the selected level
+      if (level === 'country') {
+        await this.dataStore.fetchCountryData('france')
+      } else if (level === 'departement') {
+        await this.dataStore.fetchDepartementData(location.code)
+      } else if (level === 'commune') {
+        await this.dataStore.fetchCommuneData(location.code)
+      }
+
+      // Fetch subventions data
+        if (location.type === 'country') {
+          await this.dataStore.fetchCountrySubventions('france')
+        } else if (location.type === 'departement') {
+          await this.dataStore.fetchDepartementSubventions(location.code)
+        } else if (location.type === 'commune') {
+          await this.dataStore.fetchCommuneSubventions(location.code)
+        }
+
+        // Fetch migrants data
+        if (location.type === 'country') {
+          await this.dataStore.fetchDepartementMigrants('all')
+        } else if (location.type === 'departement') {
+          await this.dataStore.fetchDepartementMigrants(location.code)
+        } else if (location.type === 'commune') {
+          await this.dataStore.fetchCommuneMigrants(location.code)
+        }
+
+        // Fetch QPV data
+        if (location.type === 'country') {
+          await this.dataStore.fetchCountryQpv()
+        } else if (location.type === 'departement') {
+          await this.dataStore.fetchDepartementQpv(location.code)
+        } else if (location.type === 'commune') {
+          await this.dataStore.fetchCommuneQpv(location.code)
+        }
+
+        // Fetch mosques data
+        if (location.type === 'country') {
+          await this.dataStore.fetchMosques('country')
+        } else if (location.type === 'departement') {
+          await this.dataStore.fetchMosques('departement', location.code)
+        } else if (location.type === 'commune') {
+          await this.dataStore.fetchMosques('commune', location.code)
+        }
+    },
+
+    async handleLoadMoreMosques() {
+      const level = this.dataStore.currentLevel;
+      let code = null;
+
+      if (level === 'departement') {
+        code = this.dataStore.getDepartementCode();
+      } else if (level === 'commune') {
+        code = this.dataStore.getCommuneCode();
+      }
+
+      const currentMosques = this.dataStore.getCurrentMosques;
+      const params = {
+        cursor: currentMosques.pagination.nextCursor,
+        limit: currentMosques.pagination.limit
+      };
+
+      await this.dataStore.loadMoreMosques(level, code, params);
+    }
+
+  },
+}
+</script>
+
+<style scoped>
+.home {
+  min-height: 100vh;
+}
+
+/* Mobile responsive adjustments for component titles */
+@media (max-width: 768px) {
+  .home :deep(.v-card-title) {
+    font-size: 1.1rem !important;
+    line-height: 1.3;
+    word-break: break-word;
+  }
+
+  .home :deep(.component-title) {
+    font-size: 1.1rem !important;
+    line-height: 1.3;
+    word-break: break-word;
+  }
+
+  .home :deep(.section-title) {
+    font-size: 1.1rem !important;
+    line-height: 1.3;
+  }
+
+  .home :deep(.card-title) {
+    font-size: 1rem !important;
+    line-height: 1.3;
+    word-break: break-word;
+  }
+}
+
+@media (max-width: 480px) {
+  .home :deep(.v-card-title) {
+    font-size: 1rem !important;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+
+  .home :deep(.component-title) {
+    font-size: 1rem !important;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+
+  .home :deep(.section-title) {
+    font-size: 1rem !important;
+    line-height: 1.2;
+  }
+
+  .home :deep(.card-title) {
+    font-size: 0.9rem !important;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+
+  .home :deep(.text-h6) {
+    font-size: 1rem !important;
+  }
+
+  .home :deep(.text-h5) {
+    font-size: 1.1rem !important;
+  }
+}
+</style>
