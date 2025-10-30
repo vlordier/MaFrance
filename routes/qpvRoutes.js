@@ -9,6 +9,7 @@ const {
   validateSearchQuery,
   validatePagination
 } = require('../middleware/validate');
+const { HTTP_BAD_REQUEST, HTTP_INTERNAL_SERVER_ERROR, DEFAULT_LIMIT, DISTANCE_CONVERSION_FACTOR } = require('../constants');
 
 // Base SQL select for QPV data
 const baseQpvSelect = `
@@ -29,7 +30,7 @@ router.get(
     // Prevent simultaneous dept and cog
     if (dept && cog) {
       return res
-        .status(400)
+        .status(HTTP_BAD_REQUEST)
         .json({ error: 'Cannot specify both dept and cog' });
     }
 
@@ -142,7 +143,7 @@ router.get('/geojson', cacheMiddleware(() => 'qpv:geojson'), (_req, res) => {
     });
   } catch (error) {
     console.error('Error processing QPV GeoJSON:', error);
-    res.status(500).json({ error: 'Error processing QPV data' });
+    res.status(HTTP_INTERNAL_SERVER_ERROR).json({ error: 'Error processing QPV data' });
   }
 });
 
@@ -151,7 +152,7 @@ router.get('/closest', cacheMiddleware((req) => `qpv:closest:${req.query.lat}:${
   const { lat, lng, limit = 5 } = req.query;
 
   if (!lat || !lng) {
-    return res.status(400).json({ error: 'Latitude and longitude are required' });
+    return res.status(HTTP_BAD_REQUEST).json({ error: 'Latitude and longitude are required' });
   }
 
   const query = `
@@ -173,7 +174,7 @@ router.get('/closest', cacheMiddleware((req) => `qpv:closest:${req.query.lat}:${
     // Calculate actual distance and format results
     const results = rows.map(row => ({
       ...row,
-      distance: Math.sqrt(row.distance_sq) * 111.32 // Rough conversion to km
+      distance: Math.sqrt(row.distance_sq) * DISTANCE_CONVERSION_FACTOR // Rough conversion to km
     }));
 
     res.json({ list: results });
@@ -185,15 +186,15 @@ router.get('/nearby', cacheMiddleware((req) => `qpv:nearby:${req.query.lat}:${re
   const { lat, lng, limit = '5' } = req.query;
 
   if (!lat || !lng) {
-    return res.status(400).json({ error: 'Latitude and longitude are required' });
+    return res.status(HTTP_BAD_REQUEST).json({ error: 'Latitude and longitude are required' });
   }
 
   const latitude = parseFloat(lat);
   const longitude = parseFloat(lng);
-  const maxResults = Math.min(parseInt(limit), 20);
+  const maxResults = Math.min(parseInt(limit), DEFAULT_LIMIT);
 
   if (isNaN(latitude) || isNaN(longitude)) {
-    return res.status(400).json({ error: 'Invalid coordinates' });
+    return res.status(HTTP_BAD_REQUEST).json({ error: 'Invalid coordinates' });
   }
 
   // Calculate distance using Haversine formula in SQL

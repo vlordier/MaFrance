@@ -9,6 +9,7 @@ const HTTP_MOVED_PERMANENTLY = 301;
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 1000000;
 const SERVER_PORT = 3000;
+const DISTANCE_CONVERSION_FACTOR = 111.32; // Rough km conversion factor
 
 module.exports = {
   HTTP_OK,
