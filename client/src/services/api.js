@@ -80,7 +80,7 @@ class ApiService {
      */
     initPersistentStorage() {
         try {
-            return {
+            const storage = {
                 get: (key) => {
                     const item = localStorage.getItem(`api_cache_${key}`);
                     return item ? JSON.parse(item) : null;
@@ -100,6 +100,7 @@ class ApiService {
                 },
                 remove: (key) => localStorage.removeItem(`api_cache_${key}`),
             };
+            return storage;
         } catch {
             return { get: () => null, set: () => {}, remove: () => {} };
         }

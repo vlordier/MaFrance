@@ -165,7 +165,6 @@ import ScatterPlot from '../components/Correlations/ScatterPlot.vue'
 export default {
   name: 'Correlations',
   components: {
-    VersionSelector,
     CorrelationHeatmap,
     ScatterPlot
   },

@@ -901,7 +901,7 @@ const MetricsConfig = {
         const basicFields = ["population", "commune", "departement", "COG"];
         [...basicFields, ...availableMetrics, ...additionalFields].forEach(
             (field) => {
-                if (sourceData.hasOwnProperty(field)) {
+                if (Object.prototype.hasOwnProperty.call(sourceData, field)) {
                     result[field] = sourceData[field];
                 }
             },
@@ -949,7 +949,7 @@ const MetricsConfig = {
     getMetricColorScale(metricKey, level) {
         if (
             this.colorScale.metricRanges[level] &&
-            this.colorScale.metricRanges[level].hasOwnProperty(metricKey)
+            Object.prototype.hasOwnProperty.call(this.colorScale.metricRanges[level], metricKey)
         ) {
             const range = this.colorScale.metricRanges[level][metricKey];
             return {

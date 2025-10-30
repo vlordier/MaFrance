@@ -54,7 +54,7 @@ const routes = [
     component: Localisation,
     meta: {
       title: 'Localisation - MaFrance.app',
-      description: 'Emplacement des centres de migrants, des "quartiers", des mosquées et prix de l\immobilier',
+      description: 'Emplacement des centres de migrants, des "quartiers", des mosquées et prix de l\'immobilier',
       image: 'https://mafrance.app/localisation-1200x630.png'
     }
   },

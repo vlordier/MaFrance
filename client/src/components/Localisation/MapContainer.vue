@@ -944,7 +944,7 @@ export default {
       }
     }, { deep: true })
 
-    watch(() => locationStore.mosquesData, (newData) => {
+    watch(() => locationStore.mosquesData, () => {
       filterDataForViewport()
       if (showMosques.value) {
         showMosquesOnMap()
@@ -965,7 +965,7 @@ export default {
       }
     })
 
-    watch(() => locationStore.closestLocations, () => {
+    watch(() => locationStore.closestLocations, (newClosestLocations) => {
       if (locationStore.selectedLocation && newClosestLocations && newClosestLocations.length > 0) {
             createArrowsFromClosestLocations(locationStore.selectedLocation.lat, locationStore.selectedLocation.lng, newClosestLocations)
       }

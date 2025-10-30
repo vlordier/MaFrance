@@ -133,7 +133,6 @@ export default {
     ExecutiveDetails,
     ScoreTable,
     CrimeGraphs,
-    Graph,
     Subventions,
     MosqueTable,
   },
@@ -227,7 +226,7 @@ export default {
         const data = this.dataStore[level]?.crimeSeries?.data || {}
 
         for(const k in data) {
-          if(!result.hasOwnProperty(k)) result[k] = {}
+          if(!Object.prototype.hasOwnProperty.call(result, k)) result[k] = {}
           result[k][level] = data[k]
         }
 
@@ -297,7 +296,6 @@ export default {
             label: this.dataStore.levels.departement,
             data: this.dataStore?.departement?.details,
           }]
-        break  
       }
 
       return []

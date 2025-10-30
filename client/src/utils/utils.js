@@ -98,7 +98,7 @@ export function serializeStats(data) {
       data: {},
     };
 
-  const yearKey = data[0].hasOwnProperty("annee") ? "annee" : "annais";
+  const yearKey = Object.prototype.hasOwnProperty.call(data[0], "annee") ? "annee" : "annais";
 
   // ensure years order
   data.sort((a, b) => {

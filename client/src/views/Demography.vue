@@ -38,7 +38,7 @@
             Année de Stabilisation Démographique
           </h3>
           <p v-if="stabilizationYear !== null" class="text-sm">
-            La population se stabilise à partir de {{ stabilizationYear }} (variations absolues < 0,2 %/an).
+            La population se stabilise à partir de {{ stabilizationYear }} (variations absolues &lt; 0,2 %/an).
           </p>
           <p v-else class="text-sm">
             Aucune stabilisation démographique n'a été atteinte
