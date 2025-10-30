@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { createDbHandler } = require('../middleware/errorHandler');
 const { validateDepartementParam, validateCOGParam } = require('../middleware/validate');
+const { HTTP_NOT_FOUND } = require('../constants');
 
 // Get country subventions
 router.get('/country', (req, res, next) => {
@@ -19,7 +20,7 @@ router.get('/country', (req, res, next) => {
       }
 
       if (!rows || rows.length === 0) {
-        return res.status(404).json({
+        return res.status(HTTP_NOT_FOUND).json({
           error: 'Données de subventions non trouvées'
         });
       }
@@ -48,7 +49,7 @@ router.get('/departement/:dept', validateDepartementParam, (req, res, next) => {
 
     if (!row) {
       return res
-        .status(404)
+        .status(HTTP_NOT_FOUND)
         .json({
           error: 'Données de subventions non trouvées pour ce département'
         });
@@ -81,7 +82,7 @@ router.get('/commune/:cog', validateCOGParam, (req, res, next) => {
 
     if (!row) {
       return res
-        .status(404)
+        .status(HTTP_NOT_FOUND)
         .json({
           error: 'Données de subventions non trouvées pour cette commune'
         });
