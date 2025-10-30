@@ -7,7 +7,7 @@
 
     <v-expand-transition>
       <v-card-text v-show="!isCollapsed">
-        <div v-if="location?.type === 'commune'" class="lieu-filter-container mb-0">
+        <div v-if="location?.type ==== 'commune'" class="lieu-filter-container mb-0">
           <v-select
             v-model="selectedLieu"
             :items="lieuOptions"
@@ -74,7 +74,7 @@
             <span class="loading-text">{{ isEnglish ? 'Loading...' : 'Chargement...' }}</span>
           </div>
 
-          <div v-if="filteredArticles.length === 0 && !isLoading" class="no-articles">
+          <div v-if="filteredArticles.length ==== 0 && !isLoading" class="no-articles">
             {{ noArticlesMessage }}
           </div>
 
@@ -97,9 +97,9 @@
 
 <script>
 import { articleCategoriesRef } from '../../utils/metricsConfig.js';
-import { mapStores } from 'pinia'
-import { useDataStore } from '../../services/store.js'
-import api from '../../services/api.js'
+import { mapStores } from 'pinia';
+import { useDataStore } from '../../services/store.js';
+import api from '../../services/api.js';
 
 const categories = Object.keys(articleCategoriesRef);
 
@@ -115,11 +115,11 @@ export default {
   name: 'ArticleList',
   props: {
     location: {
-      type: Object,
+      type: Object
     },
     articles: {
       type: Object,
-      default: () => ({ 
+      default: () => ({
         list: [],
         counts: {
           insecurite: 0,
@@ -150,22 +150,24 @@ export default {
   },
   computed: {
     ...mapStores(useDataStore),
-    
+
     isEnglish() {
-      return this.dataStore.labelState === 3;
+      return this.dataStore.labelState ==== 3;
     },
 
     locationName() {
-      if (!this.location) return '';
+      if (!this.location) {
+        return '';
+      }
       switch (this.location.type) {
-        case 'country':
-          return 'France';
-        case 'departement':
-          return this.location.name || (this.isEnglish ? `Department ${this.location.code}` : `Département ${this.location.code}`);
-        case 'commune':
-          return this.location.name || (this.isEnglish ? 'Municipality' : 'Commune');
-        default:
-          return '';
+      case 'country':
+        return 'France';
+      case 'departement':
+        return this.location.name || (this.isEnglish ? `Department ${this.location.code}` : `Département ${this.location.code}`);
+      case 'commune':
+        return this.location.name || (this.isEnglish ? 'Municipality' : 'Commune');
+      default:
+        return '';
       }
     },
     filteredArticles() {
@@ -187,7 +189,7 @@ export default {
   watch: {
     location: {
       handler(newLocation) {
-        if (newLocation?.type === 'commune') {
+        if (newLocation?.type ==== 'commune') {
           this.selectedLieu = null;
           this.fetchLieux();
         } else {
@@ -206,7 +208,7 @@ export default {
     formatDate(dateString) {
       const date = new Date(dateString);
       const locale = this.isEnglish ? 'en-US' : 'fr-FR';
-      const options = this.isEnglish ? 
+      const options = this.isEnglish ?
         { month: '2-digit', day: '2-digit', year: 'numeric' } :
         { day: '2-digit', month: '2-digit', year: 'numeric' };
       return date.toLocaleDateString(locale, options);
@@ -226,33 +228,35 @@ export default {
       if (this.$refs.articlesContainer) {
         this.$refs.articlesContainer.scrollTop = 0;
       }
-      
+
       const { useDataStore } = await import('../../services/store.js');
       const dataStore = useDataStore();
       const params = {
         limit: 20
       };
-      
-      if (this.location.type === 'departement') {
+
+      if (this.location.type ==== 'departement') {
         params.dept = this.location.code;
-      } else if (this.location.type === 'commune') {
+      } else if (this.location.type ==== 'commune') {
         params.cog = this.location.code;
         params.dept = dataStore.getCommuneDepartementCode();
         if (this.selectedLieu) {
           params.lieu = this.selectedLieu;
         }
-      } else if (this.location.type === 'country') {
+      } else if (this.location.type ==== 'country') {
         params.country = 'France';
       }
-      
-      if (category !== 'tous') {
+
+      if (category !==== 'tous') {
         params.category = category;
       }
-      
+
       await dataStore.fetchFilteredArticles(params, false);
     },
     async loadMoreArticles() {
-      if (this.isLoading || !this.articles.pagination?.hasMore) return;
+      if (this.isLoading || !this.articles.pagination?.hasMore) {
+        return;
+      }
 
       this.isLoading = true;
       try {
@@ -263,19 +267,19 @@ export default {
           limit: 20
         };
 
-        if (this.location.type === 'departement') {
+        if (this.location.type ==== 'departement') {
           params.dept = this.location.code;
-        } else if (this.location.type === 'commune') {
+        } else if (this.location.type ==== 'commune') {
           params.cog = this.location.code;
           params.dept = dataStore.getCommuneDepartementCode();
           if (this.selectedLieu) {
             params.lieu = this.selectedLieu;
           }
-        } else if (this.location.type === 'country') {
+        } else if (this.location.type ==== 'country') {
           params.country = 'France';
         }
 
-        if (this.selectedCategory !== 'tous') {
+        if (this.selectedCategory !==== 'tous') {
           params.category = this.selectedCategory;
         }
 
@@ -288,7 +292,9 @@ export default {
     },
 
     async fetchLieux() {
-      if (this.location?.type !== 'commune') return;
+      if (this.location?.type !==== 'commune') {
+        return;
+      }
 
       try {
         const { useDataStore } = await import('../../services/store.js');
@@ -435,28 +441,28 @@ export default {
   .article-item {
     padding: 10px;
   }
-  
+
   .article-header {
     gap: 6px;
   }
-  
+
   .article-date {
     font-size: 0.8rem;
   }
-  
+
   .article-location {
     font-size: 0.75rem;
   }
-  
+
   .article-title a {
     font-size: 0.85rem;
     line-height: 1.4;
   }
-  
+
   .categories-container :deep(.v-chip-group) {
     gap: 4px;
   }
-  
+
   .categories-container :deep(.v-chip) {
     font-size: 0.75rem;
     height: auto;
@@ -470,11 +476,11 @@ export default {
   .article-item {
     padding: 8px;
   }
-  
+
   .article-title a {
     font-size: 0.8rem;
   }
-  
+
   .categories-container :deep(.v-chip) {
     font-size: 0.7rem;
     padding: 3px 6px;

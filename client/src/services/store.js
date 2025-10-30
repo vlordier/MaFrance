@@ -1,18 +1,18 @@
-import { defineStore } from "pinia";
-import api from "./api.js";
-import { DepartementNames } from "../utils/departementNames.js";
-import { MetricsConfig } from "../utils/metricsConfig.js";
-import { serializeStats, aggregateStats } from "../utils/utils.js";
+import { defineStore } from 'pinia';
+import api from './api.js';
+import { DepartementNames } from '../utils/departementNames.js';
+import { MetricsConfig } from '../utils/metricsConfig.js';
+import { serializeStats, aggregateStats } from '../utils/utils.js';
 
-export const useDataStore = defineStore("data", {
+export const useDataStore = defineStore('data', {
   state: () => ({
     currentLevel: null,
-    labelState: parseInt(localStorage.getItem("metricsLabelState") || "0"),
+    labelState: parseInt(localStorage.getItem('metricsLabelState') || '0'),
     selectedMetric: null,
     levels: {
-      country: "France",
+      country: 'France',
       departement: null,
-      commune: null,
+      commune: null
     },
     country: {
       details: null,
@@ -30,7 +30,7 @@ export const useDataStore = defineStore("data", {
       migrants: null,
       mosques: null,
       articles: null,
-      nat1: null,
+      nat1: null
     },
     departement: {
       details: null,
@@ -48,7 +48,7 @@ export const useDataStore = defineStore("data", {
       subventions: null,
       migrants: null,
       mosques: null,
-      nat1: null,
+      nat1: null
     },
     commune: {
       details: null,
@@ -62,9 +62,9 @@ export const useDataStore = defineStore("data", {
       subventions: null,
       migrants: null,
       mosques: null,
-      nat1: null,
+      nat1: null
     },
-    locationCache: JSON.parse(localStorage.getItem('locationCache') || '{}'),
+    locationCache: JSON.parse(localStorage.getItem('locationCache') || '{}')
   }),
 
   actions: {
@@ -79,20 +79,20 @@ export const useDataStore = defineStore("data", {
           api.getCountryDetails(),
           api.getCountryNames(),
           api.getCountryCrime(),
-          api.getCountryCrimeHistory("france metro"),
-          api.getCountryNamesHistory("france metro"),
+          api.getCountryCrimeHistory('france metro'),
+          api.getCountryNamesHistory('france metro'),
           api.getCountryExecutive(),
           api.getDepartementRankings({
             limit: 101,
-            sort: "total_score",
-            direction: "DESC",
+            sort: 'total_score',
+            direction: 'DESC'
           }),
           api.getCountrySubventions(),
           api.getArticles({ limit: 10 }),
           api.getMigrants({ limit: 10 }),
           api.getMosques({ limit: 10 }),
           api.getQpv({ limit: 10 }),
-          api.getCountryNat1(),
+          api.getCountryNat1()
         ]);
 
         const country = {};
@@ -133,17 +133,17 @@ export const useDataStore = defineStore("data", {
           api.getCommuneRankings({
             dept: code,
             limit: 1000,
-            sort: "total_score",
-            direction: "DESC",
+            sort: 'total_score',
+            direction: 'DESC'
           }),
           api.getArticles({
             dept: code,
-            limit: 20,
+            limit: 20
           }),
           api.getDepartementSubventions(code),
           api.getMigrants({ dept: code, limit: 100 }),
           api.getMosques({ dept: code, limit: 100 }),
-          api.getDepartementNat1(code),
+          api.getDepartementNat1(code)
         ]);
 
         const departement = {};
@@ -164,7 +164,7 @@ export const useDataStore = defineStore("data", {
         departement.crimeSeries = serializeStats(results[3]);
         departement.crimeAggreg = aggregateStats(
           departement.crimeSeries.data,
-          MetricsConfig.calculatedMetrics,
+          MetricsConfig.calculatedMetrics
         );
 
         return departement;
@@ -187,12 +187,12 @@ export const useDataStore = defineStore("data", {
           api.getArticles({
             cog: code,
             dept: deptCode,
-            limit: 20,
+            limit: 20
           }),
           api.getCommuneSubventions(code),
           api.getMigrants({ cog: code, limit: 100 }),
           api.getMosques({ cog: code, limit: 100 }),
-          api.getCommuneNat1(code),
+          api.getCommuneNat1(code)
         ]);
 
         const commune = {};
@@ -230,7 +230,7 @@ export const useDataStore = defineStore("data", {
         this.levels.departement = null;
         this.levels.commune = null;
 
-        this.setLevel("country");
+        this.setLevel('country');
       });
     },
 
@@ -247,7 +247,7 @@ export const useDataStore = defineStore("data", {
       this.clearCommuneData();
       this.levels.commune = null;
 
-      this.setLevel("departement");
+      this.setLevel('departement');
     },
 
     async setCommune(cog, communeName, deptCode) {
@@ -285,18 +285,14 @@ export const useDataStore = defineStore("data", {
         this.levels.departement = DepartementNames[deptCode];
       }
 
-
-
       // on vérifie que le département de la commune est bien celui chargé pour être sûr
       if (this.getCommuneDepartementCode() !== this.getDepartementCode()) {
-        console.log("departement code mismatch");
+        console.log('departement code mismatch');
         this.setDepartement(this.commune.departement);
       }
 
-      this.setLevel("commune");
+      this.setLevel('commune');
     },
-
-
 
     // Actions utilitaires
     clearDepartementData() {
@@ -316,7 +312,7 @@ export const useDataStore = defineStore("data", {
         subventions: null,
         migrants: null,
         mosques: null,
-        nat1: null,
+        nat1: null
       };
     },
 
@@ -333,7 +329,7 @@ export const useDataStore = defineStore("data", {
         subventions: null,
         migrants: null,
         mosques: null,
-        nat1: null,
+        nat1: null
       };
     },
 
@@ -348,69 +344,69 @@ export const useDataStore = defineStore("data", {
 
     // Handle navigation from shared URLs
     async handlePendingNavigation() {
-      const pendingNav = sessionStorage.getItem('pendingNavigation')
+      const pendingNav = sessionStorage.getItem('pendingNavigation');
       if (!pendingNav) {
         // If no pending navigation, trigger LocationSelector after delay to auto-zoom map
         setTimeout(() => {
-          this.triggerLocationSelectorAutoZoom()
-        }, 500)
-        return
+          this.triggerLocationSelectorAutoZoom();
+        }, 500);
+        return;
       }
 
       try {
-        const params = JSON.parse(pendingNav)
-        sessionStorage.removeItem('pendingNavigation')
+        const params = JSON.parse(pendingNav);
+        sessionStorage.removeItem('pendingNavigation');
 
         // Set version if specified
         if (params.v) {
-          let version
+          let version;
           if (params.v === 'en') {
-            version = 3
+            version = 3;
           } else {
-            version = parseInt(params.v)
+            version = parseInt(params.v);
           }
           if (version >= 0 && version <= 3) {
-            this.setLabelState(version)
+            this.setLabelState(version);
           }
         }
 
         // Set selected metric if specified (decode compact format)
         if (params.m) {
-          const decodedMetric = MetricsConfig.getMetricFromCompact(params.m)
-          this.selectedMetric = decodedMetric
+          const decodedMetric = MetricsConfig.getMetricFromCompact(params.m);
+          this.selectedMetric = decodedMetric;
         }
 
         // Navigate to location based on 'c' parameter
         if (params.c) {
           // Simple logic: 4 or 5 characters = commune code, 3 or less = departement code
           if (params.c.length >= 4) {
-            const communeDetails = await api.getCommuneDetails(params.c)
+            const communeDetails = await api.getCommuneDetails(params.c);
             if (communeDetails) {
-              await this.setCommune(params.c, communeDetails.commune, communeDetails.departement)
+              await this.setCommune(params.c, communeDetails.commune, communeDetails.departement);
             }
           } else if (params.c.length <= 3) {
             // It's a department code
-            await this.setDepartement(params.c)
+            await this.setDepartement(params.c);
           }
         } else {
           // Stay at country level
-          await this.setCountry()
+          await this.setCountry();
         }
 
         // Trigger LocationSelector after navigation to auto-zoom map
         setTimeout(() => {
-          this.triggerLocationSelectorAutoZoom()
-        }, 500)
+          this.triggerLocationSelectorAutoZoom();
+        }, 500);
       } catch (error) {
-        console.error('Error handling shared navigation:', error)
-        sessionStorage.removeItem('pendingNavigation')
+        console.error('Error handling shared navigation:', error);
+        sessionStorage.removeItem('pendingNavigation');
       }
     },
 
     // Trigger LocationSelector to activate map auto-zoom
     triggerLocationSelectorAutoZoom() {
       // Dispatch event that LocationSelector can listen to for auto-zoom
-      window.dispatchEvent(new CustomEvent('triggerMapAutoZoom'))
+      window.dispatchEvent(new CustomEvent('triggerMapAutoZoom'));
     },
 
     // Label state management
@@ -418,12 +414,12 @@ export const useDataStore = defineStore("data", {
       this.labelState = state;
       // Keep MetricsConfig in sync
       MetricsConfig.labelState = state;
-      localStorage.setItem("metricsLabelState", state.toString());
+      localStorage.setItem('metricsLabelState', state.toString());
       // Dispatch event for components that might need to react
       window.dispatchEvent(
-        new CustomEvent("metricsLabelsToggled", {
-          detail: { labelState: this.labelState },
-        }),
+        new CustomEvent('metricsLabelsToggled', {
+          detail: { labelState: this.labelState }
+        })
       );
     },
 
@@ -433,34 +429,38 @@ export const useDataStore = defineStore("data", {
     },
 
     async loadDepartementSubventions(deptCode) {
-      if (!deptCode) return
+      if (!deptCode) {
+        return;
+      }
 
       try {
-        const data = await api.getDepartementSubventions(deptCode)
+        const data = await api.getDepartementSubventions(deptCode);
         if (data) {
-          this.departement.subventions = data.subventions || []
+          this.departement.subventions = data.subventions || [];
         }
       } catch (error) {
-        console.error('Failed to load departement subventions:', error)
+        console.error('Failed to load departement subventions:', error);
       }
     },
 
     async loadCommuneSubventions(cog) {
-      if (!cog) return
+      if (!cog) {
+        return;
+      }
 
       try {
-        const data = await api.getCommuneSubventions(cog)
+        const data = await api.getCommuneSubventions(cog);
         if (data) {
-          this.commune.subventions = data.subventions || []
+          this.commune.subventions = data.subventions || [];
         }
       } catch (error) {
-        console.error('Failed to load commune subventions:', error)
+        console.error('Failed to load commune subventions:', error);
       }
     },
 
     async fetchFilteredArticles(params, append = false) {
       try {
-        const articlesResponse = await api.getArticles(params)
+        const articlesResponse = await api.getArticles(params);
 
         if (params.cog) {
           // For commune
@@ -470,10 +470,10 @@ export const useDataStore = defineStore("data", {
               ...articlesResponse,
               list: [...this.commune.articles.list, ...articlesResponse.list],
               counts: articlesResponse.counts // Use fresh counts
-            }
+            };
           } else {
             // Replace articles list
-            this.commune.articles = articlesResponse
+            this.commune.articles = articlesResponse;
           }
         } else if (params.dept) {
           // For departement
@@ -483,10 +483,10 @@ export const useDataStore = defineStore("data", {
               ...articlesResponse,
               list: [...this.departement.articles.list, ...articlesResponse.list],
               counts: articlesResponse.counts // Use fresh counts
-            }
+            };
           } else {
             // Replace articles list
-            this.departement.articles = articlesResponse
+            this.departement.articles = articlesResponse;
           }
         } else if (params.country) { // Added condition for country
           // For country (no dept or cog)
@@ -496,22 +496,22 @@ export const useDataStore = defineStore("data", {
               ...articlesResponse,
               list: [...this.country.articles.list, ...articlesResponse.list],
               counts: articlesResponse.counts // Use fresh counts
-            }
+            };
           } else {
             // Replace articles list
-            this.country.articles = articlesResponse
+            this.country.articles = articlesResponse;
           }
         }
 
-        return articlesResponse
+        return articlesResponse;
       } catch (error) {
-        console.error('Failed to fetch filtered articles:', error)
-        return null
+        console.error('Failed to fetch filtered articles:', error);
+        return null;
       }
     },
 
     async loadMoreArticles(params) {
-      return this.fetchFilteredArticles(params, true)
+      return this.fetchFilteredArticles(params, true);
     },
 
     async fetchMigrants(level, code) {
@@ -621,7 +621,7 @@ export const useDataStore = defineStore("data", {
         } else if (level === 'commune') {
           qpvParams.cog = code;
         }
-        
+
         // Remove undefined cursor parameter
         if (qpvParams.cursor === undefined || qpvParams.cursor === null) {
           delete qpvParams.cursor;
@@ -639,10 +639,10 @@ export const useDataStore = defineStore("data", {
 
     // Subventions actions
     async fetchCountrySubventions(country = 'france') {
-        this.subventionsCountry = await api.getCountrySubventions(country) || {
-            list: [],
-            pagination: { hasMore: false, nextCursor: null, limit: 20 }
-        }
+      this.subventionsCountry = await api.getCountrySubventions(country) || {
+        list: [],
+        pagination: { hasMore: false, nextCursor: null, limit: 20 }
+      };
     },
 
     async fetchLocationData(cogs) {
@@ -660,7 +660,7 @@ export const useDataStore = defineStore("data", {
           console.error('Error fetching location data:', error);
         }
       }
-    },
+    }
   },
 
   getters: {
@@ -705,26 +705,26 @@ export const useDataStore = defineStore("data", {
     // Label state getters
     getLabelStateName: (state) => () => {
       switch (state.labelState) {
-        case 1:
-          return "alt1";
-        case 2:
-          return "alt2";
-        case 3:
-          return "english";
-        default:
-          return "standard";
+      case 1:
+        return 'alt1';
+      case 2:
+        return 'alt2';
+      case 3:
+        return 'english';
+      default:
+        return 'standard';
       }
     },
 
     getCurrentVersionLabel: (state) => () => {
       const stateName = state.getLabelStateName();
-      return MetricsConfig.versionLabels?.[stateName] || "Version Standard";
+      return MetricsConfig.versionLabels?.[stateName] || 'Version Standard';
     },
 
     getCurrentPageTitle: (state) => () => {
       const stateName = state.getLabelStateName();
       return (
-        MetricsConfig.pageTitles?.[stateName] || "Ma France: état des lieux"
+        MetricsConfig.pageTitles?.[stateName] || 'Ma France: état des lieux'
       );
     },
 
@@ -735,13 +735,13 @@ export const useDataStore = defineStore("data", {
     },
 
     getCurrentMigrants() {
-      const level = this.currentLevel
-      return this[level]?.migrants || { list: [], pagination: { hasMore: false, nextCursor: null, limit: 20 } }
+      const level = this.currentLevel;
+      return this[level]?.migrants || { list: [], pagination: { hasMore: false, nextCursor: null, limit: 20 } };
     },
 
     getCurrentMosques() {
-      const level = this.currentLevel
-      return this[level]?.mosques || { list: [], pagination: { hasMore: false, nextCursor: null, limit: 20 } }
-    },
-  },
+      const level = this.currentLevel;
+      return this[level]?.mosques || { list: [], pagination: { hasMore: false, nextCursor: null, limit: 20 } };
+    }
+  }
 });

@@ -23,13 +23,13 @@
         </div>
 
         <div v-else class="text-center py-8 text-grey">
-          <p v-if="location.type === 'country'">
+          <p v-if="location.type ==== 'country'">
             {{ noDataMessages.country }}
           </p>
-          <p v-else-if="location.type === 'departement'">
+          <p v-else-if="location.type ==== 'departement'">
             {{ noDataMessages.departement }}
           </p>
-          <p v-else-if="location.type === 'commune'">
+          <p v-else-if="location.type ==== 'commune'">
             {{ noDataMessages.commune }}
           </p>
           <p v-else>
@@ -42,9 +42,9 @@
 </template>
 
 <script>
-import { mapStores } from 'pinia'
-import { useDataStore } from '../../services/store.js'
-import { DepartementNames } from '../../utils/departementNames.js'
+import { mapStores } from 'pinia';
+import { useDataStore } from '../../services/store.js';
+import { DepartementNames } from '../../utils/departementNames.js';
 
 export default {
   name: 'ExecutiveDetails',
@@ -58,40 +58,42 @@ export default {
     return {
       loading: false,
       isCollapsed: false
-    }
+    };
   },
   computed: {
     ...mapStores(useDataStore),
 
     cardTitle() {
-      const isEnglish = this.dataStore.labelState === 3;
+      const isEnglish = this.dataStore.labelState ==== 3;
       const baseTitle = isEnglish ? 'Executive leader of' : 'Responsable exécutif de';
       return `${baseTitle}: ${this.locationName}`;
     },
 
     politicalFamilyLabel() {
-      return this.dataStore.labelState === 3 ? 'Political family' : 'Famille politique';
+      return this.dataStore.labelState ==== 3 ? 'Political family' : 'Famille politique';
     },
 
     locationName() {
-      if (!this.location) return '';
+      if (!this.location) {
+        return '';
+      }
 
-      const isEnglish = this.dataStore.labelState === 3;
+      const isEnglish = this.dataStore.labelState ==== 3;
 
       switch (this.location.type) {
-        case 'country':
-          return 'France';
-        case 'departement':
-          return this.location.name || (isEnglish ? `Department ${this.location.code}` : `Département ${this.location.code}`);
-        case 'commune':
-          return this.location.name || (isEnglish ? 'Municipality' : 'Commune');
-        default:
-          return '';
+      case 'country':
+        return 'France';
+      case 'departement':
+        return this.location.name || (isEnglish ? `Department ${this.location.code}` : `Département ${this.location.code}`);
+      case 'commune':
+        return this.location.name || (isEnglish ? 'Municipality' : 'Commune');
+      default:
+        return '';
       }
     },
 
     noDataMessages() {
-      const isEnglish = this.dataStore.labelState === 3;
+      const isEnglish = this.dataStore.labelState ==== 3;
 
       if (isEnglish) {
         return {
@@ -111,55 +113,59 @@ export default {
     },
 
     executiveData() {
-      if (!this.location) return null;
+      if (!this.location) {
+        return null;
+      }
 
       let executive = null;
       let position = '';
       let locationName = '';
 
-      const isEnglish = this.dataStore.labelState === 3;
+      const isEnglish = this.dataStore.labelState ==== 3;
 
       switch (this.location.type) {
-        case 'country':
-          executive = this.dataStore.country.executive;
-          position = isEnglish ? 'Minister of Interior' : 'Ministre de l\'intérieur';
-          locationName = 'France';
-          break;
+      case 'country':
+        executive = this.dataStore.country.executive;
+        position = isEnglish ? 'Minister of Interior' : 'Ministre de l\'intérieur';
+        locationName = 'France';
+        break;
 
-        case 'departement': {
-          executive = this.dataStore.departement.executive;
-          position = isEnglish ? 'Prefect' : 'Préfet';
-          const deptCode = this.location.code;
-          locationName = `${DepartementNames[deptCode]} (${deptCode})`;
-          break;
-        }
-
-        case 'commune': {
-          executive = this.dataStore.commune.executive;
-          position = isEnglish ? 'Mayor' : 'Maire';
-          const communeDetails = this.dataStore.commune.details;
-          if (communeDetails) {
-            locationName = `${this.location.name} (${communeDetails.departement})`;
-          } else {
-            locationName = this.location.name || (isEnglish ? 'Municipality' : 'Commune');
-          }
-          break;
-        }
-
-        default:
-          return null;
+      case 'departement': {
+        executive = this.dataStore.departement.executive;
+        position = isEnglish ? 'Prefect' : 'Préfet';
+        const deptCode = this.location.code;
+        locationName = `${DepartementNames[deptCode]} (${deptCode})`;
+        break;
       }
 
-      if (!executive) return null;
+      case 'commune': {
+        executive = this.dataStore.commune.executive;
+        position = isEnglish ? 'Mayor' : 'Maire';
+        const communeDetails = this.dataStore.commune.details;
+        if (communeDetails) {
+          locationName = `${this.location.name} (${communeDetails.departement})`;
+        } else {
+          locationName = this.location.name || (isEnglish ? 'Municipality' : 'Commune');
+        }
+        break;
+      }
+
+      default:
+        return null;
+      }
+
+      if (!executive) {
+        return null;
+      }
 
       // Format the date label
       let dateLabel = '';
       if (executive.date_mandat) {
-        dateLabel = isEnglish 
+        dateLabel = isEnglish
           ? ` since ${this.formatDate(executive.date_mandat)}`
           : ` depuis le ${this.formatDate(executive.date_mandat)}`;
       } else if (executive.date_poste) {
-        dateLabel = isEnglish 
+        dateLabel = isEnglish
           ? ` since ${this.formatDate(executive.date_poste)}`
           : ` depuis le ${this.formatDate(executive.date_poste)}`;
       }
@@ -191,7 +197,9 @@ export default {
 
   methods: {
     formatDate(dateString) {
-      if (!dateString) return '';
+      if (!dateString) {
+        return '';
+      }
 
       try {
         const date = new Date(dateString);
@@ -210,7 +218,7 @@ export default {
       this.isCollapsed = !this.isCollapsed;
     }
   }
-}
+};
 </script>
 
 <style scoped>

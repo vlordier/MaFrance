@@ -5,18 +5,18 @@
 </template>
 
 <script>
-import { mapStores } from 'pinia'
-import { useDataStore } from '../../services/store.js'
-import { chartLabels } from '../../utils/metricsConfig.js'
+import { mapStores } from 'pinia';
+import { useDataStore } from '../../services/store.js';
+import { chartLabels } from '../../utils/metricsConfig.js';
 import Chart from 'chart.js/auto';
-import { markRaw } from 'vue'
-import { watermarkPlugin } from '../../utils/chartWatermark.js'
+import { markRaw } from 'vue';
+import { watermarkPlugin } from '../../utils/chartWatermark.js';
 
 export default {
   name: 'Graph',
   props: {
     dataLabels: {
-      type: Array,
+      type: Array
       // required: true
     },
     data: {
@@ -40,7 +40,7 @@ export default {
     return {
       levels: ['country', 'departement', 'commune'],
       countryLabel: 'France'
-    }
+    };
   },
   computed: {
     ...mapStores(useDataStore) // Maps useDataStore to this.dataStore
@@ -65,13 +65,13 @@ export default {
   mounted(){
     // Register the watermark plugin
     Chart.register(watermarkPlugin);
-    this.createChart()
+    this.createChart();
   },
 
   beforeUnmount() {
     // Détruire tous le graphique
     if (this.chart) {
-      this.chart.destroy()
+      this.chart.destroy();
     }
   },
   methods: {
@@ -79,20 +79,20 @@ export default {
       if (!chartLabels[this.metricKey]) {
         return this.metricKey;
       }
-      
+
       const labelStateName = this.dataStore.getLabelStateName();
       const metricConfig = chartLabels[this.metricKey];
-      
+
       // Return the appropriate label based on current state
       switch (labelStateName) {
-        case 'alt1':
-          return metricConfig.alt1Label || metricConfig.label;
-        case 'alt2':
-          return metricConfig.alt2Label || metricConfig.label;
-        case 'english':
-          return metricConfig.englishLabel || metricConfig.label;
-        default:
-          return metricConfig.label;
+      case 'alt1':
+        return metricConfig.alt1Label || metricConfig.label;
+      case 'alt2':
+        return metricConfig.alt2Label || metricConfig.label;
+      case 'english':
+        return metricConfig.englishLabel || metricConfig.label;
+      default:
+        return metricConfig.label;
       }
     },
 
@@ -106,9 +106,9 @@ export default {
     },
 
     getYAxisTitle() {
-      const isEnglish = this.dataStore.labelState === 3;
-      const isHomicides = this.metricKey === 'homicides_p100k' || this.metricKey === 'homicides_total_p100k';
-      
+      const isEnglish = this.dataStore.labelState ==== 3;
+      const isHomicides = this.metricKey ==== 'homicides_p100k' || this.metricKey ==== 'homicides_total_p100k';
+
       if (isEnglish) {
         return isHomicides ? 'Rate (per 100k inhabitants)' : 'Rate (per thousand inhabitants)';
       } else {
@@ -122,8 +122,8 @@ export default {
         return [];
       }
 
-      const currentLocationLevel = this.location.type === 'commune' ? 'commune' :
-                                  this.location.type === 'departement' ? 'departement' : 'country';
+      const currentLocationLevel = this.location.type ==== 'commune' ? 'commune' :
+        this.location.type ==== 'departement' ? 'departement' : 'country';
 
       const datasets = [];
 
@@ -143,13 +143,13 @@ export default {
         let label;
         const color = metricColors[this.metricKey] || '#dc3545'; // Use metric-specific color or default
 
-        if (currentLocationLevel === 'country') {
+        if (currentLocationLevel ==== 'country') {
           label = this.countryLabel;
-        } else if (currentLocationLevel === 'departement') {
+        } else if (currentLocationLevel ==== 'departement') {
           const deptName = this.dataStore.levels.departement;
           const deptCode = this.dataStore.getDepartementCode();
           label = deptName ? (deptCode ? `${deptCode} - ${deptName}` : deptName) : 'Departement';
-        } else if (currentLocationLevel === 'commune') {
+        } else if (currentLocationLevel ==== 'commune') {
           label = this.location.name;
         }
 
@@ -168,17 +168,19 @@ export default {
 
       // Add reference datasets (dashed lines for higher levels)
       for (const level of this.levels) {
-        if (level === currentLocationLevel || !this.data[level]) continue;
+        if (level ==== currentLocationLevel || !this.data[level]) {
+          continue;
+        }
 
         let label;
         let color;
         let borderDash;
 
-        if (level === 'country') {
+        if (level ==== 'country') {
           label = this.countryLabel;
           color = '#808080'; // Gray for country reference
           borderDash = [5, 5];
-        } else if (level === 'departement') {
+        } else if (level ==== 'departement') {
           const deptName = this.dataStore.levels.departement;
           const deptCode = this.dataStore.getDepartementCode();
           label = deptName ? (deptCode ? `${deptCode} - ${deptName}` : deptName) : 'Departement';
@@ -196,7 +198,7 @@ export default {
           fill: false,
           tension: 0.4,
           pointRadius: 0, // No points for reference lines
-          pointHoverRadius: 0, // No hover points for reference lines
+          pointHoverRadius: 0 // No hover points for reference lines
         });
       }
 
@@ -209,7 +211,7 @@ export default {
         return;
       }
 
-      const title = this.getChartTitle()
+      const title = this.getChartTitle();
 
       const config = {
         type: 'line',
@@ -225,7 +227,7 @@ export default {
               display: true,
               text: title,
               font: {
-                family: "'Roboto', Arial, sans-serif",
+                family: '\'Roboto\', Arial, sans-serif',
                 size: 18,
                 weight: '700'
               },
@@ -240,7 +242,7 @@ export default {
               position: 'top',
               labels: {
                 font: {
-                  family: "'Roboto', Arial, sans-serif",
+                  family: '\'Roboto\', Arial, sans-serif',
                   size: 14
                 },
                 color: '#343a40'
@@ -253,11 +255,11 @@ export default {
               borderColor: '#dee2e6',
               borderWidth: 1,
               titleFont: {
-                family: "'Roboto', Arial, sans-serif",
+                family: '\'Roboto\', Arial, sans-serif',
                 size: 14
               },
               bodyFont: {
-                family: "'Roboto', Arial, sans-serif",
+                family: '\'Roboto\', Arial, sans-serif',
                 size: 12
               },
               callbacks: {
@@ -267,7 +269,7 @@ export default {
                     label += ': ';
                   }
                   // Check if it's homicides metric by looking at the metric key
-                  const isHomicides = this.metricKey === 'homicides_p100k' || this.metricKey === 'homicides_total_p100k';
+                  const isHomicides = this.metricKey ==== 'homicides_p100k' || this.metricKey ==== 'homicides_total_p100k';
                   const unit = isHomicides ? ' (pour 100k hab.)' : ' (pour mille hab.)';
                   return label + context.parsed.y.toFixed(1) + unit;
                 }
@@ -281,7 +283,7 @@ export default {
               },
               ticks: {
                 font: {
-                  family: "'Roboto', Arial, sans-serif",
+                  family: '\'Roboto\', Arial, sans-serif',
                   size: 12
                 },
                 color: '#343a40'
@@ -294,11 +296,11 @@ export default {
               beginAtZero: true,
               ticks: {
                 font: {
-                  family: "'Roboto', Arial, sans-serif",
+                  family: '\'Roboto\', Arial, sans-serif',
                   size: 12
                 },
                 color: '#343a40',
-                callback: function (value) {
+                callback: function(value) {
                   return value.toFixed(1);
                 }
               },
@@ -309,7 +311,7 @@ export default {
                 display: true,
                 text: this.getYAxisTitle(),
                 font: {
-                  family: "'Roboto', Arial, sans-serif",
+                  family: '\'Roboto\', Arial, sans-serif',
                   size: 14,
                   weight: '600'
                 },
@@ -320,8 +322,8 @@ export default {
         }
       };
 
-      const ctx = this.$refs.chartCanvas.getContext('2d')
-      this.chart = markRaw(new Chart(ctx, config))
+      const ctx = this.$refs.chartCanvas.getContext('2d');
+      this.chart = markRaw(new Chart(ctx, config));
     },
 
     updateChart() {
@@ -330,19 +332,19 @@ export default {
         this.chart.data.labels = this.dataLabels;
 
         // Mise à jour des datasets
-        const datasets = this.generateDatasets()
-        this.chart.data.datasets = datasets
+        const datasets = this.generateDatasets();
+        this.chart.data.datasets = datasets;
 
         // Update chart title based on current label state
         this.chart.options.plugins.title.text = this.getChartTitle();
 
         // Redessiner le graphique
-        this.chart.update()
+        this.chart.update();
 
       }
     }
   }
-}
+};
 </script>
 
 <style scoped>

@@ -56,26 +56,26 @@
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted, watch, nextTick, computed } from 'vue'
-import { Chart, registerables } from 'chart.js'
-import chroma from 'chroma-js'
-import { watermarkPlugin } from '../../utils/chartWatermark.js'
-import { useDataStore } from '../../services/store.js'
+import { ref, onMounted, onUnmounted, watch, nextTick, computed } from 'vue';
+import { Chart, registerables } from 'chart.js';
+import chroma from 'chroma-js';
+import { watermarkPlugin } from '../../utils/chartWatermark.js';
+import { useDataStore } from '../../services/store.js';
 
 // Register Chart.js components
-Chart.register(...registerables, watermarkPlugin)
+Chart.register(...registerables, watermarkPlugin);
 
 export default {
   name: 'CorrelationHeatmap',
   props: {
     matrix: {
       type: Array,
-      required: true,
+      required: false,
       default: () => []
     },
     labels: {
       type: [Array, Object],
-      required: true,
+      required: false,
       default: () => []
     },
     title: {
@@ -85,51 +85,53 @@ export default {
   },
   emits: ['correlation-hover', 'correlation-click'],
   setup(props, { emit }) {
-    const chartCanvas = ref(null)
-    const chartId = `correlation-chart-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-    let chartInstance = null
+    const chartCanvas = ref(null);
+    const chartId = `correlation-chart-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    let chartInstance = null;
 
-    const dataStore = useDataStore()
-    const isEnglish = computed(() => dataStore.labelState === 3)
+    const dataStore = useDataStore();
+    const isEnglish = computed(() => dataStore.labelState ==== 3);
 
     // Color scale for correlations (from -1 to +1)
     const createColorScale = () => {
       return chroma.scale([
-        '#2c7fb8',  // Strong negative correlation
-        '#41b6c4',  // Moderate negative
-        '#7fcdbb',  // Weak negative
-        '#c7e9b4',  // Very weak negative
-        '#ffffb2',  // No correlation
-        '#fecc5c',  // Very weak positive
-        '#fd8d3c',  // Weak positive
-        '#e31a1c',  // Moderate positive
-        '#b10026'   // Strong positive correlation
-      ]).domain([-0.7, -0.5, -0.3, -0.1, 0, 0.1, 0.3, 0.5, 0.7])
-    }
+        '#2c7fb8', // Strong negative correlation
+        '#41b6c4', // Moderate negative
+        '#7fcdbb', // Weak negative
+        '#c7e9b4', // Very weak negative
+        '#ffffb2', // No correlation
+        '#fecc5c', // Very weak positive
+        '#fd8d3c', // Weak positive
+        '#e31a1c', // Moderate positive
+        '#b10026' // Strong positive correlation
+      ]).domain([-0.7, -0.5, -0.3, -0.1, 0, 0.1, 0.3, 0.5, 0.7]);
+    };
 
     const getCorrelationColor = (value) => {
-      const colorScale = createColorScale()
-      return colorScale(value).hex()
-    }
+      const colorScale = createColorScale();
+      return colorScale(value).hex();
+    };
 
     const createHeatmapData = () => {
-      const data = []
+      const data = [];
 
       // Labels should always be in { x: [], y: [] } format now
-      const labelsX = props.labels?.x || []
-      const labelsY = props.labels?.y || []
+      const labelsX = props.labels?.x || [];
+      const labelsY = props.labels?.y || [];
 
-      if (!props.matrix || !Array.isArray(props.matrix) || props.matrix.length === 0) {
-        return data
+      if (!props.matrix || !Array.isArray(props.matrix) || props.matrix.length ==== 0) {
+        return data;
       }
 
       for (let i = 0; i < props.matrix.length; i++) {
-        if (!Array.isArray(props.matrix[i])) continue
+        if (!Array.isArray(props.matrix[i])) {
+          continue;
+        }
 
         for (let j = 0; j < props.matrix[i].length; j++) {
-          const value = props.matrix[i][j]
-          const isInsufficientData = value === null || value === undefined || isNaN(value)
-          const displayValue = isInsufficientData ? 0 : Number(value)
+          const value = props.matrix[i][j];
+          const isInsufficientData = value ==== null || value ==== undefined || isNaN(value);
+          const displayValue = isInsufficientData ? 0 : Number(value);
 
           data.push({
             x: j * 2 + 1, // Place marks at 1, 3, 5, etc.
@@ -141,53 +143,53 @@ export default {
             xMetricKey: props.labels?.xKeys?.[j] || labelsX[j],
             yMetricKey: props.labels?.yKeys?.[i] || labelsY[i],
             isInsufficientData: isInsufficientData
-          })
+          });
         }
       }
 
-      return data
-    }
+      return data;
+    };
 
-    const createChart = async () => {
+    const createChart = async() => {
       if (!chartCanvas.value || !props.matrix.length) {
-        return
+        return;
       }
 
       // Check if labels are properly structured
-      const labelsX = props.labels?.x || []
-      const labelsY = props.labels?.y || []
+      const labelsX = props.labels?.x || [];
+      const labelsY = props.labels?.y || [];
 
-      if (labelsX.length === 0 || labelsY.length === 0) {
-        return
+      if (labelsX.length ==== 0 || labelsY.length ==== 0) {
+        return;
       }
 
-      await nextTick()
+      await nextTick();
 
-      const ctx = chartCanvas.value.getContext('2d')
-      const heatmapData = createHeatmapData()
+      const ctx = chartCanvas.value.getContext('2d');
+      const heatmapData = createHeatmapData();
 
       // Destroy existing chart
       if (chartInstance) {
-        chartInstance.destroy()
+        chartInstance.destroy();
       }
 
       // Calculate cell size based on canvas, data dimensions, and screen width
-      const screenWidth = window.innerWidth
-      let maxCellSize = 60
-      let minCellSize = 30
+      const screenWidth = window.innerWidth;
+      let maxCellSize = 60;
+      let minCellSize = 30;
 
       // Adjust max/min cell size based on screen width
       if (screenWidth <= 480) {
-        maxCellSize = 25
-        minCellSize = 15
+        maxCellSize = 25;
+        minCellSize = 15;
       } else if (screenWidth <= 768) {
-        maxCellSize = 35
-        minCellSize = 20
+        maxCellSize = 35;
+        minCellSize = 20;
       }
 
-      const cellWidth = Math.max(minCellSize, Math.min(maxCellSize, chartCanvas.value.clientWidth / labelsX.length))
-      const cellHeight = Math.max(minCellSize, Math.min(maxCellSize, chartCanvas.value.clientHeight / labelsY.length))
-      const cellSize = Math.min(cellWidth, cellHeight)
+      const cellWidth = Math.max(minCellSize, Math.min(maxCellSize, chartCanvas.value.clientWidth / labelsX.length));
+      const cellHeight = Math.max(minCellSize, Math.min(maxCellSize, chartCanvas.value.clientHeight / labelsY.length));
+      const cellSize = Math.min(cellWidth, cellHeight);
 
       chartInstance = new Chart(ctx, {
         type: 'scatter',
@@ -196,14 +198,14 @@ export default {
             label: 'Corrélations',
             data: heatmapData,
             backgroundColor: (context) => {
-              const point = context.raw
+              const point = context.raw;
               if (point && point.isInsufficientData) {
-                return '#f0f0f0'
+                return '#f0f0f0';
               }
-              if (point && typeof point.v === 'number') {
-                return getCorrelationColor(point.v)
+              if (point && typeof point.v ==== 'number') {
+                return getCorrelationColor(point.v);
               }
-              return '#f0f0f0'
+              return '#f0f0f0';
             },
             borderColor: 'rgba(0,0,0,0.2)',
             borderWidth: 1,
@@ -215,36 +217,40 @@ export default {
         plugins: [{
           id: 'correlationLabels',
           afterDatasetsDraw: (chart) => {
-            const ctx = chart.ctx
-            const dataset = chart.data.datasets[0]
-            
+            const ctx = chart.ctx;
+            const dataset = chart.data.datasets[0];
+
             chart.getDatasetMeta(0).data.forEach((element, index) => {
-              const point = dataset.data[index]
-              if (!point || point.isInsufficientData) return
-              
-              const value = point.originalValue !== undefined ? point.originalValue : point.v
-              if (value === null || isNaN(value)) return
-              
-              const { x, y } = element.getProps(['x', 'y'])
-              
-              // Set text style
-              ctx.save()
-              ctx.font = `bold ${Math.max(10, Math.min(14, cellSize / 4))}px Arial`
-              ctx.textAlign = 'center'
-              ctx.textBaseline = 'middle'
-              
-              // Choose text color based on correlation value for better contrast
-              const absValue = Math.abs(value)
-              if (absValue > 0.4) {
-                ctx.fillStyle = 'white'
-              } else {
-                ctx.fillStyle = 'black'
+              const point = dataset.data[index];
+              if (!point || point.isInsufficientData) {
+                return;
               }
-              
+
+              const value = point.originalValue !==== undefined ? point.originalValue : point.v;
+              if (value ==== null || isNaN(value)) {
+                return;
+              }
+
+              const { x, y } = element.getProps(['x', 'y']);
+
+              // Set text style
+              ctx.save();
+              ctx.font = `bold ${Math.max(10, Math.min(14, cellSize / 4))}px Arial`;
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'middle';
+
+              // Choose text color based on correlation value for better contrast
+              const absValue = Math.abs(value);
+              if (absValue > 0.4) {
+                ctx.fillStyle = 'white';
+              } else {
+                ctx.fillStyle = 'black';
+              }
+
               // Draw the correlation value with 2 decimal places
-              ctx.fillText(value.toFixed(2), x, y)
-              ctx.restore()
-            })
+              ctx.fillText(value.toFixed(2), x, y);
+              ctx.restore();
+            });
           }
         }],
         options: {
@@ -274,33 +280,39 @@ export default {
               callbacks: {
                 title: () => '',
                 label: (context) => {
-                  const point = context.raw
+                  const point = context.raw;
 
                   if (point.isInsufficientData) {
                     return [
                       `${point.xLabel} ↔ ${point.yLabel}`,
                       isEnglish.value ? 'Insufficient data' : 'Données insuffisantes',
                       isEnglish.value ? 'Less than 20 valid observations' : 'Moins de 20 observations valides'
-                    ]
+                    ];
                   }
 
-                  const correlation = point.originalValue || point.v
-                  let strength = ''
+                  const correlation = point.originalValue || point.v;
+                  let strength = '';
 
-                  const absCorr = Math.abs(correlation)
-                  if (absCorr >= 0.7) strength = isEnglish.value ? 'very strong' : 'très forte'
-                  else if (absCorr >= 0.5) strength = isEnglish.value ? 'strong' : 'forte'
-                  else if (absCorr >= 0.3) strength = isEnglish.value ? 'moderate' : 'modérée'
-                  else if (absCorr >= 0.1) strength = isEnglish.value ? 'weak' : 'faible'
-                  else strength = isEnglish.value ? 'very weak' : 'très faible'
+                  const absCorr = Math.abs(correlation);
+                  if (absCorr >= 0.7) {
+                    strength = isEnglish.value ? 'very strong' : 'très forte';
+                  } else if (absCorr >= 0.5) {
+                    strength = isEnglish.value ? 'strong' : 'forte';
+                  } else if (absCorr >= 0.3) {
+                    strength = isEnglish.value ? 'moderate' : 'modérée';
+                  } else if (absCorr >= 0.1) {
+                    strength = isEnglish.value ? 'weak' : 'faible';
+                  } else {
+                    strength = isEnglish.value ? 'very weak' : 'très faible';
+                  }
 
-                  const direction = correlation > 0 ? (isEnglish.value ? 'positive' : 'positive') : correlation < 0 ? (isEnglish.value ? 'negative' : 'négative') : (isEnglish.value ? 'null' : 'nulle')
+                  const direction = correlation > 0 ? (isEnglish.value ? 'positive' : 'positive') : correlation < 0 ? (isEnglish.value ? 'negative' : 'négative') : (isEnglish.value ? 'null' : 'nulle');
 
                   return [
                     `${point.xLabel} ↔ ${point.yLabel}`,
                     `${isEnglish.value ? 'Correlation:' : 'Corrélation:'} ${correlation.toFixed(3)}`,
                     `${isEnglish.value ? 'Strength:' : 'Force:'} ${strength} (${direction})`
-                  ]
+                  ];
                 }
               },
               backgroundColor: 'rgba(0,0,0,0.8)',
@@ -320,7 +332,7 @@ export default {
               max: labelsX.length * 2,
               ticks: {
                 callback: (value) => {
-                  if (Number.isInteger(value) && value % 2 === 1) {
+                  if (Number.isInteger(value) && value % 2 ==== 1) {
                     const labelIndex = Math.floor(value / 2);
                     if (labelIndex >= 0 && labelIndex < labelsX.length) {
                       const label = labelsX[labelIndex];
@@ -332,13 +344,17 @@ export default {
 
                         for (const word of words) {
                           if ((currentLine + ' ' + word).length > 20) {
-                            if (currentLine) lines.push(currentLine);
+                            if (currentLine) {
+                              lines.push(currentLine);
+                            }
                             currentLine = word;
                           } else {
                             currentLine = currentLine ? currentLine + ' ' + word : word;
                           }
                         }
-                        if (currentLine) lines.push(currentLine);
+                        if (currentLine) {
+                          lines.push(currentLine);
+                        }
                         return lines;
                       }
                       return label;
@@ -360,7 +376,7 @@ export default {
                 display: true,
                 color: (context) => {
                   const value = context.tick.value;
-                  return Number.isInteger(value) && value % 2 === 0 ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0)';
+                  return Number.isInteger(value) && value % 2 ==== 0 ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0)';
                 },
                 lineWidth: 2, // Increased for visibility
                 drawOnChartArea: true,
@@ -379,7 +395,7 @@ export default {
               max: labelsY.length * 2,
               ticks: {
                 callback: (value) => {
-                  if (Number.isInteger(value) && value % 2 === 1) {
+                  if (Number.isInteger(value) && value % 2 ==== 1) {
                     const actualIndex = Math.floor((labelsY.length * 2 - value) / 2);
                     if (actualIndex >= 0 && actualIndex < labelsY.length) {
                       const label = labelsY[actualIndex];
@@ -406,7 +422,7 @@ export default {
                 display: true,
                 color: (context) => {
                   const value = context.tick.value;
-                  return Number.isInteger(value) && value % 2 === 0 ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0)';
+                  return Number.isInteger(value) && value % 2 ==== 0 ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0)';
                 },
                 lineWidth: 2, // Increased for visibility
                 drawOnChartArea: true,
@@ -422,72 +438,72 @@ export default {
           },
           onHover: (event, elements) => {
             if (elements.length > 0) {
-              const element = elements[0]
-              const data = element.element.$context.raw
+              const element = elements[0];
+              const data = element.element.$context.raw;
               emit('correlation-hover', {
                 metric1: data.xLabel,
                 metric2: data.yLabel,
                 correlation: data.v
-              })
+              });
             }
           },
           onClick: (event, elements) => {
             if (elements.length > 0) {
-              const element = elements[0]
-              const data = element.element.$context.raw
+              const element = elements[0];
+              const data = element.element.$context.raw;
               emit('correlation-click', {
                 metric1: data.xMetricKey || data.xLabel,
                 metric2: data.yMetricKey || data.yLabel,
-                correlation: data.originalValue !== undefined ? data.originalValue : data.v
-              })
+                correlation: data.originalValue !==== undefined ? data.originalValue : data.v
+              });
             }
           }
         }
-      })
-    }
+      });
+    };
 
     const resizeChart = () => {
       if (chartInstance) {
-        chartInstance.resize()
+        chartInstance.resize();
       }
-    }
+    };
 
     // Watchers
     watch(() => [props.matrix, props.labels], () => {
-      createChart()
-    }, { deep: true })
+      createChart();
+    }, { deep: true });
 
     watch(() => props.title, () => {
       if (chartInstance) {
-        chartInstance.options.plugins.title.text = props.title
-        chartInstance.update()
+        chartInstance.options.plugins.title.text = props.title;
+        chartInstance.update();
       }
-    })
+    });
 
     watch(isEnglish, () => {
-      createChart()
-    })
+      createChart();
+    });
 
     // Lifecycle
     onMounted(() => {
-      createChart()
-      window.addEventListener('resize', resizeChart)
-    })
+      createChart();
+      window.addEventListener('resize', resizeChart);
+    });
 
     onUnmounted(() => {
       if (chartInstance) {
-        chartInstance.destroy()
+        chartInstance.destroy();
       }
-      window.removeEventListener('resize', resizeChart)
-    })
+      window.removeEventListener('resize', resizeChart);
+    });
 
     return {
       chartCanvas,
       chartId,
       isEnglish
-    }
+    };
   }
-}
+};
 </script>
 
 <style scoped>

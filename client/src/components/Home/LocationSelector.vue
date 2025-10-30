@@ -8,7 +8,7 @@
         <v-row>
           <v-col cols="12" sm="3">
             <v-btn
-              :color="location.type === 'country' ? 'primary' : 'grey'"
+              :color="location.type ==== 'country' ? 'primary' : 'grey'"
               variant="elevated"
               block
               @click="selectFrance"
@@ -16,7 +16,7 @@
               France
             </v-btn>
           </v-col>
-          
+
           <v-col cols="12" sm="4">
             <v-select
               v-model="selectedDepartement"
@@ -31,7 +31,7 @@
               @update:model-value="onDepartementChange"
             />
           </v-col>
-          
+
           <v-col cols="12" sm="5">
             <v-autocomplete
               v-model="selectedCommune"
@@ -57,17 +57,16 @@
 </template>
 
 <script>
-import { mapStores } from 'pinia'
-import { useDataStore } from '../../services/store.js'
-import { DepartementNames } from '../../utils/departementNames.js'
+import { mapStores } from 'pinia';
+import { useDataStore } from '../../services/store.js';
+import { DepartementNames } from '../../utils/departementNames.js';
 // import api from '../services/api.js'
-
 
 export default {
   name: 'LocationSelector',
   props: {
     location: {
-      type: Object,
+      type: Object
       // required: true
     }
   },
@@ -81,22 +80,22 @@ export default {
       departementNames: DepartementNames,
       loading: false,
       isCollapsed: false
-    }
+    };
   },
   computed: {
     ...mapStores(useDataStore),
     cardTitle() {
-      return this.dataStore.labelState === 3 
+      return this.dataStore.labelState ==== 3
         ? 'Visualization level selection'
         : 'Sélection du niveau de visualisation';
     },
     departementLabel() {
-      return this.dataStore.labelState === 3 
+      return this.dataStore.labelState ==== 3
         ? 'Choose a department'
         : 'Choisir un département';
     },
     communeLabel() {
-      return this.dataStore.labelState === 3 
+      return this.dataStore.labelState ==== 3
         ? 'Search for a municipality'
         : 'Rechercher une commune';
     },
@@ -104,16 +103,20 @@ export default {
       return Object.entries(this.departementNames)
         .sort(([a], [b]) => {
           const parseCode = (code) => {
-            if (code === '2A') return 20.1
-            if (code === '2B') return 20.2
-            return parseInt(code, 10)
-          }
-          return parseCode(a) - parseCode(b)
+            if (code ==== '2A') {
+              return 20.1;
+            }
+            if (code ==== '2B') {
+              return 20.2;
+            }
+            return parseInt(code, 10);
+          };
+          return parseCode(a) - parseCode(b);
         })
         .map(([code, name]) => ({
           code,
           name: `${code} - ${name}`
-        }))
+        }));
     }
   },
   mounted() {
@@ -121,70 +124,72 @@ export default {
   },
   methods: {
     selectFrance() {
-      this.selectedDepartement = ''
-      this.selectedCommune = null
-      this.communeQuery = ''
-      this.communeSuggestions = []
-      this.dataStore.setCountry()
+      this.selectedDepartement = '';
+      this.selectedCommune = null;
+      this.communeQuery = '';
+      this.communeSuggestions = [];
+      this.dataStore.setCountry();
     },
-    
+
     onDepartementChange() {
       if (this.selectedDepartement) {
-        this.selectedCommune = null
-        this.communeQuery = ''
-        this.communeSuggestions = []
+        this.selectedCommune = null;
+        this.communeQuery = '';
+        this.communeSuggestions = [];
 
         // this.dataStore.currentLevel = 'departement'
         // this.dataStore.getAllDepartementData(this.selectedDepartement)
-        this.dataStore.setDepartement(this.selectedDepartement)
+        this.dataStore.setDepartement(this.selectedDepartement);
 
       }
     },
-    
-    onCommuneSelect(commune) {
-      if (!commune) return
 
-      const cog = commune.COG
-      const departement = commune.departement
+    onCommuneSelect(commune) {
+      if (!commune) {
+        return;
+      }
+
+      const cog = commune.COG;
+      const departement = commune.departement;
 
       // console.log('onCommuneSelect', commune, cog, departement)
 
-      this.dataStore.setCommune(cog, commune.commune, departement)
+      this.dataStore.setCommune(cog, commune.commune, departement);
     },
-    
+
     async onCommuneInput() {
       if (this.communeQuery.length < 3) {
-        this.communeSuggestions = []
-        return
+        this.communeSuggestions = [];
+        return;
       }
-      
-      this.loading = true
+
+      this.loading = true;
       try {
         // console.log('communeQuery', this.communeQuery)
-        const communes = await this.dataStore.searchCommunes(this.communeQuery)
-        
+        const communes = await this.dataStore.searchCommunes(this.communeQuery);
+
         this.communeSuggestions = communes.map(commune => ({
           displayName: `${commune.commune} (${commune.departement})`,
           commune: commune.commune,
           COG: commune.COG,
           departement: commune.departement
-        }))
-        
-        this.communesData = this.communeSuggestions
+        }));
+
+        this.communesData = this.communeSuggestions;
       } catch (error) {
-        console.error('Erreur recherche communes:', error)
-        this.communeSuggestions = []
+        console.error('Erreur recherche communes:', error);
+        this.communeSuggestions = [];
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     },
 
     toggleCollapse() {
-      this.isCollapsed = !this.isCollapsed
+      this.isCollapsed = !this.isCollapsed;
     }
-  },
-  
-}
+  }
+
+};
 </script>
 
 <style scoped>
@@ -202,4 +207,4 @@ export default {
   max-height: 15rem;
   overflow-y: auto;
 }
-</style> 
+</style>

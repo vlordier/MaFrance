@@ -5,8 +5,8 @@
     </v-card-title>
     <v-card-subtitle class="text-caption text-grey pt-0 pb-0">
       <a
-        href="https://www.data.gouv.fr/fr/datasets/bases-statistiques-communale-et-departementale-de-la-delinquance-enregistree-par-la-police-et-la-gendarmerie-nationales/" 
-        target="_blank" 
+        href="https://www.data.gouv.fr/fr/datasets/bases-statistiques-communale-et-departementale-de-la-delinquance-enregistree-par-la-police-et-la-gendarmerie-nationales/"
+        target="_blank"
         class="text-decoration-none"
       >
         {{ sourceText }}
@@ -36,10 +36,10 @@
 </template>
 
 <script>
-import Graph from './Graph.vue'
-import { MetricsConfig } from '../../utils/metricsConfig.js'
-import { mapStores } from 'pinia'
-import { useDataStore } from '../../services/store.js'
+import Graph from './Graph.vue';
+import { MetricsConfig } from '../../utils/metricsConfig.js';
+import { mapStores } from 'pinia';
+import { useDataStore } from '../../services/store.js';
 
 export default {
   name: 'CrimeGraphs',
@@ -52,11 +52,11 @@ export default {
       required: true
     },
     labels: {
-      type: Array,
+      type: Array
       // default: null
     },
     data: {
-      type: Object,
+      type: Object
       // default: null
     }
   },
@@ -73,85 +73,89 @@ export default {
         'escroqueries_p1k'
       ],
       isCollapsed: false
-    }
+    };
   },
   computed: {
     ...mapStores(useDataStore),
-    
+
     cardTitle() {
-      const isEnglish = this.dataStore.labelState === 3;
+      const isEnglish = this.dataStore.labelState ==== 3;
       const baseTitle = isEnglish ? 'Crime Charts for' : 'Graphiques de Criminalité pour';
       return `${baseTitle}: ${this.locationName}`;
     },
-    
+
     sourceText() {
-      return this.dataStore.labelState === 3 ? 'source SSMSI' : 'source SSMSI';
+      return this.dataStore.labelState ==== 3 ? 'source SSMSI' : 'source SSMSI';
     },
-    
+
     locationName() {
-      if (!this.location) return '';
-      
-      const isEnglish = this.dataStore.labelState === 3;
-      
+      if (!this.location) {
+        return '';
+      }
+
+      const isEnglish = this.dataStore.labelState ==== 3;
+
       switch (this.location.type) {
-        case 'country':
-          return 'France';
-        case 'departement':
-          return this.location.name || (isEnglish ? `Department ${this.location.code}` : `Département ${this.location.code}`);
-        case 'commune':
-          return this.location.name || (isEnglish ? 'Municipality' : 'Commune');
-        default:
-          return '';
+      case 'country':
+        return 'France';
+      case 'departement':
+        return this.location.name || (isEnglish ? `Department ${this.location.code}` : `Département ${this.location.code}`);
+      case 'commune':
+        return this.location.name || (isEnglish ? 'Municipality' : 'Commune');
+      default:
+        return '';
       }
     },
-    
+
     availableCharts() {
       // Only return charts that have data available
       return this.chartList.filter(chartKey => {
-        return this.aggregatedData[chartKey] && 
+        return this.aggregatedData[chartKey] &&
                Object.keys(this.aggregatedData[chartKey]).length > 0 &&
-               Object.values(this.aggregatedData[chartKey]).some(levelData => 
+               Object.values(this.aggregatedData[chartKey]).some(levelData =>
                  levelData && levelData.length > 0
                );
       });
     },
     aggregatedData() {
-      const result = {}
-      
+      const result = {};
+
       // Pour chaque métrique calculée définie dans MetricsConfig
       Object.keys(MetricsConfig.calculatedMetrics).forEach(metricKey => {
-        const calculation = MetricsConfig.calculatedMetrics[metricKey]
-        result[metricKey] = {}
+        const calculation = MetricsConfig.calculatedMetrics[metricKey];
+        result[metricKey] = {};
 
-        for(const level of this.levels) {
+        for (const level of this.levels) {
           // Vérifier que tous les composants nécessaires sont disponibles
           const inputSeries = calculation.components
             .map(key => this.data[key] && this.data[key][level])
-            .filter(serie => serie) // Filtrer les séries undefined/null
+            .filter(serie => serie); // Filtrer les séries undefined/null
 
-          if(inputSeries.length === 0) continue
+          if (inputSeries.length ==== 0) {
+            continue;
+          }
 
-          const seriesLength = inputSeries[0].length
-      
+          const seriesLength = inputSeries[0].length;
+
           // Calculer la métrique pour chaque entrée/level en utilisant la formule
-          result[metricKey][level] = []
+          result[metricKey][level] = [];
 
           for (let i = 0; i < seriesLength; i++) {
             // Créer un objet de données pour cette année/période
-            const dataPoint = {}
+            const dataPoint = {};
             calculation.components.forEach(key => {
-              const serie = this.data[key] && this.data[key][level]
-              dataPoint[key] = serie ? (serie[i] || 0) : 0
-            })
-            
+              const serie = this.data[key] && this.data[key][level];
+              dataPoint[key] = serie ? (serie[i] || 0) : 0;
+            });
+
             // Appliquer la formule
-            const calculatedValue = calculation.formula(dataPoint)
-            result[metricKey][level].push(calculatedValue)
+            const calculatedValue = calculation.formula(dataPoint);
+            result[metricKey][level].push(calculatedValue);
           }
         }
-      })
-      
-      return result
+      });
+
+      return result;
     }
   },
   watch: {
@@ -171,7 +175,7 @@ export default {
       this.isCollapsed = !this.isCollapsed;
     }
   }
-}
+};
 </script>
 
 <style scoped>
@@ -187,4 +191,4 @@ export default {
 .chart-canvas {
 
 }
-</style> 
+</style>

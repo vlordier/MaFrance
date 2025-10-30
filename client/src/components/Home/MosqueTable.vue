@@ -68,8 +68,8 @@
 </template>
 
 <script>
-import { mapStores } from 'pinia'
-import { useDataStore } from '../../services/store.js'
+import { mapStores } from 'pinia';
+import { useDataStore } from '../../services/store.js';
 
 export default {
   name: 'MosqueTable',
@@ -88,7 +88,7 @@ export default {
           limit: 20
         }
       })
-    },
+    }
   },
   data() {
     return {
@@ -100,90 +100,90 @@ export default {
       scrollTop: 0,
       bufferSize: 5,
       scrollListenerAttached: false
-    }
+    };
   },
   computed: {
     ...mapStores(useDataStore),
 
     isEnglish() {
-      return this.dataStore.labelState === 3;
+      return this.dataStore.labelState ==== 3;
     },
 
     locationName() {
-      if (this.location.type === 'departement') {
-        return this.location.name
-      } else if (this.location.type === 'commune') {
-        return this.location.name
+      if (this.location.type ==== 'departement') {
+        return this.location.name;
+      } else if (this.location.type ==== 'commune') {
+        return this.location.name;
       }
-      return this.isEnglish ? 'France' : 'France'
+      return this.isEnglish ? 'France' : 'France';
     },
 
     mosquesList() {
-      return this.data.list || []
+      return this.data.list || [];
     },
 
     // Virtual scrolling computed properties
     visibleStartIndex() {
-      return Math.max(0, Math.floor(this.scrollTop / this.itemHeight) - this.bufferSize)
+      return Math.max(0, Math.floor(this.scrollTop / this.itemHeight) - this.bufferSize);
     },
 
     visibleEndIndex() {
-      const visibleCount = Math.ceil(this.containerHeight / this.itemHeight)
+      const visibleCount = Math.ceil(this.containerHeight / this.itemHeight);
       return Math.min(
         this.mosquesList.length - 1,
         this.visibleStartIndex + visibleCount + this.bufferSize * 2
-      )
+      );
     },
 
     visibleMosques() {
-      return this.mosquesList.slice(this.visibleStartIndex, this.visibleEndIndex + 1)
+      return this.mosquesList.slice(this.visibleStartIndex, this.visibleEndIndex + 1);
     },
 
     virtualHeight() {
-      return this.mosquesList.length * this.itemHeight
+      return this.mosquesList.length * this.itemHeight;
     },
 
     offsetY() {
-      return this.visibleStartIndex * this.itemHeight
+      return this.visibleStartIndex * this.itemHeight;
     },
 
     computedContainerHeight() {
       // Reduce to 50px if no mosques and not loading
-      return this.mosquesList.length === 0 && !this.isLoading ? 50 : 400;
+      return this.mosquesList.length ==== 0 && !this.isLoading ? 50 : 400;
     }
   },
   watch: {
     data: {
       handler() {
         this.$nextTick(() => {
-          this.updateContainerHeight()
-        })
+          this.updateContainerHeight();
+        });
       },
       deep: true
     },
     'data.pagination.hasMore': function(newVal) {
       if (newVal) {
-        this.attachScrollListener()
+        this.attachScrollListener();
       } else {
-        this.removeScrollListener()
+        this.removeScrollListener();
       }
     }
   },
   mounted() {
-    this.updateContainerHeight()
-    window.addEventListener('resize', this.updateContainerHeight)
+    this.updateContainerHeight();
+    window.addEventListener('resize', this.updateContainerHeight);
     if (this.data.pagination?.hasMore) {
-      this.attachScrollListener()
+      this.attachScrollListener();
     }
   },
   beforeUnmount() {
-    window.removeEventListener('resize', this.updateContainerHeight)
-    this.removeScrollListener()
+    window.removeEventListener('resize', this.updateContainerHeight);
+    this.removeScrollListener();
   },
   methods: {
     updateContainerHeight() {
       if (this.$refs.tableContainer) {
-        this.containerHeight = this.$refs.tableContainer.clientHeight
+        this.containerHeight = this.$refs.tableContainer.clientHeight;
       }
     },
 
@@ -193,15 +193,15 @@ export default {
 
     attachScrollListener() {
       if (!this.scrollListenerAttached && this.$refs.tableContainer) {
-        this.$refs.tableContainer.addEventListener('scroll', this.handleScroll)
-        this.scrollListenerAttached = true
+        this.$refs.tableContainer.addEventListener('scroll', this.handleScroll);
+        this.scrollListenerAttached = true;
       }
     },
 
     removeScrollListener() {
       if (this.scrollListenerAttached && this.$refs.tableContainer) {
-        this.$refs.tableContainer.removeEventListener('scroll', this.handleScroll)
-        this.scrollListenerAttached = false
+        this.$refs.tableContainer.removeEventListener('scroll', this.handleScroll);
+        this.scrollListenerAttached = false;
       }
     },
 
@@ -214,11 +214,11 @@ export default {
         !this.isLoading &&
         this.data.pagination?.hasMore
       ) {
-      this.$emit('load-more');
-    }
+        this.$emit('load-more');
+      }
     }
   }
-}
+};
 </script>
 
 <style scoped>

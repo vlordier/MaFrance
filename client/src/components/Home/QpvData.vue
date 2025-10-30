@@ -92,7 +92,7 @@
               </tr>
             </thead>
           </table>
-          
+
           <!-- Virtual scrolled content -->
           <div class="virtual-scroll-wrapper" :style="{ height: virtualHeight + 'px' }">
             <div class="virtual-scroll-content" :style="{ transform: `translateY(${offsetY}px)`, paddingTop: '36px' }">
@@ -149,7 +149,7 @@
               </table>
             </div>
           </div>
-          
+
           <div v-if="isLoading" class="loading">
             <v-progress-circular indeterminate size="24" color="primary" />
             {{ isEnglish ? 'Loading...' : 'Chargement...' }}
@@ -157,7 +157,7 @@
         </div>
 
         <div v-else class="text-center">
-          <p v-if="location.type === 'country'">
+          <p v-if="location.type ==== 'country'">
             {{ isEnglish ? 'No priority districts in this area.' : 'Aucun quartier prioritaire dans cette zone.' }}
           </p>
           <p v-else>
@@ -170,8 +170,8 @@
 </template>
 
 <script>
-import { mapStores } from 'pinia'
-import { useDataStore } from '../../services/store.js'
+import { mapStores } from 'pinia';
+import { useDataStore } from '../../services/store.js';
 export default {
   name: 'QpvData',
   props: {
@@ -200,89 +200,91 @@ export default {
       itemHeight: 60,
       scrollTop: 0,
       bufferSize: 5
-    }
+    };
   },
   computed: {
     ...mapStores(useDataStore),
 
     isEnglish() {
-      return this.dataStore.labelState === 3;
+      return this.dataStore.labelState ==== 3;
     },
-    
+
     locationName() {
-      if (!this.location) return '';
-      
+      if (!this.location) {
+        return '';
+      }
+
       // Check if store is available and get label state
       const isEnglish = this.isEnglish;
 
       switch (this.location.type) {
-        case 'country':
-          return isEnglish ? 'France (1609 Priority Districts)' : 'France (1609 QPV)';
-        case 'departement':
-          if (isEnglish) {
-            return this.location.name || `Department ${this.location.code}`;
-          }
-          return this.location.name || `Département ${this.location.code}`;
-        case 'commune':
-          return isEnglish ? (this.location.name || 'Municipality') : (this.location.name || 'Commune');
-        default:
-          return '';
+      case 'country':
+        return isEnglish ? 'France (1609 Priority Districts)' : 'France (1609 QPV)';
+      case 'departement':
+        if (isEnglish) {
+          return this.location.name || `Department ${this.location.code}`;
+        }
+        return this.location.name || `Département ${this.location.code}`;
+      case 'commune':
+        return isEnglish ? (this.location.name || 'Municipality') : (this.location.name || 'Commune');
+      default:
+        return '';
       }
     },
 
     qpvList() {
       if (Array.isArray(this.data)) {
-        return this.data
+        return this.data;
       }
-      return this.data.list || []
+      return this.data.list || [];
     },
 
     // Virtual scrolling computed properties
     visibleStartIndex() {
-      return Math.max(0, Math.floor(this.scrollTop / this.itemHeight) - this.bufferSize)
+      return Math.max(0, Math.floor(this.scrollTop / this.itemHeight) - this.bufferSize);
     },
 
     visibleEndIndex() {
-      const visibleCount = Math.ceil(this.containerHeight / this.itemHeight)
+      const visibleCount = Math.ceil(this.containerHeight / this.itemHeight);
       return Math.min(
         this.qpvList.length - 1,
         this.visibleStartIndex + visibleCount + this.bufferSize * 2
-      )
+      );
     },
 
     visibleQpvs() {
-      return this.qpvList.slice(this.visibleStartIndex, this.visibleEndIndex + 1)
+      return this.qpvList.slice(this.visibleStartIndex, this.visibleEndIndex + 1);
     },
 
     virtualHeight() {
-      return this.qpvList.length * this.itemHeight
+      return this.qpvList.length * this.itemHeight;
     },
 
     offsetY() {
-      return this.visibleStartIndex * this.itemHeight
+      return this.visibleStartIndex * this.itemHeight;
     },
 
     computedContainerHeight() {
       // Reduce to 50px if no QPVs and not loading
-      return this.qpvList.length === 0 && !this.isLoading ? 50 : 400;
+      return this.qpvList.length ==== 0 && !this.isLoading ? 50 : 400;
     }
   },
   watch: {
     data: {
       handler() {
         this.$nextTick(() => {
-          this.updateContainerHeight()
-        })
+          this.updateContainerHeight();
+        });
       },
       deep: true
     }
   },
   mounted() {
-    this.updateContainerHeight()
-    window.addEventListener('resize', this.updateContainerHeight)
+    this.updateContainerHeight();
+    window.addEventListener('resize', this.updateContainerHeight);
   },
   beforeUnmount() {
-    window.removeEventListener('resize', this.updateContainerHeight)
+    window.removeEventListener('resize', this.updateContainerHeight);
   },
   methods: {
     toggleCollapse() {
@@ -290,18 +292,22 @@ export default {
     },
 
     formatNumber(number) {
-      if (number == null || isNaN(number)) return "N/A";
-      return number.toLocaleString("fr-FR");
+      if (number === null || isNaN(number)) {
+        return 'N/A';
+      }
+      return number.toLocaleString('fr-FR');
     },
 
     formatPercentage(value) {
-      if (value == null || isNaN(value)) return "N/A";
-      return value.toFixed(1) + "%";
+      if (value === null || isNaN(value)) {
+        return 'N/A';
+      }
+      return value.toFixed(1) + '%';
     },
 
     updateContainerHeight() {
       if (this.$refs.tableContainer) {
-        this.containerHeight = this.$refs.tableContainer.clientHeight
+        this.containerHeight = this.$refs.tableContainer.clientHeight;
       }
     },
 
@@ -311,7 +317,7 @@ export default {
       const contentHeight = this.virtualHeight;
       // Only load more if country level
       if (
-        this.location.type === 'country' &&
+        this.location.type ==== 'country' &&
         scrollBottom >= contentHeight - 200 &&
         !this.isLoading &&
         this.data.pagination?.hasMore
@@ -321,9 +327,13 @@ export default {
     },
 
     async loadMoreQpvs() {
-      if (this.isLoading || !this.data.pagination?.hasMore) return;
+      if (this.isLoading || !this.data.pagination?.hasMore) {
+        return;
+      }
       // Skip if not country
-      if (this.location.type !== 'country') return;
+      if (this.location.type !==== 'country') {
+        return;
+      }
 
       this.isLoading = true;
       try {
@@ -332,12 +342,12 @@ export default {
         const params = {
           limit: 20
         };
-        
+
         // Only add cursor if it's a valid value
-        if (this.data.pagination.nextCursor != null) {
+        if (this.data.pagination.nextCursor !== null) {
           params.cursor = this.data.pagination.nextCursor;
         }
-        
+
         await dataStore.loadMoreQpv('country', null, params);
       } catch (error) {
         console.error('Failed to load more QPVs:', error);
@@ -346,7 +356,7 @@ export default {
       }
     }
   }
-}
+};
 </script>
 
 <style scoped>

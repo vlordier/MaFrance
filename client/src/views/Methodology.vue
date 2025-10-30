@@ -5,22 +5,22 @@
       <h1 class="main-title">
         Méthodologie, termes utilisés et logique
       </h1>
-      
+
       <div class="content">
         <section class="section">
           <h2 class="section-title">
             Présentation
           </h2>
           <p class="text">
-            Cette application analyse différents indicateurs pour évaluer l'état des lieux en France, 
-            au niveau des départements et des communes. Les données proviennent de sources officielles 
+            Cette application analyse différents indicateurs pour évaluer l'état des lieux en France,
+            au niveau des départements et des communes. Les données proviennent de sources officielles
             et sont traitées selon une méthodologie rigoureuse.
           </p>
           <p class="text">
             Le site est en béta ouverte. Il est possible que des bugs ou erreurs soient présents. Des fonctions et données supplémentaires sont ajoutées régulièrement.
           </p>
           <p class="text">
-            Si vous souhaitez m'aider, vous pouver m'apporter une petite contribution via le lien Ko-fi pour m'aider à couvrir les frais de fonctionnement du site: <a href="https://ko-fi.com/remi63047" target="_blank" class="link">ko-fi.com/remi63047</a> 
+            Si vous souhaitez m'aider, vous pouver m'apporter une petite contribution via le lien Ko-fi pour m'aider à couvrir les frais de fonctionnement du site: <a href="https://ko-fi.com/remi63047" target="_blank" class="link">ko-fi.com/remi63047</a>
             ou via un don en <a href="/support" target="_blank" class="link">cryptomonaies</a>
           </p>
         </section>
@@ -121,7 +121,7 @@
             </div>
           </div>
         </section>
-            
+
         <section class="section">
           <h2 class="section-title">
             Principales données
@@ -226,14 +226,14 @@
                 Prix de l'immobilier
               </h3>
               <p class="data-text">
-                Les prix moyens de l'immobilier par section cadastrale disponibles sur la carte outil <a href="/localisation" target="_blank" class="link">Localisation</a> sont issus du site officiel <a href="https://dvf-api.data.gouv.fr/" target="_blank" class="link">dvf-api.data.gouv.fr/</a>, qui en distribue les données par API. 
+                Les prix moyens de l'immobilier par section cadastrale disponibles sur la carte outil <a href="/localisation" target="_blank" class="link">Localisation</a> sont issus du site officiel <a href="https://dvf-api.data.gouv.fr/" target="_blank" class="link">dvf-api.data.gouv.fr/</a>, qui en distribue les données par API.
                 Par exemple, le lien <a href="https://dvf-api.data.gouv.fr/commune/75101/sections" target="_blank" class="link">dvf-api.data.gouv.fr/commune/75101/sections</a>permet de récupérer les données par section cadastrales du 1e arrondissement de Paris. La valeur "m_am" est celle utilisée.
                 Ce sont les mêmes données qui sont utilisées par le site <a href="https://explore.data.gouv.fr/" target="_blank" class="link">explore.data.gouv.fr/</a> par exemple.
               </p>
             </div>
           </div>
         </section>
-                
+
         <section class="section">
           <h2 class="sources-title">
             Résumé des Sources
@@ -313,14 +313,14 @@
               <tr>
                 <td>Prix moyen de l'immobilier</td>
                 <td>
-                  <a href="https://dvf-api.data.gouv.fr/" target="_blank" class="link">dvf-api.data.gouv.fr/</a>. 
+                  <a href="https://dvf-api.data.gouv.fr/" target="_blank" class="link">dvf-api.data.gouv.fr/</a>.
                   Les données sont automatiquement les dernières disponibles (2024 à ce jour)
                 </td>
               </tr>
             </tbody>
           </table>
         </section>
-            
+
         <section class="section">
           <h2 class="section-title">
             Limites et précautions
@@ -345,7 +345,7 @@
 <script>
 export default {
   name: 'Methodology'
-}
+};
 </script>
 
 <style scoped>

@@ -17,7 +17,7 @@
     <!-- Results Section -->
     <div class="results-section">
       <div v-if="loading" class="loading">
-        {{ store.labelState === 3 ? 'Loading...' : 'Chargement...' }}
+        {{ store.labelState ==== 3 ? 'Loading...' : 'Chargement...' }}
       </div>
 
       <div v-else-if="error" class="error">
@@ -34,21 +34,21 @@
       />
 
       <div v-else class="no-data">
-        {{ store.labelState === 3 ? 'Select a metric to view the ranking.' : 'Sélectionnez une métrique pour voir le classement.' }}
+        {{ store.labelState ==== 3 ? 'Select a metric to view the ranking.' : 'Sélectionnez une métrique pour voir le classement.' }}
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { ref, computed, onMounted, watch } from 'vue'
-import { useDataStore } from '../services/store.js'
-import api from '../services/api.js'
-import { MetricsConfig } from '../utils/metricsConfig.js'
-import { DepartementNames } from '../utils/departementNames.js'
+import { ref, computed, onMounted, watch } from 'vue';
+import { useDataStore } from '../services/store.js';
+import api from '../services/api.js';
+import { MetricsConfig } from '../utils/metricsConfig.js';
+import { DepartementNames } from '../utils/departementNames.js';
 
-import RankingFilters from '../components/Rankings/RankingFilters.vue'
-import RankingResults from '../components/Rankings/RankingResults.vue'
+import RankingFilters from '../components/Rankings/RankingFilters.vue';
+import RankingResults from '../components/Rankings/RankingResults.vue';
 
 export default {
   name: 'Rankings',
@@ -57,35 +57,35 @@ export default {
     RankingResults
   },
   setup() {
-    const store = useDataStore()
+    const store = useDataStore();
 
     // Reactive state
-    const selectedScope = ref('departements')
-    const selectedDepartement = ref('')
-    const selectedMetric = ref('')
-    const currentLevel = ref('departement')
-    const rankings = ref([])
-    const loading = ref(false)
-    const error = ref('')
+    const selectedScope = ref('departements');
+    const selectedDepartement = ref('');
+    const selectedMetric = ref('');
+    const currentLevel = ref('departement');
+    const rankings = ref([]);
+    const loading = ref(false);
+    const error = ref('');
     const filters = ref({
       popLower: 20000, // Default to null (no limit)
       popUpper: null, // Default to null (no limit)
       topLimit: 10,
       politicalFamily: true
-    })
+    });
 
     // Computed properties
     const currentType = computed(() => {
-      return currentLevel.value === 'commune' ? 'Commune' : 'Département'
-    })
+      return currentLevel.value ==== 'commune' ? 'Commune' : 'Département';
+    });
 
-    const fetchDepartmentRankings = async (metric, limit) => {
+    const fetchDepartmentRankings = async(metric, limit) => {
       // Use store data for departementsRankings
       let departmentData = store.country?.departementsRankings?.data;
 
       if (!departmentData) {
         // Fetch the data if not present
-        const fetchedData = await api.getDepartementRankings({ limit: 101, sort: "total_score", direction: "DESC" });
+        const fetchedData = await api.getDepartementRankings({ limit: 101, sort: 'total_score', direction: 'DESC' });
         store.country.departementsRankings = fetchedData;
         departmentData = fetchedData.data;
       }
@@ -99,7 +99,7 @@ export default {
           deptCode: dept.departement,
           name: DepartementNames[dept.departement] || dept.departement,
           population: dept.population,
-          rank: index + 1,
+          rank: index + 1
         };
         // Use pre-calculated values directly from store data (like MapComponent)
         MetricsConfig.metrics.forEach(metricConfig => {
@@ -117,7 +117,7 @@ export default {
             deptCode: dept.departement,
             name: DepartementNames[dept.departement] || dept.departement,
             population: dept.population,
-            rank: totalDepartments - limit + index + 1,
+            rank: totalDepartments - limit + index + 1
           };
           // Use pre-calculated values directly from store data (like MapComponent)
           MetricsConfig.metrics.forEach(metricConfig => {
@@ -130,7 +130,7 @@ export default {
       return [...topRankings, ...bottomRankings];
     };
 
-    const fetchCommuneRankings = async (deptCode = '', metric, limit, populationRange) => {
+    const fetchCommuneRankings = async(deptCode = '', metric, limit, populationRange) => {
       try {
         const requestParams = {
           dept: deptCode,
@@ -149,9 +149,9 @@ export default {
         const topResponse = await api.getCommuneRankings(requestParams);
 
         if (!topResponse?.data) {
-          const errorMsg = deptCode 
-            ? "Aucune donnée communale disponible pour ce département."
-            : "Aucune donnée communale disponible pour la France entière.";
+          const errorMsg = deptCode
+            ? 'Aucune donnée communale disponible pour ce département.'
+            : 'Aucune donnée communale disponible pour la France entière.';
           error.value = errorMsg;
           return [];
         }
@@ -175,7 +175,7 @@ export default {
             name: commune.commune,
             population: commune.population,
             famille_nuance: commune.famille_nuance,
-            rank: index + 1,
+            rank: index + 1
           };
           // Use pre-calculated values directly from API data
           MetricsConfig.metrics.forEach(metricConfig => {
@@ -192,7 +192,7 @@ export default {
             name: commune.commune,
             population: commune.population,
             famille_nuance: commune.famille_nuance,
-            rank: bottomOffset + index + 1,
+            rank: bottomOffset + index + 1
           };
           // Use pre-calculated values directly from API data
           MetricsConfig.metrics.forEach(metricConfig => {
@@ -206,14 +206,14 @@ export default {
         const finalRankings = [...topRankings];
         bottomRankings.forEach(bottomRanking => {
           // Only add bottom ranking if it's not already in top rankings
-          if (!finalRankings.some(topRanking => topRanking.rank === bottomRanking.rank)) {
+          if (!finalRankings.some(topRanking => topRanking.rank ==== bottomRanking.rank)) {
             finalRankings.push(bottomRanking);
           }
         });
 
         return finalRankings;
       } catch (err) {
-        const errorMsg = deptCode 
+        const errorMsg = deptCode
           ? `Erreur lors du chargement des communes département: ${err.message}`
           : `Erreur lors du chargement des communes France: ${err.message}`;
         error.value = errorMsg;
@@ -222,134 +222,132 @@ export default {
       }
     };
 
-    const updateRankings = async () => {
+    const updateRankings = async() => {
       if (!selectedMetric.value) {
-        error.value = "Veuillez sélectionner une métrique."
-        return
+        error.value = 'Veuillez sélectionner une métrique.';
+        return;
       }
 
       // Validate metric availability for current scope
       if (!MetricsConfig.isMetricAvailable(selectedMetric.value, currentLevel.value)) {
-        error.value = `Erreur : La métrique sélectionnée n'est pas disponible au niveau ${currentLevel.value === 'commune' ? 'communal' : 'départemental'}.`
-        return
+        error.value = `Erreur : La métrique sélectionnée n'est pas disponible au niveau ${currentLevel.value ==== 'commune' ? 'communal' : 'départemental'}.`;
+        return;
       }
 
-      loading.value = true
-      error.value = ''
+      loading.value = true;
+      error.value = '';
 
       try {
-        const populationRange = constructPopulationRange()
-        const limit = Math.min(filters.value.topLimit || 10, 100)
+        const populationRange = constructPopulationRange();
+        const limit = Math.min(filters.value.topLimit || 10, 100);
 
-        if (selectedScope.value === 'departements') {
-          rankings.value = await fetchDepartmentRankings(selectedMetric.value, limit)
-        } else if (selectedScope.value === 'communes_france') {
+        if (selectedScope.value ==== 'departements') {
+          rankings.value = await fetchDepartmentRankings(selectedMetric.value, limit);
+        } else if (selectedScope.value ==== 'communes_france') {
           // France-wide commune rankings (empty deptCode)
-          rankings.value = await fetchCommuneRankings('', selectedMetric.value, limit, populationRange)
-        } else if (selectedScope.value === 'communes_dept') {
+          rankings.value = await fetchCommuneRankings('', selectedMetric.value, limit, populationRange);
+        } else if (selectedScope.value ==== 'communes_dept') {
           if (!selectedDepartement.value) {
-            error.value = "Veuillez sélectionner un département."
-            return
+            error.value = 'Veuillez sélectionner un département.';
+            return;
           }
-          rankings.value = await fetchCommuneRankings(selectedDepartement.value, selectedMetric.value, limit, populationRange)
+          rankings.value = await fetchCommuneRankings(selectedDepartement.value, selectedMetric.value, limit, populationRange);
         }
       } catch (err) {
-        error.value = `Erreur lors de la mise à jour des classements : ${err.message}`
-        console.error('Erreur updateRankings:', err)
+        error.value = `Erreur lors de la mise à jour des classements : ${err.message}`;
+        console.error('Erreur updateRankings:', err);
       } finally {
-        loading.value = false
+        loading.value = false;
       }
-    }
+    };
 
     const constructPopulationRange = () => {
-      const { popLower, popUpper } = filters.value
+      const { popLower, popUpper } = filters.value;
 
       // Convert to numbers, treating null/undefined as no limit
-      const lowerNum = popLower ? parseInt(popLower, 10) : null
-      const upperNum = popUpper ? parseInt(popUpper, 10) : null
+      const lowerNum = popLower ? parseInt(popLower, 10) : null;
+      const upperNum = popUpper ? parseInt(popUpper, 10) : null;
 
       // Both limits specified
-      if (lowerNum !== null && upperNum !== null) {
-        return `${lowerNum}-${upperNum}`
-      }
-      // Only lower limit
-      else if (lowerNum !== null) {
-        return `${lowerNum}+`
-      }
-      // Only upper limit
-      else if (upperNum !== null) {
-        return `0-${upperNum}`
+      if (lowerNum !==== null && upperNum !==== null) {
+        return `${lowerNum}-${upperNum}`;
+      } else if (lowerNum !==== null) {
+        // Only lower limit
+        return `${lowerNum}+`;
+      } else if (upperNum !==== null) {
+        // Only upper limit
+        return `0-${upperNum}`;
       }
       // No limits
-      return null
-    }
+      return null;
+    };
 
     const onSelectionChanged = (selection) => {
-      selectedScope.value = selection.scope
-      selectedDepartement.value = selection.departement
-      selectedMetric.value = selection.metric
-      currentLevel.value = selection.level
+      selectedScope.value = selection.scope;
+      selectedDepartement.value = selection.departement;
+      selectedMetric.value = selection.metric;
+      currentLevel.value = selection.level;
 
       // Clear previous results and errors
-      rankings.value = []
-      error.value = ''
+      rankings.value = [];
+      error.value = '';
 
       // Reset population filters when changing scope
-      if (selection.scope === 'departements') {
-        filters.value.popLower = null
-        filters.value.popUpper = null
+      if (selection.scope ==== 'departements') {
+        filters.value.popLower = null;
+        filters.value.popUpper = null;
       }
 
       // Update rankings if metric is selected
       if (selectedMetric.value) {
-        updateRankings()
+        updateRankings();
       }
-    }
+    };
 
     const onFiltersChanged = (newFilters) => {
-      filters.value = { ...newFilters }
+      filters.value = { ...newFilters };
       if (selectedMetric.value) {
-        updateRankings()
+        updateRankings();
       }
-    }
+    };
 
     // Watchers
     watch(() => store.labelState, () => {
       // Refresh when label state changes
       if (selectedMetric.value) {
-        updateRankings()
+        updateRankings();
       }
-    })
+    });
 
     // Listen for label state changes from MetricsConfig
     onMounted(() => {
       const handleLabelChange = () => {
         if (selectedMetric.value) {
-          updateRankings()
+          updateRankings();
         }
-      }
+      };
 
-      window.addEventListener('metricsLabelsToggled', handleLabelChange)
+      window.addEventListener('metricsLabelsToggled', handleLabelChange);
 
       // Cleanup listener when component unmounts
       return () => {
-        window.removeEventListener('metricsLabelsToggled', handleLabelChange)
-      }
-    })
+        window.removeEventListener('metricsLabelsToggled', handleLabelChange);
+      };
+    });
 
     // Lifecycle
     onMounted(() => {
       // Set initial state from URL parameter (if applicable)
-      const urlParams = new URLSearchParams(window.location.search)
-      const labelState = urlParams.get('labelState')
+      const urlParams = new URLSearchParams(window.location.search);
+      const labelState = urlParams.get('labelState');
       if (labelState) {
-        store.setLabelState(parseInt(labelState))
+        store.setLabelState(parseInt(labelState));
       }
 
       // Initial load of rankings based on default/URL params if any
       // For now, it waits for user selection or updates.
       // If you want it to load based on default metric, call updateRankings() here.
-    })
+    });
 
     // Removed problematic watcher that was causing infinite loops
     // Rankings will update when user makes selections via onSelectionChanged
@@ -368,9 +366,9 @@ export default {
       updateRankings,
       onSelectionChanged,
       onFiltersChanged
-    }
+    };
   }
-}
+};
 </script>
 
 <style scoped>

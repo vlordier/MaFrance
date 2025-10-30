@@ -65,7 +65,6 @@ watch(() => props.selectedYear, (newVal) => {
 // Émettre les changements du slider
 const emit = defineEmits(['update:selectedYear']);
 
-
 // Chart canvas ref and instance
 const chartCanvas = ref(null);
 let chartInstance = null;
@@ -90,7 +89,9 @@ const ageGroups = [
 
 // Surveillance des changements de pyramide pour mise à jour du graphique
 watch(() => props.pyramid, (newPyramid) => {
-  if (chartInstance) chartInstance.destroy();
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
   if (!newPyramid || !newPyramid.popF || !newPyramid.popM) {
     return;
   }
@@ -155,7 +156,6 @@ watch(() => props.pyramid, (newPyramid) => {
     options: pyramidOptions.value
   });
 }, { immediate: true, deep: true });
-
 
 // Options du graphique (configuration pour compacité et orientation)
 const pyramidOptions = computed(() => ({

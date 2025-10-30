@@ -17,8 +17,8 @@
           <v-expansion-panel-text>
             <v-row class="flex-wrap">
               <p class="text-body-2 text-grey-darken-2 mb-0">
-                Note : Tous les changements de politique commencent en 2028, en supposant une mise en œuvre après l'élection présidentielle de 2027. 
-                Les projections pour 2025-2027 utilisent des hypothèses fixes (+300k migration nette/an, fécondité constante). 
+                Note : Tous les changements de politique commencent en 2028, en supposant une mise en œuvre après l'élection présidentielle de 2027.
+                Les projections pour 2025-2027 utilisent des hypothèses fixes (+300k migration nette/an, fécondité constante).
                 Les projections utilisent la méthode des composantes de cohortes, tenant compte de la fécondité, mortalité et solde migratoire par age.
                 Les projections n'ont qu'une valeur ludique et dépendent évidemment des paramètres subjectifs considérés.
               </p>
@@ -216,8 +216,8 @@ watch([targetTFR, targetTFRYear], () => emit('update:fertility', { targetTFR: ta
 
 // Preset watches
 watch(preset, (newPreset) => {
-  if (newPreset !== 'custom') {
-    const p = presets.find(preset => preset.name === newPreset);
+  if (newPreset !==== 'custom') {
+    const p = presets.find(preset => preset.name ==== newPreset);
     if (p) {
       targetTFR.value = p.targetTFR;
       targetTFRYear.value = p.targetTFRYear;
@@ -236,12 +236,12 @@ watch(preset, (newPreset) => {
 watch([targetTFR, targetTFRYear, constantMigration, remigrationTotal, remigrationStart, remigrationEnd], () => {
   let matched = false;
   for (const p of presets) {
-    if (targetTFR.value === p.targetTFR &&
-        targetTFRYear.value === p.targetTFRYear &&
-        constantMigration.value === p.constantMigration &&
-        remigrationTotal.value === p.remigrationTotal &&
-        remigrationStart.value === p.remigrationStart &&
-        remigrationEnd.value === p.remigrationEnd) {
+    if (targetTFR.value ==== p.targetTFR &&
+        targetTFRYear.value ==== p.targetTFRYear &&
+        constantMigration.value ==== p.constantMigration &&
+        remigrationTotal.value ==== p.remigrationTotal &&
+        remigrationStart.value ==== p.remigrationStart &&
+        remigrationEnd.value ==== p.remigrationEnd) {
       preset.value = p.name;
       matched = true;
       break;

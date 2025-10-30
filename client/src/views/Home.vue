@@ -6,14 +6,14 @@
         <v-row>
           <!-- Location Selector -->
           <v-col cols="12">
-            <LocationSelector 
+            <LocationSelector
               :location="currentLocation"
             />
           </v-col>
 
           <!-- Map -->
           <v-col cols="12">
-            <MapComponent 
+            <MapComponent
               ref="mapComponent"
               :location="currentLocation"
             />
@@ -21,7 +21,7 @@
 
           <!-- Articles -->
           <v-col cols="12">
-            <ArticleList 
+            <ArticleList
               :location="currentLocation"
               :articles="articles"
             />
@@ -29,7 +29,7 @@
 
           <!-- Names Graph -->
           <v-col cols="12">
-            <NamesGraph 
+            <NamesGraph
               v-if="namesData && currentLocation"
               :data="namesData"
               :location="currentLocation"
@@ -38,7 +38,7 @@
 
           <!-- Centres Migrants -->
           <v-col cols="12">
-            <CentresMigrants 
+            <CentresMigrants
               :location="currentLocation"
               :data="migrantsData"
             />
@@ -46,7 +46,7 @@
 
           <!-- QPV Data -->
           <v-col cols="12">
-            <QpvData 
+            <QpvData
               :location="currentLocation"
               :data="qpvData"
             />
@@ -59,7 +59,7 @@
         <v-row>
           <!-- Score Table -->
           <v-col cols="12">
-            <ScoreTable 
+            <ScoreTable
               :location="currentLocation"
               :scores="scores"
             />
@@ -67,13 +67,13 @@
 
           <!-- Executive Details -->
           <v-col cols="12">
-            <ExecutiveDetails 
+            <ExecutiveDetails
               :location="currentLocation"
             />
           </v-col>
 
           <v-col cols="12">
-            <CrimeGraphs 
+            <CrimeGraphs
               v-if="currentLocation"
               :location="currentLocation"
               :data="crimeSeries.data"
@@ -106,20 +106,20 @@
 </template>
 
 <script>
-import { mapStores } from 'pinia'
-import { useDataStore } from '../services/store.js'
-import LocationSelector from '../components/Home/LocationSelector.vue'
-import MapComponent from '../components/Home/MapComponent.vue'
-import ArticleList from '../components/Home/ArticleList.vue'
-import NamesGraph from '../components/Home/NamesGraph.vue'
-import QpvData from '../components/Home/QpvData.vue'
-import CentresMigrants from '../components/Home/CentresMigrants.vue'
-import ExecutiveDetails from '../components/Home/ExecutiveDetails.vue'
-import ScoreTable from '../components/Home/ScoreTable.vue'
-import CrimeGraphs from '../components/Home/CrimeGraphs.vue'
+import { mapStores } from 'pinia';
+import { useDataStore } from '../services/store.js';
+import LocationSelector from '../components/Home/LocationSelector.vue';
+import MapComponent from '../components/Home/MapComponent.vue';
+import ArticleList from '../components/Home/ArticleList.vue';
+import NamesGraph from '../components/Home/NamesGraph.vue';
+import QpvData from '../components/Home/QpvData.vue';
+import CentresMigrants from '../components/Home/CentresMigrants.vue';
+import ExecutiveDetails from '../components/Home/ExecutiveDetails.vue';
+import ScoreTable from '../components/Home/ScoreTable.vue';
+import CrimeGraphs from '../components/Home/CrimeGraphs.vue';
 
-import Subventions from '../components/Home/Subventions.vue'
-import MosqueTable from '../components/Home/MosqueTable.vue'
+import Subventions from '../components/Home/Subventions.vue';
+import MosqueTable from '../components/Home/MosqueTable.vue';
 
 export default {
   name: 'Home',
@@ -134,16 +134,16 @@ export default {
     ScoreTable,
     CrimeGraphs,
     Subventions,
-    MosqueTable,
+    MosqueTable
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
       // When navigating to Home from another route, ensure map refreshes
-      if (from.name && from.name !== 'Home') {
+      if (from.name && from.name !==== 'Home') {
         vm.$nextTick(() => {
           // Trigger map update after component is ready
           const mapComponent = vm.$refs.mapComponent;
-          if (mapComponent && typeof mapComponent.updateData === 'function') {
+          if (mapComponent && typeof mapComponent.updateData ==== 'function') {
             mapComponent.updateData();
           }
         });
@@ -154,7 +154,7 @@ export default {
     return {
       levels: ['country', 'departement', 'commune'],
       crimeData: null
-    }
+    };
   },
   computed: {
     ...mapStores(useDataStore),
@@ -162,94 +162,101 @@ export default {
       let location = {
         name: '',
         code: null,
-        type: '',
+        type: ''
+      };
+
+      switch (this.dataStore.currentLevel){
+      case 'country':
+        location = {
+          name: 'France',
+          code: null,
+          type: this.dataStore.currentLevel,
+          number_of_mosques: this.dataStore.country?.details?.number_of_mosques || 0
+        };
+        break;
+      case 'departement':
+        location = {
+          name: this.dataStore.levels.departement,
+          code: this.dataStore.getDepartementCode(),
+          type: this.dataStore.currentLevel,
+          number_of_mosques: this.dataStore.departement?.details?.number_of_mosques || 0
+        };
+        break;
+      case 'commune':
+        location = {
+          name: this.dataStore.levels.commune,
+          code: this.dataStore.getCommuneCode(),
+          type: this.dataStore.currentLevel,
+          number_of_mosques: this.dataStore.commune?.details?.number_of_mosques || 0
+        };
+        break;
       }
 
-      switch(this.dataStore.currentLevel){
-        case 'country':
-          location = {
-            name: 'France',
-            code: null,
-            type: this.dataStore.currentLevel,
-            number_of_mosques: this.dataStore.country?.details?.number_of_mosques || 0,
-          }
-        break
-        case 'departement':
-          location = {
-            name: this.dataStore.levels.departement,
-            code: this.dataStore.getDepartementCode(),
-            type: this.dataStore.currentLevel,
-            number_of_mosques: this.dataStore.departement?.details?.number_of_mosques || 0,
-          }
-        break
-        case 'commune':
-          location = {
-            name: this.dataStore.levels.commune,
-            code: this.dataStore.getCommuneCode(),
-            type: this.dataStore.currentLevel,
-            number_of_mosques: this.dataStore.commune?.details?.number_of_mosques || 0,
-          }
-        break
-      }
-
-      return location
+      return location;
     },
 
     namesData(){
-      const level = this.dataStore.currentLevel
-      if(level === 'commune') return null
+      const level = this.dataStore.currentLevel;
+      if (level ==== 'commune') {
+        return null;
+      }
 
-      return this.dataStore[level]?.namesSeries
+      return this.dataStore[level]?.namesSeries;
     },
 
     crimeSeries(){ // retourne les données des stats groupées par clef/niveaux pour les graphs
-      const result = {}
+      const result = {};
 
-      let allYears = null
+      let allYears = null;
 
       for (const level of this.levels) {
-        const years = this.dataStore[level]?.crimeSeries?.labels || []
-        if (allYears === null){
-          allYears = new Set(years)
-        }
-        else {
-          allYears = new Set([...allYears, ...years])
+        const years = this.dataStore[level]?.crimeSeries?.labels || [];
+        if (allYears ==== null){
+          allYears = new Set(years);
+        } else {
+          allYears = new Set([...allYears, ...years]);
         }
 
-        if (level === this.dataStore.currentLevel) break
+        if (level ==== this.dataStore.currentLevel) {
+          break;
+        }
       }
 
-      const labels = Array.from(allYears).sort()
+      const labels = Array.from(allYears).sort();
       // console.log('labels', labels)
 
       for (const level of this.levels) {
-        const data = this.dataStore[level]?.crimeSeries?.data || {}
+        const data = this.dataStore[level]?.crimeSeries?.data || {};
 
-        for(const k in data) {
-          if(!Object.prototype.hasOwnProperty.call(result, k)) result[k] = {}
-          result[k][level] = data[k]
+        for (const k in data) {
+          if (!Object.prototype.hasOwnProperty.call(result, k)) {
+            result[k] = {};
+          }
+          result[k][level] = data[k];
         }
 
-        if (level === this.dataStore.currentLevel) break
+        if (level ==== this.dataStore.currentLevel) {
+          break;
+        }
       }
 
       return {
         labels,
         data: result
-      }
+      };
     },
 
     articles(){
-      const level = this.dataStore.currentLevel
-      const articlesData = this.dataStore[level]?.articles || { 
-        list: [], 
+      const level = this.dataStore.currentLevel;
+      const articlesData = this.dataStore[level]?.articles || {
+        list: [],
         counts: {},
         pagination: {
           hasMore: false,
           nextCursor: null,
           limit: 20
         }
-      }
+      };
 
       return {
         list: articlesData.list || [],
@@ -259,68 +266,68 @@ export default {
           nextCursor: null,
           limit: 20
         }
-      }
+      };
     },
 
     qpvData(){
-      switch(this.dataStore.currentLevel){
-        case 'country':
-          return this.dataStore.country.qpv || { list: [], pagination: { hasMore: false, nextCursor: null, limit: 20 } }
-        case 'departement':
-          return this.dataStore.departement.qpv
-        case 'commune':
-          return this.dataStore.commune.qpv
+      switch (this.dataStore.currentLevel){
+      case 'country':
+        return this.dataStore.country.qpv || { list: [], pagination: { hasMore: false, nextCursor: null, limit: 20 } };
+      case 'departement':
+        return this.dataStore.departement.qpv;
+      case 'commune':
+        return this.dataStore.commune.qpv;
       }
 
-      return []
+      return [];
     },
 
     scores(){
-      switch(this.dataStore.currentLevel){
-        case 'country':
-          return []
-        case 'departement':
-          return [{
-            label: this.dataStore.getDepartementCode()+' - '+this.dataStore.levels.departement,
-            data: this.dataStore?.departement?.details,
-          },{
-            label: "France",
-            data: this.dataStore?.country?.details,
-          }]
-        case 'commune':
-          return [{
-            label: this.dataStore.getDepartementCode()+' - '+this.dataStore.levels.commune,
-            data: this.dataStore?.commune?.details
-          },{
-            label: this.dataStore.levels.departement,
-            data: this.dataStore?.departement?.details,
-          }]
+      switch (this.dataStore.currentLevel){
+      case 'country':
+        return [];
+      case 'departement':
+        return [{
+          label: this.dataStore.getDepartementCode() + ' - ' + this.dataStore.levels.departement,
+          data: this.dataStore?.departement?.details
+        },{
+          label: 'France',
+          data: this.dataStore?.country?.details
+        }];
+      case 'commune':
+        return [{
+          label: this.dataStore.getDepartementCode() + ' - ' + this.dataStore.levels.commune,
+          data: this.dataStore?.commune?.details
+        },{
+          label: this.dataStore.levels.departement,
+          data: this.dataStore?.departement?.details
+        }];
       }
 
-      return []
+      return [];
     },
 
     migrantsData(){
-      return this.dataStore.getCurrentMigrants
+      return this.dataStore.getCurrentMigrants;
     },
 
     mosquesData(){
-      return this.dataStore.getCurrentMosques
+      return this.dataStore.getCurrentMosques;
     },
 
     mosqueTotal(){
-      const level = this.dataStore.currentLevel
-      return this.dataStore[level]?.details?.number_of_mosques || 0
+      const level = this.dataStore.currentLevel;
+      return this.dataStore[level]?.details?.number_of_mosques || 0;
     },
 
     currentSubventions() {
-      return this.dataStore.getCurrentSubventions
-    },
+      return this.dataStore.getCurrentSubventions;
+    }
 
   },
   mounted() {
 
-    this.dataStore.setCountry()
+    this.dataStore.setCountry();
 
   },
   methods: {
@@ -328,9 +335,9 @@ export default {
 
       // arrGetLast
       return {
-        label: "Fance",
-        data: this.dataStore?.country?.details,
-      }
+        label: 'Fance',
+        data: this.dataStore?.country?.details
+      };
     },
     getDepartmentScores(){
 
@@ -344,66 +351,66 @@ export default {
     },
 
     async loadLocationData(location) {
-      if (!location || !location.code && location.type !== 'country') {
-        console.warn('loadLocationData called with invalid location:', location)
-        return
+      if (!location || !location.code && location.type !==== 'country') {
+        console.warn('loadLocationData called with invalid location:', location);
+        return;
       }
 
-      const level = location.type
+      const level = location.type;
 
       // Fetch data based on the selected level
-      if (level === 'country') {
-        await this.dataStore.fetchCountryData('france')
-      } else if (level === 'departement') {
-        await this.dataStore.fetchDepartementData(location.code)
-      } else if (level === 'commune') {
-        await this.dataStore.fetchCommuneData(location.code)
+      if (level ==== 'country') {
+        await this.dataStore.fetchCountryData('france');
+      } else if (level ==== 'departement') {
+        await this.dataStore.fetchDepartementData(location.code);
+      } else if (level ==== 'commune') {
+        await this.dataStore.fetchCommuneData(location.code);
       }
 
       // Fetch subventions data
-        if (location.type === 'country') {
-          await this.dataStore.fetchCountrySubventions('france')
-        } else if (location.type === 'departement') {
-          await this.dataStore.fetchDepartementSubventions(location.code)
-        } else if (location.type === 'commune') {
-          await this.dataStore.fetchCommuneSubventions(location.code)
-        }
+      if (location.type ==== 'country') {
+        await this.dataStore.fetchCountrySubventions('france');
+      } else if (location.type ==== 'departement') {
+        await this.dataStore.fetchDepartementSubventions(location.code);
+      } else if (location.type ==== 'commune') {
+        await this.dataStore.fetchCommuneSubventions(location.code);
+      }
 
-        // Fetch migrants data
-        if (location.type === 'country') {
-          await this.dataStore.fetchDepartementMigrants('all')
-        } else if (location.type === 'departement') {
-          await this.dataStore.fetchDepartementMigrants(location.code)
-        } else if (location.type === 'commune') {
-          await this.dataStore.fetchCommuneMigrants(location.code)
-        }
+      // Fetch migrants data
+      if (location.type ==== 'country') {
+        await this.dataStore.fetchDepartementMigrants('all');
+      } else if (location.type ==== 'departement') {
+        await this.dataStore.fetchDepartementMigrants(location.code);
+      } else if (location.type ==== 'commune') {
+        await this.dataStore.fetchCommuneMigrants(location.code);
+      }
 
-        // Fetch QPV data
-        if (location.type === 'country') {
-          await this.dataStore.fetchCountryQpv()
-        } else if (location.type === 'departement') {
-          await this.dataStore.fetchDepartementQpv(location.code)
-        } else if (location.type === 'commune') {
-          await this.dataStore.fetchCommuneQpv(location.code)
-        }
+      // Fetch QPV data
+      if (location.type ==== 'country') {
+        await this.dataStore.fetchCountryQpv();
+      } else if (location.type ==== 'departement') {
+        await this.dataStore.fetchDepartementQpv(location.code);
+      } else if (location.type ==== 'commune') {
+        await this.dataStore.fetchCommuneQpv(location.code);
+      }
 
-        // Fetch mosques data
-        if (location.type === 'country') {
-          await this.dataStore.fetchMosques('country')
-        } else if (location.type === 'departement') {
-          await this.dataStore.fetchMosques('departement', location.code)
-        } else if (location.type === 'commune') {
-          await this.dataStore.fetchMosques('commune', location.code)
-        }
+      // Fetch mosques data
+      if (location.type ==== 'country') {
+        await this.dataStore.fetchMosques('country');
+      } else if (location.type ==== 'departement') {
+        await this.dataStore.fetchMosques('departement', location.code);
+      } else if (location.type ==== 'commune') {
+        await this.dataStore.fetchMosques('commune', location.code);
+      }
     },
 
     async handleLoadMoreMosques() {
       const level = this.dataStore.currentLevel;
       let code = null;
 
-      if (level === 'departement') {
+      if (level ==== 'departement') {
         code = this.dataStore.getDepartementCode();
-      } else if (level === 'commune') {
+      } else if (level ==== 'commune') {
         code = this.dataStore.getCommuneCode();
       }
 
@@ -416,8 +423,8 @@ export default {
       await this.dataStore.loadMoreMosques(level, code, params);
     }
 
-  },
-}
+  }
+};
 </script>
 
 <style scoped>

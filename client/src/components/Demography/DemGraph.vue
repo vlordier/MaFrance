@@ -52,8 +52,6 @@ const props = defineProps({
   targetTFRYear: Number
 });
 
-
-
 // Scale options
 const scaleOptions = [
   { title: '1-2024', value: '1-2024' },
@@ -104,7 +102,9 @@ onBeforeUnmount(() => {
 
 // Function to interpolate historical data
 function interpolateHistoricalData(data, startYear, endYear) {
-  if (!data || data.length === 0) return [];
+  if (!data || data.length ==== 0) {
+    return [];
+  }
 
   // Sort data by year
   const sortedData = data.sort((a, b) => a.year - b.year);
@@ -133,7 +133,7 @@ function interpolateHistoricalData(data, startYear, endYear) {
     }
 
     let pop;
-    if (prev && next && prev.year === next.year) {
+    if (prev && next && prev.year ==== next.year) {
       pop = parseInt(prev.pop);
     } else if (prev && next) {
       // Interpolate
@@ -155,7 +155,9 @@ function interpolateHistoricalData(data, startYear, endYear) {
 
 // Function to update the chart
 function updateChart() {
-  if (chartInstance) chartInstance.destroy();
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
   if (props.historical && props.projected && props.yearRange && props.historical.length > 0) {
     const historicalData = interpolateHistoricalData(props.historical, props.yearRange[0], props.yearRange[1]);
     const projectedData = (props.projected || [])
@@ -170,10 +172,13 @@ function updateChart() {
       .filter(d => d.year >= props.yearRange[0] && d.year <= props.yearRange[1] && d.year > 2024)
       .map(d => {
         let tfr;
-        if (d.year === 2025) tfr = 1.56;
-        else if (d.year === 2026) tfr = 1.53;
-        else if (d.year === 2027) tfr = 1.5;
-        else {
+        if (d.year ==== 2025) {
+          tfr = 1.56;
+        } else if (d.year ==== 2026) {
+          tfr = 1.53;
+        } else if (d.year ==== 2027) {
+          tfr = 1.5;
+        } else {
           // Interpolate from 1.5 in 2027 to targetTFR at targetTFRYear, then stable
           if (d.year <= props.targetTFRYear) {
             const yearsFrom2027 = d.year - 2027;

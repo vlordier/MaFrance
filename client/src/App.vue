@@ -18,7 +18,7 @@
                 variant="text"
                 class="mx-2 twitter-btn"
               >
-                @ 
+                @
                 <b>𝕏</b>
               </v-btn>
             </template>
@@ -44,7 +44,6 @@
             <span>{{ kofiTooltip }}</span>
           </v-tooltip>
 
-
           <template v-for="item in menuItems" :key="item.title">
             <!-- Regular menu item -->
             <v-tooltip v-if="!item.children" bottom>
@@ -60,7 +59,7 @@
               </template>
               <span>{{ item.tooltip }}</span>
             </v-tooltip>
-            
+
             <!-- Dropdown menu item -->
             <v-tooltip v-else bottom>
               <template #activator="{ props: tooltipProps }">
@@ -142,7 +141,7 @@
           >
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item>
-          
+
           <!-- Expandable menu item -->
           <v-list-group v-else :value="item.title">
             <template #activator="{ props }">
@@ -206,12 +205,12 @@
 </template>
 
 <script>
-import VersionSelector from './components/Menu/VersionSelector.vue'
+import VersionSelector from './components/Menu/VersionSelector.vue';
 
-import ShareButton from './components/Menu/ShareButton.vue'
-import HamburgerIcon from './components/Menu/HamburgerIcon.vue'
-import { mapStores } from 'pinia'
-import { useDataStore } from './services/store.js'
+import ShareButton from './components/Menu/ShareButton.vue';
+import HamburgerIcon from './components/Menu/HamburgerIcon.vue';
+import { mapStores } from 'pinia';
+import { useDataStore } from './services/store.js';
 
 export default {
   name: 'App',
@@ -223,20 +222,20 @@ export default {
   data() {
     return {
       mobileMenuOpen: false
-    }
+    };
   },
   computed: {
     ...mapStores(useDataStore),
     currentPageTitle() {
-      return this.dataStore.getCurrentPageTitle()
+      return this.dataStore.getCurrentPageTitle();
     },
     menuItems() {
-      const isEnglish = this.dataStore.labelState === 3;
-      
+      const isEnglish = this.dataStore.labelState ==== 3;
+
       if (isEnglish) {
         return [
-          { 
-            title: 'Home', 
+          {
+            title: 'Home',
             path: '/',
             tooltip: 'Return to the main page with national data'
           },
@@ -248,19 +247,19 @@ export default {
               { title: 'Correlations', path: '/correlations' },
               { title: 'Locations', path: '/localisation' },
               { title: 'Demography', path: '/demography' },
-              { title: 'Politics', path: '/politique' },
+              { title: 'Politics', path: '/politique' }
             ]
           },
-          { 
-            title: 'Methodology', 
+          {
+            title: 'Methodology',
             path: '/methodologie',
             tooltip: 'Discover how data is collected and analyzed'
           }
         ];
       } else {
         return [
-          { 
-            title: 'Accueil', 
+          {
+            title: 'Accueil',
             path: '/',
             tooltip: 'Retour à la page principale avec les données nationales'
           },
@@ -272,11 +271,11 @@ export default {
               { title: 'Corrélations', path: '/correlations' },
               { title: 'Localisation', path: '/localisation' },
               { title: 'Démographie', path: '/demography' },
-              { title: 'Politique', path: '/politique' },
+              { title: 'Politique', path: '/politique' }
             ]
           },
-          { 
-            title: 'Méthodologie', 
+          {
+            title: 'Méthodologie',
             path: '/methodologie',
             tooltip: 'Découvrez comment les données sont collectées et analysées'
           }
@@ -284,69 +283,75 @@ export default {
       }
     },
     twitterTooltip() {
-      return this.dataStore.labelState === 3 
+      return this.dataStore.labelState ==== 3
         ? 'Follow us on X (Twitter) for the latest updates'
         : 'Suivez-nous sur X (Twitter) pour les dernières mises à jour';
     },
     kofiTooltip() {
-      return this.dataStore.labelState === 3 
+      return this.dataStore.labelState ==== 3
         ? 'Support the project'
         : 'Soutenez le projet';
     },
     versionTooltip() {
-      return this.dataStore.labelState === 3 
+      return this.dataStore.labelState ==== 3
         ? 'Change the site cosmetics, not the data'
         : 'Modifiez la cosmétique du site, pas les données';
     },
     shareTooltip() {
-      return this.dataStore.labelState === 3 
+      return this.dataStore.labelState ==== 3
         ? 'Share this visualization with a custom link'
         : 'Partagez cette visualisation avec un lien personnalisé';
     },
     mobileTwitterText() {
-      return this.dataStore.labelState === 3 
+      return this.dataStore.labelState ==== 3
         ? '@ou_va_ma_France'
         : '@ou_va_ma_France';
     },
     mobileKofiText() {
-      return this.dataStore.labelState === 3 
+      return this.dataStore.labelState ==== 3
         ? 'Buy me a coffee'
         : 'Offrez-moi un café';
     }
   },
   mounted() {
     // Handle URL parameters for shared links
-    this.handleUrlParameters()
-    
+    this.handleUrlParameters();
+
     // Initialize store to sync with MetricsConfig
-    this.dataStore.initializeStore()
+    this.dataStore.initializeStore();
   },
   methods: {
     handleUrlParameters() {
-      const urlParams = new URLSearchParams(window.location.search)
-      
+      const urlParams = new URLSearchParams(window.location.search);
+
       // Check if there are any relevant parameters
-      const hasParams = urlParams.has('v') || urlParams.has('c') || urlParams.has('m')
-      
+      const hasParams = urlParams.has('v') || urlParams.has('c') || urlParams.has('m');
+
       if (hasParams) {
-        const params = {}
-        
+        const params = {};
+
         // Extract parameters
-        if (urlParams.has('v')) params.v = urlParams.get('v')
-        if (urlParams.has('c')) params.c = urlParams.get('c')
-        if (urlParams.has('m')) params.m = urlParams.get('m')
-        
+        if (urlParams.has('v')) {
+          params.v = urlParams.get('v');
+        }
+        if (urlParams.has('c')) {
+          params.c = urlParams.get('c');
+        }
+        if (urlParams.has('m')) {
+          params.m = urlParams.get('m');
+        }
+
         // Store in sessionStorage for the store to process
-        sessionStorage.setItem('pendingNavigation', JSON.stringify(params))
-        
+        sessionStorage.setItem('pendingNavigation', JSON.stringify(params));
+
         // Clear URL parameters to keep URL clean
-        const url = new URL(window.location)
-        url.search = ''
-        window.history.replaceState({}, '', url)
+        const url = new URL(window.location);
+        url.search = '';
+        window.history.replaceState({}, '', url);
       }
     }
   }
-}
+};
 </script>
 
 <style>

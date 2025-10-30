@@ -27,9 +27,9 @@
 export default {
   name: 'Support',
   setup() {
-    return {}
+    return {};
   }
-}
+};
 </script>
 
 <style scoped>
