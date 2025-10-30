@@ -7,22 +7,27 @@ const {
   validateOptionalDepartement,
   validateOptionalCOG
 } = require('../middleware/validate');
+const {
+  DEFAULT_LIMIT,
+  MAX_PAGINATION_LIMIT,
+  HTTP_BAD_REQUEST
+} = require('../constants');
 
 // GET /api/mosques - Get all mosques with optional filtering
 router.get(
   '/',
-  [validateOptionalDepartement, validateOptionalCOG, cacheMiddleware((req) => `mosques:${req.query.dept || 'all'}:${req.query.cog || 'all'}:${req.query.cursor || 0}:${req.query.limit || 20}`)],
+  [validateOptionalDepartement, validateOptionalCOG, cacheMiddleware((req) => `mosques:${req.query.dept || 'all'}:${req.query.cog || 'all'}:${req.query.cursor || 0}:${req.query.limit || DEFAULT_LIMIT}`)],
   (req, res) => {
     const db = req.app.locals.db;
     const dbHandler = createDbHandler(res);
-    const { dept, cog, cursor, limit = '20' } = req.query;
-    const pageLimit = Math.min(parseInt(limit), 2000);
+    const { dept, cog, cursor, limit = DEFAULT_LIMIT } = req.query;
+    const pageLimit = Math.min(parseInt(limit), MAX_PAGINATION_LIMIT);
     const offset = cursor ? parseInt(cursor) : 0;
 
     // Prevent simultaneous dept and cog
     if (dept && cog) {
       return res
-        .status(400)
+        .status(HTTP_BAD_REQUEST)
         .json({ error: 'Cannot specify both dept and cog' });
     }
 
@@ -81,15 +86,15 @@ router.get('/closest', cacheMiddleware((req) => `mosques:closest:${req.query.lat
   const { lat, lng, limit = 5 } = req.query;
 
   if (!lat || !lng) {
-    return res.status(400).json({ error: 'Latitude and longitude are required' });
+    return res.status(HTTP_BAD_REQUEST).json({ error: 'Latitude and longitude are required' });
   }
 
   const latitude = parseFloat(lat);
   const longitude = parseFloat(lng);
-  const maxResults = Math.min(parseInt(limit), 20);
+  const maxResults = Math.min(parseInt(limit), DEFAULT_LIMIT);
 
   if (isNaN(latitude) || isNaN(longitude)) {
-    return res.status(400).json({ error: 'Invalid coordinates' });
+    return res.status(HTTP_BAD_REQUEST).json({ error: 'Invalid coordinates' });
   }
 
   // Calculate distance using Haversine formula in SQL

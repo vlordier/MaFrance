@@ -7,22 +7,27 @@ const {
   validateOptionalCOG,
   validatePagination
 } = require('../middleware/validate');
+const {
+  DEFAULT_LIMIT,
+  MAX_PAGINATION_LIMIT,
+  HTTP_BAD_REQUEST
+} = require('../constants');
 
 // Single endpoint for all migrant centers
 router.get(
   '/',
-  [validateOptionalDepartement, validateOptionalCOG, validatePagination, cacheMiddleware((req) => `migrants:${req.query.dept || 'all'}:${req.query.cog || 'all'}:${req.query.cursor || 0}:${req.query.limit || 20}`)],
+  [validateOptionalDepartement, validateOptionalCOG, validatePagination, cacheMiddleware((req) => `migrants:${req.query.dept || 'all'}:${req.query.cog || 'all'}:${req.query.cursor || 0}:${req.query.limit || DEFAULT_LIMIT}`)],
   (req, res) => {
     const db = req.app.locals.db;
     const dbHandler = createDbHandler(res);
-    const { dept, cog, cursor, limit = '20' } = req.query;
-    const pageLimit = Math.min(parseInt(limit), 2000);
+    const { dept, cog, cursor, limit = DEFAULT_LIMIT } = req.query;
+    const pageLimit = Math.min(parseInt(limit), MAX_PAGINATION_LIMIT);
     const offset = cursor ? parseInt(cursor) : 0;
 
     // Prevent simultaneous dept and cog
     if (dept && cog) {
       return res
-        .status(400)
+        .status(HTTP_BAD_REQUEST)
         .json({ error: 'Cannot specify both dept and cog' });
     }
 

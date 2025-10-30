@@ -9,7 +9,9 @@ const HTTP_MOVED_PERMANENTLY = 301;
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 1000000;
 const SERVER_PORT = 3000;
-const DISTANCE_CONVERSION_FACTOR = 111.32; // Rough km conversion factor
+const MAX_PAGINATION_LIMIT = 2000;
+const MAX_POPULATION = 10000000; // Maximum population for validation
+const DEPARTMENT_RANKINGS_LIMIT = 101; // Default limit for department rankings
 
 module.exports = {
   HTTP_OK,
