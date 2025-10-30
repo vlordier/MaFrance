@@ -117,7 +117,7 @@ import CentresMigrants from '../components/Home/CentresMigrants.vue'
 import ExecutiveDetails from '../components/Home/ExecutiveDetails.vue'
 import ScoreTable from '../components/Home/ScoreTable.vue'
 import CrimeGraphs from '../components/Home/CrimeGraphs.vue'
-import Graph from '../components/Home/Graph.vue'
+
 import Subventions from '../components/Home/Subventions.vue'
 import MosqueTable from '../components/Home/MosqueTable.vue'
 
@@ -287,7 +287,6 @@ export default {
             label: "France",
             data: this.dataStore?.country?.details,
           }]
-        break
         case 'commune':
           return [{
             label: this.dataStore.getDepartementCode()+' - '+this.dataStore.levels.commune,
@@ -341,10 +340,7 @@ export default {
     },
 
     getComposites(){
-
-      const data = this.dataStore.country.crimeAggreg
-
-
+      // Method implementation needed
     },
 
     async loadLocationData(location) {
