@@ -152,13 +152,6 @@ export default {
       return this.mosquesList.length === 0 && !this.isLoading ? 50 : 400;
     }
   },
-  mounted() {
-    this.updateContainerHeight()
-    window.addEventListener('resize', this.updateContainerHeight)
-    if (this.data.pagination?.hasMore) {
-      this.attachScrollListener()
-    }
-  },
   watch: {
     data: {
       handler() {
@@ -174,6 +167,13 @@ export default {
       } else {
         this.removeScrollListener()
       }
+    }
+  },
+  mounted() {
+    this.updateContainerHeight()
+    window.addEventListener('resize', this.updateContainerHeight)
+    if (this.data.pagination?.hasMore) {
+      this.attachScrollListener()
     }
   },
   beforeUnmount() {

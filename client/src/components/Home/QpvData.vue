@@ -267,10 +267,6 @@ export default {
       return this.qpvList.length === 0 && !this.isLoading ? 50 : 400;
     }
   },
-  mounted() {
-    this.updateContainerHeight()
-    window.addEventListener('resize', this.updateContainerHeight)
-  },
   watch: {
     data: {
       handler() {
@@ -280,6 +276,10 @@ export default {
       },
       deep: true
     }
+  },
+  mounted() {
+    this.updateContainerHeight()
+    window.addEventListener('resize', this.updateContainerHeight)
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.updateContainerHeight)
