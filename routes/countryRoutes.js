@@ -23,9 +23,12 @@ router.get('/details', validateCountry, cacheMiddleware((req) => {
   }
 
   db.all(sql, params, (err, rows) => {
-    if (err) return handleDbError(err);
-    if (!rows || rows.length === 0)
+    if (err) {
+      return handleDbError(err);
+    }
+    if (!rows || rows.length === 0) {
       return res.status(404).json({ error: 'Données pays non trouvées' });
+    }
 
     res.json(rows);
   });
@@ -51,11 +54,14 @@ router.get('/names', validateCountry, cacheMiddleware((req) => {
   }
 
   db.all(sql, params, (err, rows) => {
-    if (err) return handleDbError(err);
-    if (!rows || rows.length === 0)
+    if (err) {
+      return handleDbError(err);
+    }
+    if (!rows || rows.length === 0) {
       return res.status(404).json({
         error: 'Données de prénoms non trouvées pour la dernière année'
       });
+    }
 
     res.json(rows);
   });
@@ -83,7 +89,9 @@ router.get('/names_history', validateCountry, cacheMiddleware((req) => {
   }
 
   db.all(sql, params, (err, rows) => {
-    if (err) return handleDbError(err);
+    if (err) {
+      return handleDbError(err);
+    }
 
     res.json(rows);
   });
@@ -109,11 +117,14 @@ router.get('/crime', cacheMiddleware((req) => {
   }
 
   db.all(sql, params, (err, rows) => {
-    if (err) return handleDbError(err);
-    if (!rows || rows.length === 0)
+    if (err) {
+      return handleDbError(err);
+    }
+    if (!rows || rows.length === 0) {
       return res.status(404).json({
         error: 'Données criminelles non trouvées pour la dernière année'
       });
+    }
 
     res.json(rows);
   });
@@ -141,7 +152,9 @@ router.get('/crime_history', validateCountry, cacheMiddleware((req) => {
   }
 
   db.all(sql, params, (err, rows) => {
-    if (err) return handleDbError(err);
+    if (err) {
+      return handleDbError(err);
+    }
 
     res.json(rows);
   });
@@ -157,8 +170,12 @@ router.get('/ministre', cacheMiddleware(() => 'ministre_france'), (req, res, nex
                ORDER BY date_mandat DESC LIMIT 1`;
 
   db.get(sql, [], (err, row) => {
-    if (err) return handleDbError(err);
-    if (!row) return res.status(404).json({ error: 'Ministre non trouvé' });
+    if (err) {
+      return handleDbError(err);
+    }
+    if (!row) {
+      return res.status(404).json({ error: 'Ministre non trouvé' });
+    }
 
     res.json(row);
   });

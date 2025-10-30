@@ -18,7 +18,9 @@ function importSubventions(db, callback) {
       files.forEach(file => {
         if (!fs.existsSync(file.path)) {
           processedFiles++;
-          if (processedFiles === files.length) resolve(Array.from(allFields));
+          if (processedFiles === files.length) {
+            resolve(Array.from(allFields));
+          }
           return;
         }
 
@@ -52,7 +54,9 @@ function importSubventions(db, callback) {
       const countryRequiredFields = ['country'];
       const countryProcessRow = function(row) {
         const country = row['country'];
-        if (!country) return null;
+        if (!country) {
+          return null;
+        }
         const values = [country.trim()];
         subventionFields.forEach(field => {
           const value = row[field];
@@ -63,7 +67,9 @@ function importSubventions(db, callback) {
       const countryCreateTable = function() {
         const columnDefs = this.columns.map(col => {
           let def = `${col.name} ${col.type}`;
-          if (col.required) def += ' NOT NULL';
+          if (col.required) {
+            def += ' NOT NULL';
+          }
           return def;
         }).join(', ');
         const sql = `CREATE TABLE IF NOT EXISTS ${this.tableName} (${columnDefs}, PRIMARY KEY (country))`;
@@ -93,7 +99,9 @@ function importSubventions(db, callback) {
       const departmentColumns = [{ name: 'dep', type: 'TEXT', required: true }].concat(subventionFields.map(f => ({ name: f, type: 'REAL' })));
       const departmentRequiredFields = ['dept_code'];
       const departmentProcessRow = function(row) {
-        if (!row['dept_code']) return null;
+        if (!row['dept_code']) {
+          return null;
+        }
         let dep = row['dept_code'].trim().toUpperCase();
         if (/^\d+$/.test(dep)) {
           dep = dep.padStart(2, '0');
@@ -112,7 +120,9 @@ function importSubventions(db, callback) {
       const departmentCreateTable = function() {
         const columnDefs = this.columns.map(col => {
           let def = `${col.name} ${col.type}`;
-          if (col.required) def += ' NOT NULL';
+          if (col.required) {
+            def += ' NOT NULL';
+          }
           return def;
         }).join(', ');
         const sql = `CREATE TABLE IF NOT EXISTS ${this.tableName} (${columnDefs}, PRIMARY KEY (dep))`;
@@ -142,7 +152,9 @@ function importSubventions(db, callback) {
       const communeColumns = [{ name: 'COG', type: 'TEXT', required: true }].concat(subventionFields.map(f => ({ name: f, type: 'REAL' })));
       const communeRequiredFields = ['COG'];
       const communeProcessRow = function(row) {
-        if (!row['COG']) return null;
+        if (!row['COG']) {
+          return null;
+        }
         const values = [row['COG'].trim()];
         subventionFields.forEach(field => {
           const value = row[field];
@@ -153,7 +165,9 @@ function importSubventions(db, callback) {
       const communeCreateTable = function() {
         const columnDefs = this.columns.map(col => {
           let def = `${col.name} ${col.type}`;
-          if (col.required) def += ' NOT NULL';
+          if (col.required) {
+            def += ' NOT NULL';
+          }
           return def;
         }).join(', ');
         const sql = `CREATE TABLE IF NOT EXISTS ${this.tableName} (${columnDefs}, PRIMARY KEY (COG))`;

@@ -16,7 +16,9 @@ const DEPARTMENT_CODE_REGEX = /^(0[1-9]|[1-8][0-9]|9[0-5]|2[AB]|97[1-6])$/;
  * @returns {Date|null} Parsed Date object or null if invalid.
  */
 function parseFrenchDate(dateStr) {
-  if (!dateStr) return null;
+  if (!dateStr) {
+    return null;
+  }
   const frenchDateMatch = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
   if (frenchDateMatch) {
     const [, day, month, year] = frenchDateMatch;
@@ -35,7 +37,9 @@ function parseFrenchDate(dateStr) {
  * @returns {string|null} Validated date string or null if invalid.
  */
 function parseISODate(dateStr) {
-  if (!dateStr) return null;
+  if (!dateStr) {
+    return null;
+  }
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
     const date = new Date(dateStr);
     if (!isNaN(date.getTime())) {
@@ -51,7 +55,9 @@ function parseISODate(dateStr) {
  * @returns {string|null} Date string in YYYY-MM-DD format or null if invalid.
  */
 function parseShortFrenchDate(dateStr) {
-  if (!dateStr) return null;
+  if (!dateStr) {
+    return null;
+  }
   const match = dateStr.match(/^(\d{2})\/(\d{2})\/(\d{2})$/);
   if (match) {
     const [, day, month, year] = match;
@@ -70,7 +76,9 @@ function parseShortFrenchDate(dateStr) {
  * @returns {string|null} Normalized department code or null if invalid.
  */
 function normalizeDepartmentCode(code) {
-  if (!code) return null;
+  if (!code) {
+    return null;
+  }
   let normalized = code.trim().toUpperCase();
   // Pad numeric codes with leading zero
   if (/^\d+$/.test(normalized)) {
@@ -126,8 +134,12 @@ function parseIntegerField(value, allowNull = true) {
  * @returns {number} 1 for true, 0 for false.
  */
 function parseBooleanField(value) {
-  if (typeof value === 'boolean') return value ? 1 : 0;
-  if (typeof value === 'number') return value === 1 ? 1 : 0;
+  if (typeof value === 'boolean') {
+    return value ? 1 : 0;
+  }
+  if (typeof value === 'number') {
+    return value === 1 ? 1 : 0;
+  }
   if (typeof value === 'string') {
     const normalized = value.trim().toLowerCase();
     return ['1', '1.0', 'true', 'yes', 'oui'].includes(normalized) ? 1 : 0;
@@ -165,7 +177,9 @@ function validateRequiredFields(row, requiredFields) {
  * @returns {string|null} Uppercase M/F or null if invalid.
  */
 function validateSexe(sexe) {
-  if (!sexe) return null;
+  if (!sexe) {
+    return null;
+  }
   const normalized = sexe.trim().toUpperCase();
   return ['M', 'F'].includes(normalized) ? normalized : null;
 }

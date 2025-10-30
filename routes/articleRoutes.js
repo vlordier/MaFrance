@@ -110,7 +110,9 @@ router.get(
         const nextCursor = hasMore && articles.length > 0 ? articles[articles.length - 1].rowid : null;
 
         // Remove rowid from response
-        const cleanArticles = articles.map(row => { delete row.rowid; return row; });
+        const cleanArticles = articles.map(row => {
+          delete row.rowid; return row;
+        });
 
         res.json({
           list: cleanArticles,

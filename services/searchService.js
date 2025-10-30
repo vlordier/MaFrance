@@ -60,7 +60,9 @@ class SearchService {
                      LIMIT ?`,
           [departement, limit],
           (err, rows) => {
-            if (err) return reject(err);
+            if (err) {
+              return reject(err);
+            }
             resolve(rows);
           }
         );
@@ -84,7 +86,9 @@ class SearchService {
                  LIMIT ?`,
         [departement, likePattern, `%${query}%`, limit * 3], // Get more results for fuzzy ranking
         (err, rows) => {
-          if (err) return reject(err);
+          if (err) {
+            return reject(err);
+          }
 
           // Apply fuzzy matching and ranking
           const results = rows.map(row => {
@@ -130,7 +134,9 @@ class SearchService {
             `;
 
       db.all(sql, [likePattern, `%${query}%`, limit * 3], (err, rows) => {
-        if (err) return reject(err);
+        if (err) {
+          return reject(err);
+        }
 
         // Apply fuzzy matching and ranking
         const results = rows.map(row => {
@@ -139,11 +145,9 @@ class SearchService {
           };
         });
 
-        // Sort by relevance score and return top results
+        // Sort by population and return top results
         const sortedResults = results
-          .sort((a, b) => b.score - a.score)
-          .slice(0, limit)
-          .map(({ score, ...item }) => item);
+          .slice(0, limit);
 
         resolve(sortedResults);
       });

@@ -11,7 +11,7 @@ const {
 } = require('../middleware/validate');
 
 // GET /api/communes
-router.get('/', [validateDepartement, validateSearchQuery], async (req, res) => {
+router.get('/', [validateDepartement, validateSearchQuery], async(req, res) => {
   const { dept, q = '' } = req.query;
 
   try {
@@ -24,7 +24,7 @@ router.get('/', [validateDepartement, validateSearchQuery], async (req, res) => 
 });
 
 // GET /api/communes/suggestions - New endpoint for autocomplete
-router.get('/suggestions', [validateDepartement, validateSearchQuery], async (req, res) => {
+router.get('/suggestions', [validateDepartement, validateSearchQuery], async(req, res) => {
   const { dept, q = '' } = req.query;
 
   try {
@@ -37,7 +37,7 @@ router.get('/suggestions', [validateDepartement, validateSearchQuery], async (re
 });
 
 // GET /api/communes/search - Global commune search endpoint
-router.get('/search', [validateSearchQuery], async (req, res) => {
+router.get('/search', [validateSearchQuery], async(req, res) => {
   const { q = '' } = req.query;
 
   if (!q || q.length < 3) {
@@ -61,7 +61,9 @@ router.get('/all', cacheMiddleware(() => 'communes:all'), (req, res) => {
     [],
     (err, rows) => {
       dbHandler(err);
-      if (err) return;
+      if (err) {
+        return;
+      }
       res.json(rows);
     }
   );
@@ -78,11 +80,14 @@ router.get('/names', validateCOG, cacheMiddleware((req) => `communes:names:${req
     [cog, cog],
     (err, row) => {
       dbHandler(err);
-      if (err) return;
-      if (!row)
+      if (err) {
+        return;
+      }
+      if (!row) {
         return res.status(404).json({
           error: 'Données de prénoms non trouvées pour la dernière année'
         });
+      }
       res.json(row);
     }
   );
@@ -100,7 +105,9 @@ router.get('/names_history', validateCOG, cacheMiddleware((req) => `communes:nam
     [cog],
     (err, rows) => {
       dbHandler(err);
-      if (err) return;
+      if (err) {
+        return;
+      }
       res.json(rows);
     }
   );
@@ -117,11 +124,14 @@ router.get('/crime', validateCOG, cacheMiddleware((req) => `communes:crime:${req
     [cog, cog],
     (err, row) => {
       dbHandler(err);
-      if (err) return;
-      if (!row)
+      if (err) {
+        return;
+      }
+      if (!row) {
         return res.status(404).json({
           error: 'Données criminelles non trouvées pour la dernière année'
         });
+      }
       res.json(row);
     }
   );
@@ -139,7 +149,9 @@ router.get('/crime_history', validateCOG, cacheMiddleware((req) => `communes:cri
     [cog],
     (err, rows) => {
       dbHandler(err);
-      if (err) return;
+      if (err) {
+        return;
+      }
       res.json(rows);
     }
   );
@@ -154,8 +166,12 @@ router.get('/details', validateCOG, cacheMiddleware((req) => `communes:details:$
     [cog],
     (err, row) => {
       dbHandler(err);
-      if (err) return;
-      if (!row) return res.status(404).json({ error: 'Commune non trouvée' });
+      if (err) {
+        return;
+      }
+      if (!row) {
+        return res.status(404).json({ error: 'Commune non trouvée' });
+      }
       res.json(row);
     }
   );
@@ -197,8 +213,12 @@ router.get('/maire', validateCOG, cacheMiddleware((req) => `communes:maire:${req
     [cog],
     (err, row) => {
       dbHandler(err);
-      if (err) return;
-      if (!row) return res.status(404).json({ error: 'Maire non trouvé' });
+      if (err) {
+        return;
+      }
+      if (!row) {
+        return res.status(404).json({ error: 'Maire non trouvé' });
+      }
 
       // Map the nuance_politique code to its full description
       const response = {

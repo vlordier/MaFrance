@@ -11,7 +11,9 @@ const {
 router.get('/', (req, res, next) => {
   const handleDbError = createDbHandler(res, next);
   db.all('SELECT DISTINCT departement FROM departements', [], (err, rows) => {
-    if (err) return handleDbError(err);
+    if (err) {
+      return handleDbError(err);
+    }
     rows.sort((a, b) =>
       a.departement
         .padStart(3, '0')
@@ -62,8 +64,12 @@ router.get('/details', validateDepartement, cacheMiddleware((req) => `dept_detai
   `;
 
   db.get(sql, [normalizedDept, dept], (err, row) => {
-    if (err) return handleDbError(err);
-    if (!row) return res.status(404).json({ error: 'Département non trouvé' });
+    if (err) {
+      return handleDbError(err);
+    }
+    if (!row) {
+      return res.status(404).json({ error: 'Département non trouvé' });
+    }
 
     res.json(row);
   });
@@ -80,11 +86,14 @@ router.get('/names', validateDepartement, cacheMiddleware((req) => `dept_names_$
      WHERE dpt = ? AND annais = (SELECT MAX(annais) FROM department_names WHERE dpt = ?)`,
     [dept, dept],
     (err, row) => {
-      if (err) return handleDbError(err);
-      if (!row)
+      if (err) {
+        return handleDbError(err);
+      }
+      if (!row) {
         return res.status(404).json({
           error: 'Données de prénoms non trouvées pour la dernière année'
         });
+      }
 
       res.json(row);
     }
@@ -103,7 +112,9 @@ router.get('/names_history', validateDepartement, cacheMiddleware((req) => `dept
      ORDER BY annais ASC`,
     [dept],
     (err, rows) => {
-      if (err) return handleDbError(err);
+      if (err) {
+        return handleDbError(err);
+      }
 
       res.json(rows);
     }
@@ -121,11 +132,14 @@ router.get('/crime', validateDepartement, cacheMiddleware((req) => `dept_crime_$
      WHERE dep = ? AND annee = (SELECT MAX(annee) FROM department_crime WHERE dep = ?)`,
     [dept, dept],
     (err, row) => {
-      if (err) return handleDbError(err);
-      if (!row)
+      if (err) {
+        return handleDbError(err);
+      }
+      if (!row) {
         return res.status(404).json({
           error: 'Données criminelles non trouvées pour la dernière année'
         });
+      }
 
       res.json(row);
     }
@@ -144,7 +158,9 @@ router.get('/crime_history', validateDepartement, cacheMiddleware((req) => `dept
      ORDER BY annee ASC`,
     [dept],
     (err, rows) => {
-      if (err) return handleDbError(err);
+      if (err) {
+        return handleDbError(err);
+      }
 
       res.json(rows);
     }
@@ -160,8 +176,12 @@ router.get('/prefet', validateDepartement, cacheMiddleware((req) => `prefet_${re
     'SELECT prenom, nom, date_poste FROM prefets WHERE code = ?',
     [dept],
     (err, row) => {
-      if (err) return handleDbError(err);
-      if (!row) return res.status(404).json({ error: 'Préfet non trouvé' });
+      if (err) {
+        return handleDbError(err);
+      }
+      if (!row) {
+        return res.status(404).json({ error: 'Préfet non trouvé' });
+      }
 
       res.json(row);
     }

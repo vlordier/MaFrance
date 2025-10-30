@@ -52,7 +52,9 @@ router.get(
 
     db.all(dataSql, params, (err, rows) => {
       dbHandler(err);
-      if (err) return;
+      if (err) {
+        return;
+      }
 
       const hasMore = rows.length > pageLimit;
       const mosques = hasMore ? rows.slice(0, pageLimit) : rows;
@@ -110,7 +112,9 @@ router.get('/closest', cacheMiddleware((req) => `mosques:closest:${req.query.lat
 
   db.all(sql, [latitude, latitude, longitude, maxResults], (err, rows) => {
     dbHandler(err);
-    if (err) return;
+    if (err) {
+      return;
+    }
 
     const results = rows.map(row => ({
       ...row,

@@ -33,10 +33,12 @@ class CacheService {
   async preloadDepartmentData() {
     return new Promise((resolve, reject) => {
       // Get all departments
-      db.all('SELECT DISTINCT departement FROM departements ORDER BY departement', [], async (err, depts) => {
-        if (err) return reject(err);
+      db.all('SELECT DISTINCT departement FROM departements ORDER BY departement', [], async(err, depts) => {
+        if (err) {
+          return reject(err);
+        }
 
-        const promises = depts.map(async ({ departement }) => {
+        const promises = depts.map(async({ departement }) => {
           try {
             // Cache department details
             await this.cacheDepartmentDetails(departement);
@@ -175,7 +177,9 @@ class CacheService {
             `;
 
       db.get(sql, [normalizedDept, dept], (err, row) => {
-        if (err) return reject(err);
+        if (err) {
+          return reject(err);
+        }
         if (row) {
           this.set(`dept_details_${dept}`, row);
         }
@@ -190,7 +194,9 @@ class CacheService {
         'SELECT * FROM department_crime WHERE dep = ? ORDER BY annee ASC',
         [dept],
         (err, rows) => {
-          if (err) return reject(err);
+          if (err) {
+            return reject(err);
+          }
           this.set(`dept_crime_history_${dept}`, rows);
           resolve(rows);
         }
@@ -205,7 +211,9 @@ class CacheService {
                  FROM department_names WHERE dpt = ? ORDER BY annais ASC`,
         [dept],
         (err, rows) => {
-          if (err) return reject(err);
+          if (err) {
+            return reject(err);
+          }
           this.set(`dept_names_history_${dept}`, rows);
           resolve(rows);
         }
@@ -220,7 +228,9 @@ class CacheService {
                  WHERE dep = ? AND annee = (SELECT MAX(annee) FROM department_crime WHERE dep = ?)`,
         [dept, dept],
         (err, row) => {
-          if (err) return reject(err);
+          if (err) {
+            return reject(err);
+          }
           if (row) {
             this.set(`dept_crime_${dept}`, row);
           }
@@ -238,7 +248,9 @@ class CacheService {
                  WHERE dpt = ? AND annais = (SELECT MAX(annais) FROM department_names WHERE dpt = ?)`,
         [dept, dept],
         (err, row) => {
-          if (err) return reject(err);
+          if (err) {
+            return reject(err);
+          }
           if (row) {
             this.set(`dept_names_${dept}`, row);
           }
@@ -254,7 +266,9 @@ class CacheService {
         'SELECT code, prenom, nom, date_poste FROM prefets WHERE code = ?',
         [dept],
         (err, row) => {
-          if (err) return reject(err);
+          if (err) {
+            return reject(err);
+          }
           if (row) {
             this.set(`prefet_${dept}`, row);
           }
@@ -272,7 +286,9 @@ class CacheService {
                  FROM country WHERE UPPER(country) = ?`,
         [country.toUpperCase()],
         (err, row) => {
-          if (err) return reject(err);
+          if (err) {
+            return reject(err);
+          }
           if (row) {
             this.set(`country_details_${country.toLowerCase()}`, row);
           }
@@ -288,7 +304,9 @@ class CacheService {
         'SELECT * FROM country_crime WHERE UPPER(country) = ? ORDER BY annee ASC',
         [country.toUpperCase()],
         (err, rows) => {
-          if (err) return reject(err);
+          if (err) {
+            return reject(err);
+          }
           this.set(`country_crime_history_${country.toLowerCase()}`, rows);
           resolve(rows);
         }
@@ -303,7 +321,9 @@ class CacheService {
                  FROM country_names WHERE UPPER(country) = ? ORDER BY annais ASC`,
         [country.toUpperCase()],
         (err, rows) => {
-          if (err) return reject(err);
+          if (err) {
+            return reject(err);
+          }
           this.set(`country_names_history_${country.toLowerCase()}`, rows);
           resolve(rows);
         }
@@ -318,7 +338,9 @@ class CacheService {
                  WHERE UPPER(country) = ? AND annee = (SELECT MAX(annee) FROM country_crime WHERE UPPER(country) = ?)`,
         [country.toUpperCase(), country.toUpperCase()],
         (err, row) => {
-          if (err) return reject(err);
+          if (err) {
+            return reject(err);
+          }
           if (row) {
             this.set(`country_crime_${country.toLowerCase()}`, row);
           }
@@ -336,7 +358,9 @@ class CacheService {
                  WHERE UPPER(country) = ? AND annais = (SELECT MAX(annais) FROM country_names WHERE UPPER(country) = ?)`,
         [country.toUpperCase(), country.toUpperCase()],
         (err, row) => {
-          if (err) return reject(err);
+          if (err) {
+            return reject(err);
+          }
           if (row) {
             this.set(`country_names_${country.toLowerCase()}`, row);
           }
@@ -355,7 +379,9 @@ class CacheService {
                  ORDER BY date_mandat DESC LIMIT 1`,
         [country.toUpperCase()],
         (err, row) => {
-          if (err) return reject(err);
+          if (err) {
+            return reject(err);
+          }
           if (row) {
             this.set(`ministre_${country.toLowerCase()}`, row);
           }
@@ -432,7 +458,9 @@ class CacheService {
             `;
 
       db.all(sql, [], (err, rows) => {
-        if (err) return reject(err);
+        if (err) {
+          return reject(err);
+        }
         this.set('department_rankings', { data: rows, total_count: rows.length });
         console.log(`Cached department rankings data for ${rows.length} departments`);
         resolve({ data: rows, total_count: rows.length });
@@ -526,7 +554,9 @@ class CacheService {
             `;
 
       db.all(sql, [], (err, rows) => {
-        if (err) return reject(err);
+        if (err) {
+          return reject(err);
+        }
         const result = {};
         rows.forEach(row => {
           const { famille_nuance, ...metrics } = row;

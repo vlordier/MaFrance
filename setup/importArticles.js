@@ -65,10 +65,18 @@ function createTables(db) {
 
 function processRow(row) {
   const missingFields = [];
-  if (!row.date) missingFields.push('date');
-  if (!row.departement) missingFields.push('departement');
-  if (!row.title) missingFields.push('title');
-  if (!row.url) missingFields.push('url');
+  if (!row.date) {
+    missingFields.push('date');
+  }
+  if (!row.departement) {
+    missingFields.push('departement');
+  }
+  if (!row.title) {
+    missingFields.push('title');
+  }
+  if (!row.url) {
+    missingFields.push('url');
+  }
 
   if (missingFields.length > 0) {
     console.warn(`Ligne ignorée (champs manquants: ${missingFields.join(', ')}):`, row);
@@ -123,7 +131,9 @@ function processRow(row) {
 }
 
 function parseFrenchDate(dateStr) {
-  if (!dateStr) return null;
+  if (!dateStr) {
+    return null;
+  }
   const frenchDateMatch = dateStr.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
   if (frenchDateMatch) {
     const [, day, month, year] = frenchDateMatch;

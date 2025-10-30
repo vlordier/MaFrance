@@ -17,7 +17,7 @@ router.post('/clear', (_req, res) => {
 });
 
 // POST /api/cache/refresh - Refresh cache data
-router.post('/refresh', async (_req, res) => {
+router.post('/refresh', async(_req, res) => {
   try {
     await cacheService.initializeCache();
     res.json({ message: 'Cache refreshed successfully' });

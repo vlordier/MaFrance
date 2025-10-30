@@ -28,7 +28,9 @@ router.get(
 
     db.all(sql, [dept], (err, rows) => {
       dbHandler(err);
-      if (err) return;
+      if (err) {
+        return;
+      }
 
       const filteredCommunes = rows
         .filter((row) =>
@@ -51,14 +53,22 @@ router.get(
           // 1. Prioritize exact matches
           const isExactA = normA === normalizedQuery;
           const isExactB = normB === normalizedQuery;
-          if (isExactA && !isExactB) return -1;
-          if (!isExactA && isExactB) return 1;
+          if (isExactA && !isExactB) {
+            return -1;
+          }
+          if (!isExactA && isExactB) {
+            return 1;
+          }
 
           // 2. Prioritize startsWith
           const startsA = normA.startsWith(normalizedQuery);
           const startsB = normB.startsWith(normalizedQuery);
-          if (startsA && !startsB) return -1;
-          if (!startsA && startsB) return 1;
+          if (startsA && !startsB) {
+            return -1;
+          }
+          if (!startsA && startsB) {
+            return 1;
+          }
 
           // 3. Sort alphabetically
           return a.commune.localeCompare(b.commune);

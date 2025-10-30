@@ -11,10 +11,14 @@ const {
 
 // Function to compute percentage fields from raw NAT1 data
 const computePercentageFields = (row) => {
-  if (!row) return null;
+  if (!row) {
+    return null;
+  }
 
   const ensemble = parseFloat(row.Ensemble) || 0;
-  if (ensemble === 0) return null; // Avoid division by zero
+  if (ensemble === 0) {
+    return null;
+  } // Avoid division by zero
 
   const etrangers = parseFloat(row.Etrangers) || 0;
   const francais_de_naissance = parseFloat(row.Francais_de_naissance) || 0;
@@ -65,7 +69,9 @@ router.get('/country', cacheMiddleware(() => 'nat1_country_all'), (req, res, nex
     'SELECT * FROM country_nat1 ORDER BY Code',
     [],
     (err, rows) => {
-      if (err) return handleDbError(err);
+      if (err) {
+        return handleDbError(err);
+      }
       if (!rows || rows.length === 0) {
         return res.status(404).json({ error: 'Données NAT1 non trouvées' });
       }
@@ -93,7 +99,9 @@ router.get('/departement', validateDepartement, cacheMiddleware((req) => `nat1_d
     'SELECT * FROM department_nat1 WHERE Code = ?',
     [normalizedDept],
     (err, row) => {
-      if (err) return handleDbError(err);
+      if (err) {
+        return handleDbError(err);
+      }
       if (!row) {
         return res.status(404).json({ error: 'Données NAT1 non trouvées pour ce département' });
       }
@@ -117,7 +125,9 @@ router.get('/commune', validateCOG, cacheMiddleware((req) => `nat1_commune_${req
     'SELECT * FROM commune_nat1 WHERE Code = ?',
     [cog],
     (err, row) => {
-      if (err) return handleDbError(err);
+      if (err) {
+        return handleDbError(err);
+      }
       if (!row) {
         return res.status(404).json({ error: 'Données NAT1 non trouvées pour cette commune' });
       }

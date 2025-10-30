@@ -109,10 +109,18 @@ function processLocationRow(row) {
 
 function validateCountryRow(row) {
   const missingFields = [];
-  if (!row['country']) missingFields.push('country');
-  if (!row['population']) missingFields.push('population');
-  if (!row['Mosque_p100k'] && row['Mosque_p100k'] !== '0') missingFields.push('Mosque_p100k');
-  if (!row['logements_sociaux_pct'] && row['logements_sociaux_pct'] !== '0') missingFields.push('logements_sociaux_pct');
+  if (!row['country']) {
+    missingFields.push('country');
+  }
+  if (!row['population']) {
+    missingFields.push('population');
+  }
+  if (!row['Mosque_p100k'] && row['Mosque_p100k'] !== '0') {
+    missingFields.push('Mosque_p100k');
+  }
+  if (!row['logements_sociaux_pct'] && row['logements_sociaux_pct'] !== '0') {
+    missingFields.push('logements_sociaux_pct');
+  }
   if (missingFields.length > 0) {
     console.warn(`Ligne ignorée dans france_scores.csv (champs manquants: ${missingFields.join(', ')}):`, row);
     return false;
@@ -122,12 +130,24 @@ function validateCountryRow(row) {
 
 function validateDepartementRow(row) {
   const missingFields = [];
-  if (!row['departement']) missingFields.push('departement');
-  if (!row['population']) missingFields.push('population');
-  if (!row['Mosque_p100k'] && row['Mosque_p100k'] !== '0') missingFields.push('Mosque_p100k');
-  if (!row['logements_sociaux_pct'] && row['logements_sociaux_pct'] !== '0') missingFields.push('logements_sociaux_pct');
-  if (!row['Total_places_migrants'] && row['Total_places_migrants'] !== '0') missingFields.push('Total_places_migrants');
-  if (!row['places_migrants_p1k'] && row['places_migrants_p1k'] !== '0') missingFields.push('places_migrants_p1k');
+  if (!row['departement']) {
+    missingFields.push('departement');
+  }
+  if (!row['population']) {
+    missingFields.push('population');
+  }
+  if (!row['Mosque_p100k'] && row['Mosque_p100k'] !== '0') {
+    missingFields.push('Mosque_p100k');
+  }
+  if (!row['logements_sociaux_pct'] && row['logements_sociaux_pct'] !== '0') {
+    missingFields.push('logements_sociaux_pct');
+  }
+  if (!row['Total_places_migrants'] && row['Total_places_migrants'] !== '0') {
+    missingFields.push('Total_places_migrants');
+  }
+  if (!row['places_migrants_p1k'] && row['places_migrants_p1k'] !== '0') {
+    missingFields.push('places_migrants_p1k');
+  }
   if (missingFields.length > 0) {
     console.warn(`Ligne ignorée dans departement_scores.csv (champs manquants: ${missingFields.join(', ')}):`, row);
     return false;
@@ -142,12 +162,24 @@ function validateDepartementRow(row) {
 
 function validateLocationRow(row) {
   const missingFields = [];
-  if (!row['COG']) missingFields.push('COG');
-  if (!row['commune']) missingFields.push('commune');
-  if (!row['departement']) missingFields.push('departement');
-  if (!row['population']) missingFields.push('population');
-  if (!row['Mosque_p100k'] && row['Mosque_p100k'] !== '0') missingFields.push('Mosque_p100k');
-  if (!row['logements_sociaux_pct'] && row['logements_sociaux_pct'] !== '0') missingFields.push('logements_sociaux_pct');
+  if (!row['COG']) {
+    missingFields.push('COG');
+  }
+  if (!row['commune']) {
+    missingFields.push('commune');
+  }
+  if (!row['departement']) {
+    missingFields.push('departement');
+  }
+  if (!row['population']) {
+    missingFields.push('population');
+  }
+  if (!row['Mosque_p100k'] && row['Mosque_p100k'] !== '0') {
+    missingFields.push('Mosque_p100k');
+  }
+  if (!row['logements_sociaux_pct'] && row['logements_sociaux_pct'] !== '0') {
+    missingFields.push('logements_sociaux_pct');
+  }
   if (missingFields.length > 0) {
     console.warn(`Ligne ignorée dans commune_scores.csv (champs manquants: ${missingFields.join(', ')}):`, row);
     return false;

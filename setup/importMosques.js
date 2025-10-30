@@ -27,7 +27,9 @@ class MosquesImporter extends BaseImporter {
     return new Promise((resolve, reject) => {
       const columnDefs = this.columns.map(col => {
         let def = `${col.name} ${col.type}`;
-        if (col.required) def += ' NOT NULL';
+        if (col.required) {
+          def += ' NOT NULL';
+        }
         return def;
       }).join(', ');
 

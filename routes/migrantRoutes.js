@@ -48,7 +48,9 @@ router.get(
 
     db.all(query, params, (err, rows) => {
       dbHandler(err);
-      if (err) return;
+      if (err) {
+        return;
+      }
 
       const hasMore = rows.length > pageLimit;
       const centers = hasMore ? rows.slice(0, pageLimit) : rows;

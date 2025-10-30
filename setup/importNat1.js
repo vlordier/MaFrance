@@ -25,8 +25,12 @@ function importNat1(db, callback) {
         .pipe(csv())
         .on('data', (row) => {
           const missingFields = [];
-          if (!row['Type']) missingFields.push('Type');
-          if (!row['Code']) missingFields.push('Code');
+          if (!row['Type']) {
+            missingFields.push('Type');
+          }
+          if (!row['Code']) {
+            missingFields.push('Code');
+          }
 
           if (missingFields.length > 0) {
             const reason = `Champs manquants: ${missingFields.join(', ')}`;
@@ -175,9 +179,9 @@ function importNat1(db, callback) {
     return columnName
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
-      .replace(/[^a-zA-Z0-9_]/g, '_')   // Replace non-alphanumeric with underscores
-      .replace(/_{2,}/g, '_')           // Replace multiple underscores with single
-      .replace(/^_+|_+$/g, '');        // Remove leading/trailing underscores
+      .replace(/[^a-zA-Z0-9_]/g, '_') // Replace non-alphanumeric with underscores
+      .replace(/_{2,}/g, '_') // Replace multiple underscores with single
+      .replace(/^_+|_+$/g, ''); // Remove leading/trailing underscores
   }
 
   function createColumns(fieldNames) {

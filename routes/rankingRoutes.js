@@ -166,9 +166,13 @@ router.get(
       : [dept, dept];
 
     db.all(sql, queryParams, (err, rows) => {
-      if (err) return handleDbError(err, res, next);
+      if (err) {
+        return handleDbError(err, res, next);
+      }
       db.get(countSql, countParams, (countErr, countRow) => {
-        if (countErr) return handleDbError(countErr, res, next);
+        if (countErr) {
+          return handleDbError(countErr, res, next);
+        }
         res.json({
           data: rows,
           total_count: countRow.total_count
@@ -199,11 +203,15 @@ router.get(
       const bValue = b[sort] || 0;
 
       if (direction === 'DESC') {
-        if (bValue !== aValue) return bValue - aValue;
+        if (bValue !== aValue) {
+          return bValue - aValue;
+        }
         // Secondary sort by departement code
         return b.departement.localeCompare(a.departement);
       } else {
-        if (aValue !== bValue) return aValue - bValue;
+        if (aValue !== bValue) {
+          return aValue - bValue;
+        }
         // Secondary sort by departement code
         return a.departement.localeCompare(b.departement);
       }
@@ -315,7 +323,9 @@ router.get('/politique', cacheMiddleware(() => 'politique_rankings'), (req, res,
   `;
 
   db.all(sql, [], (err, rows) => {
-    if (err) return handleDbError(err, res, next);
+    if (err) {
+      return handleDbError(err, res, next);
+    }
     const result = {};
     rows.forEach(row => {
       const { famille_nuance, ...metrics } = row;

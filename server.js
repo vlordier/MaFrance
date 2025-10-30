@@ -59,12 +59,15 @@ app.use(sanitizeInput);
 app.use(
   express.static(path.join(__dirname, 'dist'), {
     setHeaders: (res, filePath) => {
-      if (filePath.endsWith('.html'))
+      if (filePath.endsWith('.html')) {
         res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      if (filePath.endsWith('.css'))
+      }
+      if (filePath.endsWith('.css')) {
         res.setHeader('Content-Type', 'text/css; charset=utf-8');
-      if (filePath.endsWith('.js'))
+      }
+      if (filePath.endsWith('.js')) {
         res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+      }
     }
   })
 );
