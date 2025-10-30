@@ -729,4 +729,5 @@ export const useDataStore = defineStore('data', {
       const level = this.currentLevel;
       return this[level]?.mosques || { list: [], pagination: { hasMore: false, nextCursor: null, limit: 20 } };
     }
+  }
   });
