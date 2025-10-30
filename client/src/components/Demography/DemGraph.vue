@@ -52,8 +52,7 @@ const props = defineProps({
   targetTFRYear: Number
 });
 
-// Emits
-const emit = defineEmits(['update:selectedScale']);
+
 
 // Scale options
 const scaleOptions = [

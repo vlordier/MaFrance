@@ -126,14 +126,15 @@ export default {
           locationName = 'France';
           break;
 
-        case 'departement':
+        case 'departement': {
           executive = this.dataStore.departement.executive;
           position = isEnglish ? 'Prefect' : 'Préfet';
           const deptCode = this.location.code;
           locationName = `${DepartementNames[deptCode]} (${deptCode})`;
           break;
+        }
 
-        case 'commune':
+        case 'commune': {
           executive = this.dataStore.commune.executive;
           position = isEnglish ? 'Mayor' : 'Maire';
           const communeDetails = this.dataStore.commune.details;
@@ -143,6 +144,7 @@ export default {
             locationName = this.location.name || (isEnglish ? 'Municipality' : 'Commune');
           }
           break;
+        }
 
         default:
           return null;
@@ -179,7 +181,7 @@ export default {
 
   watch: {
     location: {
-      handler(newLocation) {
+      handler() {
         // The store will handle loading the executive data
         // when the location changes through the main app logic
       },
