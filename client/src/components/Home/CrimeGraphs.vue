@@ -170,6 +170,11 @@ export default {
   },
   mounted() {
     // console.log('data', this.data)
+  },
+  methods: {
+    toggleCollapse() {
+      this.isCollapsed = !this.isCollapsed;
+    }
   }
 }
 </script>
