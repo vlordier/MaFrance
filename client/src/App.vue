@@ -10,7 +10,7 @@
         <!-- Desktop Menu -->
         <div class="header-menu d-none d-md-flex">
           <v-tooltip bottom>
-            <template v-slot:activator="{ props }">
+            <template #activator="{ props }">
               <v-btn
                 v-bind="props"
                 href="https://twitter.com/intent/follow?screen_name=ou_va_ma_France"
@@ -26,7 +26,7 @@
           </v-tooltip>
 
           <v-tooltip bottom>
-            <template v-slot:activator="{ props }">
+            <template #activator="{ props }">
               <v-btn
                 v-bind="props"
                 href="https://ko-fi.com/remi63047"
@@ -38,7 +38,7 @@
                   src="/images/kofi_symbol.webp"
                   alt="Ko-fi"
                   class="kofi-icon"
-                />
+                >
               </v-btn>
             </template>
             <span>{{ kofiTooltip }}</span>
@@ -48,7 +48,7 @@
           <template v-for="item in menuItems" :key="item.title">
             <!-- Regular menu item -->
             <v-tooltip v-if="!item.children" bottom>
-              <template v-slot:activator="{ props }">
+              <template #activator="{ props }">
                 <v-btn
                   v-bind="props"
                   :to="item.path"
@@ -63,9 +63,9 @@
             
             <!-- Dropdown menu item -->
             <v-tooltip v-else bottom>
-              <template v-slot:activator="{ props: tooltipProps }">
+              <template #activator="{ props: tooltipProps }">
                 <v-menu offset-y>
-                  <template v-slot:activator="{ props: menuProps }">
+                  <template #activator="{ props: menuProps }">
                     <v-btn
                       v-bind="{ ...menuProps, ...tooltipProps }"
                       variant="text"
@@ -90,35 +90,35 @@
             </v-tooltip>
           </template>
 
-        <v-spacer></v-spacer>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ props }">
-            <div v-bind="props">
-              <VersionSelector />
-            </div>
-          </template>
-          <span>{{ versionTooltip }}</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ props }">
-            <div v-bind="props">
-              <ShareButton :showText="false" />
-            </div>
-          </template>
-          <span>{{ shareTooltip }}</span>
-        </v-tooltip>
+          <v-spacer />
+          <v-tooltip bottom>
+            <template #activator="{ props }">
+              <div v-bind="props">
+                <VersionSelector />
+              </div>
+            </template>
+            <span>{{ versionTooltip }}</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template #activator="{ props }">
+              <div v-bind="props">
+                <ShareButton :show-text="false" />
+              </div>
+            </template>
+            <span>{{ shareTooltip }}</span>
+          </v-tooltip>
         </div>
 
         <!-- Mobile Hamburger Menu -->
         <div class="d-flex d-md-none">
           <v-btn
             icon
-            @click="mobileMenuOpen = !mobileMenuOpen"
             class="hamburger-btn"
+            @click="mobileMenuOpen = !mobileMenuOpen"
           >
             <hamburger-icon
-            color="white"
-            :opened="mobileMenuOpen"
+              color="white"
+              :opened="mobileMenuOpen"
             />
           </v-btn>
         </div>
@@ -145,7 +145,7 @@
           
           <!-- Expandable menu item -->
           <v-list-group v-else :value="item.title">
-            <template v-slot:activator="{ props }">
+            <template #activator="{ props }">
               <v-list-item v-bind="props">
                 <v-list-item-title>{{ item.title }}</v-list-item-title>
               </v-list-item>
@@ -154,15 +154,15 @@
               v-for="child in item.children"
               :key="child.path"
               :to="child.path"
-              @click="mobileMenuOpen = false"
               class="pl-8"
+              @click="mobileMenuOpen = false"
             >
               <v-list-item-title>{{ child.title }}</v-list-item-title>
             </v-list-item>
           </v-list-group>
         </template>
 
-        <v-divider class="my-2"></v-divider>
+        <v-divider class="my-2" />
 
         <v-list-item>
           <VersionSelector />
@@ -190,11 +190,10 @@
               src="/images/kofi_symbol.webp"
               alt="Ko-fi"
               class="kofi-icon-mobile"
-            />
+            >
             {{ mobileKofiText }}
           </v-list-item-title>
         </v-list-item>
-
       </v-list>
     </v-navigation-drawer>
     <!-- Main Content -->
@@ -208,7 +207,7 @@
 
 <script>
 import VersionSelector from './components/Menu/VersionSelector.vue'
-import LocationSelector from './components/Home/LocationSelector.vue'
+
 import ShareButton from './components/Menu/ShareButton.vue'
 import HamburgerIcon from './components/Menu/HamburgerIcon.vue'
 import { mapStores } from 'pinia'
@@ -218,14 +217,12 @@ export default {
   name: 'App',
   components: {
     VersionSelector,
-    LocationSelector,
     ShareButton,
     HamburgerIcon
   },
-  computed: {
-    ...mapStores(useDataStore),
-    currentPageTitle() {
-      return this.dataStore.getCurrentPageTitle()
+  data() {
+    return {
+      mobileMenuOpen: false
     }
   },
   computed: {
@@ -315,11 +312,6 @@ export default {
       return this.dataStore.labelState === 3 
         ? 'Buy me a coffee'
         : 'Offrez-moi un café';
-    }
-  },
-  data() {
-    return {
-      mobileMenuOpen: false
     }
   },
   mounted() {
