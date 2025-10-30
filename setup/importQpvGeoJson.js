@@ -5,17 +5,13 @@ function importQpvGeoJson(db, callback) {
   const geoJsonPath = 'setup/inputFiles/qpv2024_simplified.geojson'; // You'll place your GeoJSON file here
 
   if (!fs.existsSync(geoJsonPath)) {
-    console.log('QPV GeoJSON file not found, skipping...');
     return callback(null);
   }
 
   try {
     const geoJsonData = JSON.parse(fs.readFileSync(geoJsonPath, 'utf8'));
-    let processedCount = 0;
     const batchSize = 1000;
     let batch = [];
-
-    console.log('Processing QPV GeoJSON data...');
 
     db.serialize(() => {
       // Create table for QPV coordinates
@@ -33,7 +29,6 @@ function importQpvGeoJson(db, callback) {
                 )
             `, (err) => {
         if (err) {
-          console.error('Error creating qpv_coordinates table:', err.message);
           return callback(err);
         }
 
@@ -58,7 +53,6 @@ function importQpvGeoJson(db, callback) {
               centroid.lng,
               JSON.stringify(geometry)
             ]);
-            processedCount++;
 
             if (batch.length >= batchSize) {
               insertBatch(db, batch);
@@ -74,19 +68,16 @@ function importQpvGeoJson(db, callback) {
 
         db.run('COMMIT', (commitErr) => {
           if (commitErr) {
-            console.error('Error committing QPV coordinates:', commitErr.message);
             db.run('ROLLBACK');
             return callback(commitErr);
           }
 
-          console.log(`Imported ${processedCount} QPV coordinates`);
           callback(null);
         });
       });
     });
 
   } catch (error) {
-    console.error('Error reading QPV GeoJSON file:', error.message);
     callback(error);
   }
 }
@@ -103,7 +94,7 @@ function insertBatch(db, batch) {
     flatBatch,
     (err) => {
       if (err) {
-        console.error('Error inserting QPV coordinates batch:', err.message);
+        // Error handling for batch insert
       }
     }
   );
@@ -120,8 +111,7 @@ function calculateCentroid(geometry) {
       return getPolygonCentroid(coordinates);
     }
     return null;
-  } catch (calcError) {
-    console.error('Error calculating centroid:', calcError);
+  } catch {
     return null;
   }
 }

@@ -46,7 +46,6 @@ class MigrantsImporter extends BaseImporter {
 
       this.db.run(sql, (err) => {
         if (err) {
-          console.error(`Error creating table ${this.tableName}:`, err.message);
           reject(err);
           return;
         }
@@ -57,7 +56,6 @@ class MigrantsImporter extends BaseImporter {
           this.indexes.forEach(indexSql => {
             this.db.run(indexSql, (indexErr) => {
               if (indexErr) {
-                console.error('Error creating index:', indexErr.message);
                 reject(indexErr);
                 return;
               }
@@ -77,7 +75,6 @@ class MigrantsImporter extends BaseImporter {
   static customValidateRow(row) {
     const missingFields = ['COG', 'departement'].filter(field => !row[field] || row[field].trim() === '');
     if (missingFields.length > 0) {
-      console.warn(`Ligne ignorée dans centres_migrants.csv (champs manquants: ${missingFields.join(', ')}):`, row);
       return false;
     }
 
@@ -87,7 +84,6 @@ class MigrantsImporter extends BaseImporter {
       departement = departement.padStart(2, '0');
     }
     if (!/^(0[1-9]|[1-8][0-9]|9[0-5]|2[AB]|97[1-6])$/.test(departement)) {
-      console.warn(`Code département invalide ignoré dans centres_migrants.csv: ${departement}`, row);
       return false;
     }
 
@@ -124,31 +120,24 @@ class MigrantsImporter extends BaseImporter {
   }
 
   async import() {
-    try {
-      await this.createTable();
-      const data = await this.readCSV();
-      // Sort by places descending, then by departement, COG, gestionnaire
-      data.sort((a, b) => {
-        const placesA = a[5] || 0; // places at index 5
-        const placesB = b[5] || 0;
-        if (placesB !== placesA) {
-          return placesB - placesA; // descending order
-        }
-        if (a[1] !== b[1]) {
-          return a[1].localeCompare(b[1]); // departement
-        }
-        if (a[0] !== b[0]) {
-          return a[0].localeCompare(b[0]); // COG
-        }
-        return (a[3] || '').localeCompare(b[3] || ''); // gestionnaire
-      });
-      console.log(`Données triées: ${data.length} centres par places (décroissant)`);
-      await this.insertBatch(data);
-      console.log(`Import completed for ${this.tableName}: ${data.length} rows inserted`);
-    } catch (err) {
-      console.error(`Import failed for ${this.tableName}:`, err.message);
-      throw err;
-    }
+    await this.createTable();
+    const data = await this.readCSV();
+    // Sort by places descending, then by departement, COG, gestionnaire
+    data.sort((a, b) => {
+      const placesA = a[5] || 0; // places at index 5
+      const placesB = b[5] || 0;
+      if (placesB !== placesA) {
+        return placesB - placesA; // descending order
+      }
+      if (a[1] !== b[1]) {
+        return a[1].localeCompare(b[1]); // departement
+      }
+      if (a[0] !== b[0]) {
+        return a[0].localeCompare(b[0]); // COG
+      }
+      return (a[3] || '').localeCompare(b[3] || ''); // gestionnaire
+    });
+    await this.insertBatch(data);
   }
 }
 
@@ -156,11 +145,9 @@ function importMigrants(db, callback) {
   try {
     const importer = new MigrantsImporter(db);
     importer.import().then(() => callback(null)).catch(err => {
-      console.error('Échec de l\'importation des centres migrants:', err.message);
       callback(err);
     });
   } catch (err) {
-    console.error('Échec de l\'importation des centres migrants:', err.message);
     callback(err);
   }
 }

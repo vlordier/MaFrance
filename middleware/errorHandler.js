@@ -19,7 +19,6 @@ class ValidationError extends Error {
 
 // Error handling functions
 const handleDatabaseError = (err, res) => {
-  console.error('Database error:', err.message);
   const error = new DatabaseError('Erreur lors de la requête à la base de données', err.message);
   res.status(error.status).json({
     error: error.message,
@@ -28,7 +27,6 @@ const handleDatabaseError = (err, res) => {
 };
 
 const handleValidationError = (err, res) => {
-  console.error('Validation error:', err.message);
   const error = new ValidationError(err.message || 'Erreur de validation', err.details);
   res.status(error.status).json({
     error: error.message,
@@ -45,8 +43,6 @@ const createDbHandler = (res) => (err, result) => {
 };
 
 const errorHandler = (err, _req, res) => {
-  console.error('Error:', err.message);
-
   // Don't expose internal errors in production
   const isProd = process.env.NODE_ENV === 'production';
 

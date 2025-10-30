@@ -141,8 +141,7 @@ router.get('/geojson', cacheMiddleware(() => 'qpv:geojson'), (_req, res) => {
 
       res.json({ geojson: geoJsonData });
     });
-  } catch (error) {
-    console.error('Error processing QPV GeoJSON:', error);
+  } catch {
     res.status(HTTP_INTERNAL_SERVER_ERROR).json({ error: 'Error processing QPV data' });
   }
 });

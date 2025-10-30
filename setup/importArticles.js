@@ -25,7 +25,6 @@ function createTables(db) {
                 `,
         (err) => {
           if (err) {
-            console.error('Erreur création table articles:', err.message);
             reject(err);
             return;
           }
@@ -34,7 +33,6 @@ function createTables(db) {
             'CREATE INDEX IF NOT EXISTS idx_articles_dept_commune ON articles(departement, cog, commune, lieu)',
             (indexErr) => {
               if (indexErr) {
-                console.error('Erreur création index articles:', indexErr.message);
                 reject(indexErr);
                 return;
               }
@@ -48,7 +46,6 @@ function createTables(db) {
                                 `,
                 (lieuErr) => {
                   if (lieuErr) {
-                    console.error('Erreur création table lieux:', lieuErr.message);
                     reject(lieuErr);
                     return;
                   }
@@ -63,7 +60,7 @@ function createTables(db) {
   });
 }
 
-function processRow(row) {
+function validateRequiredFields(row) {
   const missingFields = [];
   if (!row.date) {
     missingFields.push('date');
@@ -79,27 +76,24 @@ function processRow(row) {
   }
 
   if (missingFields.length > 0) {
-    console.warn(`Ligne ignorée (champs manquants: ${missingFields.join(', ')}):`, row);
-    return null;
+    return false;
   }
+  return true;
+}
 
-  // Normalize departement code
-  let normalizedDepartement = row.departement.trim();
-  if (normalizedDepartement.length <= 2) {
-    normalizedDepartement = normalizedDepartement.padStart(2, '0');
+function normalizeDepartementCode(code) {
+  let normalized = code.trim();
+  if (normalized.length <= 2) {
+    normalized = normalized.padStart(2, '0');
   }
+  return normalized;
+}
 
-  const insecurite = ['1', '1.0', 1].includes(row.Insécurité) ? 1 : 0;
-  const immigration = ['1', '1.0', 1].includes(row.Immigration) ? 1 : 0;
-  const islamisme = ['1', '1.0', 1].includes(row.Islamisme) ? 1 : 0;
-  const defrancisation = ['1', '1.0', 1].includes(row.Défrancisation) ? 1 : 0;
-  const wokisme = ['1', '1.0', 1].includes(row.Wokisme) ? 1 : 0;
+function parseBooleanField(value) {
+  return ['1', '1.0', 1].includes(value) ? 1 : 0;
+}
 
-  const cog = row.COG && row.COG.trim() !== '' ? row.COG : null;
-  const commune = row.commune && row.commune.trim() !== '' ? row.commune : null;
-  const lieu = row.lieu && row.lieu.trim() !== '' ? row.lieu : null;
-
-  // Collect cog-lieu mapping
+function updateCogLieuMap(cog, lieu) {
   if (cog && lieu) {
     if (!cogLieuMap.has(cog)) {
       cogLieuMap.set(cog, new Set());
@@ -113,6 +107,26 @@ function processRow(row) {
       }
     });
   }
+}
+
+function processRow(row) {
+  if (!validateRequiredFields(row)) {
+    return null;
+  }
+
+  const normalizedDepartement = normalizeDepartementCode(row.departement);
+
+  const insecurite = parseBooleanField(row.Insécurité);
+  const immigration = parseBooleanField(row.Immigration);
+  const islamisme = parseBooleanField(row.Islamisme);
+  const defrancisation = parseBooleanField(row.Défrancisation);
+  const wokisme = parseBooleanField(row.Wokisme);
+
+  const cog = row.COG && row.COG.trim() !== '' ? row.COG : null;
+  const commune = row.commune && row.commune.trim() !== '' ? row.commune : null;
+  const lieu = row.lieu && row.lieu.trim() !== '' ? row.lieu : null;
+
+  updateCogLieuMap(cog, lieu);
 
   return [
     row.date,
@@ -167,17 +181,14 @@ function processCSV() {
           const parsedDateA = parseFrenchDate(a[0]);
           const parsedDateB = parseFrenchDate(b[0]);
           if (!parsedDateA || !parsedDateB || isNaN(parsedDateA.getTime()) || isNaN(parsedDateB.getTime())) {
-            console.warn('Invalid date found:', a[0], b[0]);
             return b[0].localeCompare(a[0]);
           }
           return parsedDateB - parsedDateA;
         });
 
-        console.log(`Sorted ${allArticles.length} articles by date (descending)`);
         resolve({ allArticles, articleRows });
       })
       .on('error', (err) => {
-        console.error('Erreur lecture CSV:', err.message);
         reject(err);
       });
   });
@@ -187,7 +198,6 @@ function insertBatches(db, allArticles) {
   return new Promise((resolve, reject) => {
     db.run('BEGIN TRANSACTION', (err) => {
       if (err) {
-        console.error('Erreur début transaction:', err.message);
         reject(err);
         return;
       }
@@ -200,7 +210,6 @@ function insertBatches(db, allArticles) {
         if (batchIndex >= allArticles.length) {
           db.run('COMMIT', (commitErr) => {
             if (commitErr) {
-              console.error('Erreur commit:', commitErr.message);
               reject(commitErr);
             } else {
               resolve();
@@ -222,7 +231,6 @@ function insertBatches(db, allArticles) {
           flatBatch,
           (insertErr) => {
             if (insertErr) {
-              console.error('Erreur insertion batch:', insertErr.message);
               db.run('ROLLBACK', () => reject(insertErr));
               return;
             }
@@ -258,10 +266,8 @@ function insertLieux(db) {
       flatLieux,
       (err) => {
         if (err) {
-          console.error('Erreur insertion lieux:', err.message);
           reject(err);
         } else {
-          console.log(`Inserted ${lieuxData.length} distinct cog-lieu pairs into lieux table`);
           resolve();
         }
       }
@@ -271,17 +277,12 @@ function insertLieux(db) {
 
 async function importArticles(db, callback) {
   try {
-    const { allArticles, articleRows } = await processCSV();
+    const { allArticles } = await processCSV();
     await createTables(db);
     await insertBatches(db, allArticles);
     await insertLieux(db);
-    console.log(`Importation de ${articleRows} lignes dans articles terminée`);
-    if (articleRows === 0) {
-      console.warn('Avertissement: CSV est vide ou n\'a pas de données valides');
-    }
     callback(null);
   } catch (err) {
-    console.error('Échec de l\'importation des articles:', err.message);
     callback(err);
   }
 }

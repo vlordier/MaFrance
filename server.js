@@ -123,8 +123,8 @@ app.get('/api/version', (_req, res) => {
           buildHash = hashMatch[1];
         }
       }
-    } catch (error) {
-      console.warn('Failed to read build hash from index.html:', error);
+    } catch {
+      // Continue with fallback
     }
   }
 
@@ -146,10 +146,8 @@ app.get('/', (req, res) => {
     return res.status(HTTP_OK).send('OK');
   }
   const filePath = path.resolve(__dirname, 'dist', 'index.html');
-  console.log(`Attempting to serve ${filePath} for root request`);
   res.sendFile(filePath, (err) => {
     if (err) {
-      console.error(`Error serving ${filePath}:`, err);
       res.status(HTTP_INTERNAL_SERVER_ERROR).json({ error: err.message, details: null });
     }
   });
@@ -175,16 +173,12 @@ app.use(errorHandler);
 
 // Start server
 const server = app.listen(config.server.port, config.server.host, () => {
-  console.log(
-    `Server running at http://${config.server.host}:${config.server.port}`
-  );
+  // Server started successfully
 });
 
 // Graceful shutdown
 process.on('SIGINT', () => {
-  console.log('Fermeture du serveur...');
   server.close(() => {
-    console.log('Serveur arrêté');
     process.exit(0);
   });
 });

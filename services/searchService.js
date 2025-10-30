@@ -9,6 +9,10 @@ class SearchService {
      * Normalize text for search by removing accents and converting to lowercase
      */
   static normalizeText(text) {
+    // Ensure text is a string to prevent object injection
+    if (typeof text !== 'string') {
+      return '';
+    }
     return text
       .toLowerCase()
       .normalize('NFD')

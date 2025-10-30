@@ -41,7 +41,6 @@ class MosquesImporter extends BaseImporter {
 
       this.db.run(sql, (err) => {
         if (err) {
-          console.error(`Error creating table ${this.tableName}:`, err.message);
           reject(err);
           return;
         }
@@ -52,7 +51,6 @@ class MosquesImporter extends BaseImporter {
           this.indexes.forEach(indexSql => {
             this.db.run(indexSql, (indexErr) => {
               if (indexErr) {
-                console.error('Error creating index:', indexErr.message);
                 reject(indexErr);
                 return;
               }
@@ -106,14 +104,11 @@ function importMosques(db, callback) {
   try {
     const importer = new MosquesImporter(db);
     importer.import().then(() => {
-      console.log('✓ Mosque data import completed');
       callback(null);
     }).catch(err => {
-      console.error('Error importing mosque data:', err.message);
       callback(err);
     });
   } catch (err) {
-    console.error('Error importing mosque data:', err.message);
     callback(err);
   }
 }

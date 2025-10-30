@@ -62,7 +62,6 @@ class BaseImporter {
 
       this.db.run(sql, (err) => {
         if (err) {
-          console.error(`Error creating table ${this.tableName}:`, err.message);
           reject(err);
           return;
         }
@@ -73,7 +72,6 @@ class BaseImporter {
           this.indexes.forEach(indexSql => {
             this.db.run(indexSql, (indexErr) => {
               if (indexErr) {
-                console.error('Error creating index:', indexErr.message);
                 reject(indexErr);
                 return;
               }
@@ -98,7 +96,6 @@ class BaseImporter {
     return new Promise((resolve, reject) => {
       if (!fs.existsSync(this.csvPath)) {
         if (this.allowMissingCsv) {
-          console.log(`Warning: ${this.csvPath} does not exist, proceeding with empty data`);
           resolve([]);
           return;
         } else {
@@ -108,7 +105,6 @@ class BaseImporter {
       }
 
       const processedRows = [];
-      let rowCount = 0;
 
       fs.createReadStream(this.csvPath)
         .pipe(csv())
@@ -117,16 +113,13 @@ class BaseImporter {
             const processed = this.processRow(row);
             if (processed) {
               processedRows.push(processed);
-              rowCount++;
             }
           }
         })
         .on('end', () => {
-          console.log(`Processed ${rowCount} rows from ${this.csvPath}`);
           resolve(processedRows);
         })
         .on('error', (err) => {
-          console.error(`Error reading CSV ${this.csvPath}:`, err.message);
           reject(err);
         });
     });
@@ -141,7 +134,6 @@ class BaseImporter {
   defaultValidateRow(row) {
     const missingFields = this.requiredFields.filter(field => !row[field] || row[field].trim() === '');
     if (missingFields.length > 0) {
-      console.warn(`Row ignored (missing fields: ${missingFields.join(', ')}):`, row);
       return false;
     }
     return true;
@@ -176,7 +168,6 @@ class BaseImporter {
 
       this.db.run('BEGIN TRANSACTION', (err) => {
         if (err) {
-          console.error('Error starting transaction:', err.message);
           reject(err);
           return;
         }
@@ -187,7 +178,6 @@ class BaseImporter {
           if (batchIndex >= data.length) {
             this.db.run('COMMIT', (commitErr) => {
               if (commitErr) {
-                console.error('Error committing transaction:', commitErr.message);
                 reject(commitErr);
               } else {
                 resolve();
@@ -204,7 +194,6 @@ class BaseImporter {
 
           this.db.run(sql, flatBatch, (insertErr) => {
             if (insertErr) {
-              console.error('Error inserting batch:', insertErr.message);
               this.db.run('ROLLBACK', () => reject(insertErr));
               return;
             }
@@ -222,15 +211,9 @@ class BaseImporter {
      * Orchestrates the full import process.
      */
   async import() {
-    try {
-      await this.createTable();
-      const data = await this.readCSV();
-      await this.insertBatch(data);
-      console.log(`Import completed for ${this.tableName}: ${data.length} rows inserted`);
-    } catch (err) {
-      console.error(`Import failed for ${this.tableName}:`, err.message);
-      throw err;
-    }
+    await this.createTable();
+    const data = await this.readCSV();
+    await this.insertBatch(data);
   }
 }
 

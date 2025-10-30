@@ -122,7 +122,6 @@ function validateCountryRow(row) {
     missingFields.push('logements_sociaux_pct');
   }
   if (missingFields.length > 0) {
-    console.warn(`Ligne ignorée dans france_scores.csv (champs manquants: ${missingFields.join(', ')}):`, row);
     return false;
   }
   return true;
@@ -149,12 +148,10 @@ function validateDepartementRow(row) {
     missingFields.push('places_migrants_p1k');
   }
   if (missingFields.length > 0) {
-    console.warn(`Ligne ignorée dans departement_scores.csv (champs manquants: ${missingFields.join(', ')}):`, row);
     return false;
   }
   const departement = normalizeDepartmentCode(row['departement']);
   if (!departement) {
-    console.warn(`Code département invalide ignoré: ${row['departement']}`, row);
     return false;
   }
   return true;
@@ -181,12 +178,10 @@ function validateLocationRow(row) {
     missingFields.push('logements_sociaux_pct');
   }
   if (missingFields.length > 0) {
-    console.warn(`Ligne ignorée dans commune_scores.csv (champs manquants: ${missingFields.join(', ')}):`, row);
     return false;
   }
   const departement = normalizeDepartmentCode(row['departement']);
   if (!departement) {
-    console.warn(`Code département invalide ignoré: ${row['departement']}`, row);
     return false;
   }
   return true;
@@ -217,13 +212,11 @@ function createLocationsTable() {
         `;
     this.db.run(sql, (err) => {
       if (err) {
-        console.error('Erreur création table locations:', err.message);
         reject(err);
         return;
       }
       this.db.run('CREATE INDEX IF NOT EXISTS idx_locations_dept_commune ON locations(departement, commune)', (indexErr) => {
         if (indexErr) {
-          console.error('Erreur création index locations:', indexErr.message);
           reject(indexErr);
           return;
         }
@@ -273,7 +266,6 @@ function importScores(db, callback) {
     .then(() => locationImporter.import())
     .then(() => callback(null))
     .catch((err) => {
-      console.error('Échec de l\'importation des scores:', err.message);
       callback(err);
     });
 }

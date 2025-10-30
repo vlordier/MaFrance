@@ -13,13 +13,17 @@ const uploadLimiter = rateLimit({
 const sanitizeInput = (req, _res, next) => {
   const sanitize = (obj) => {
     if (typeof obj === 'string') {
-      return obj.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      // Use safer string replacement instead of complex regex
+      return obj.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
         .replace(/javascript:/gi, '')
         .replace(/on\w+\s*=/gi, '');
     }
     if (typeof obj === 'object' && obj !== null) {
       Object.keys(obj).forEach(key => {
-        obj[key] = sanitize(obj[key]);
+        // Only sanitize own properties to prevent prototype pollution
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
+          obj[key] = sanitize(obj[key]);
+        }
       });
     }
     return obj;
