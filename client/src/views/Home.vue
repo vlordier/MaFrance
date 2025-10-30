@@ -136,7 +136,7 @@ export default {
     Subventions,
     MosqueTable
   },
-  beforeRouteEnter(to, from, next) {
+  beforeRouteEnter(_to, from, next) {
     next(vm => {
       // When navigating to Home from another route, ensure map refreshes
       if (from.name && from.name !== 'Home') {

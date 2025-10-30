@@ -6,7 +6,7 @@ export default [
     rules: {
       'no-console': 'error',
       'no-debugger': 'error',
-      'no-unused-vars': ['error', { 'vars': 'all', 'args': 'after-used', 'ignoreRestSiblings': false }],
+            'no-unused-vars': ['error', { 'vars': 'all', 'args': 'all', 'ignoreRestSiblings': false, 'argsIgnorePattern': '^_' }],
       'no-undef': 'error',
       'prefer-const': 'error',
       'no-var': 'error',
@@ -17,7 +17,20 @@ export default [
       'semi': ['error', 'always'],
       'comma-dangle': ['error', 'never'],
       'object-curly-spacing': ['error', 'always'],
-      'array-bracket-spacing': ['error', 'never']
+      'array-bracket-spacing': ['error', 'never'],
+      'no-shadow': 'error',
+      'no-redeclare': 'error',
+      'no-magic-numbers': ['error', { 'ignore': [0, 1, -1, 2, 3, 4, 5, 10, 50, 100, 500, 1000] }],
+      'complexity': ['error', 20],
+      'max-lines-per-function': ['error', 100],
+      'max-params': ['error', 6],
+      'eqeqeq': 'error',
+      'curly': 'error',
+      'brace-style': ['error', '1tbs'],
+      'space-before-function-paren': ['error', 'never'],
+      'keyword-spacing': 'error',
+      'space-infix-ops': 'error',
+      'no-multi-spaces': 'error'
     }
   }
   ,

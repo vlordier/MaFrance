@@ -436,7 +436,7 @@ export default {
               }
             }
           },
-          onHover: (event, elements) => {
+          onHover: (_event, elements) => {
             if (elements.length > 0) {
               const element = elements[0];
               const data = element.element.$context.raw;
@@ -447,7 +447,7 @@ export default {
               });
             }
           },
-          onClick: (event, elements) => {
+          onClick: (_event, elements) => {
             if (elements.length > 0) {
               const element = elements[0];
               const data = element.element.$context.raw;

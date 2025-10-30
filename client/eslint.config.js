@@ -29,7 +29,7 @@ export default [
     rules: {
       'no-console': 'error',
       'no-debugger': 'error',
-      'no-unused-vars': 'error',
+      'no-unused-vars': ['error', { 'vars': 'all', 'args': 'all', 'ignoreRestSiblings': false, 'argsIgnorePattern': '^_' }],
       'vue/no-unused-vars': 'error',
       'vue/multi-word-component-names': 'off',
       'vue/require-v-for-key': 'error',
@@ -77,7 +77,13 @@ export default [
       'space-before-function-paren': ['error', 'never'],
       'keyword-spacing': 'error',
       'space-infix-ops': 'error',
-      'no-multi-spaces': 'error'
+      'no-multi-spaces': 'error',
+      'no-shadow': 'error',
+      'no-redeclare': 'error',
+      'no-magic-numbers': ['error', { 'ignore': [0, 1, -1, 2, 3, 4, 5, 10, 50, 100, 500, 1000] }],
+      'complexity': ['error', 20],
+      'max-lines-per-function': ['error', 100],
+      'max-params': ['error', 6],
     }
   }
 ];

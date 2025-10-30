@@ -125,7 +125,7 @@ function updateMetaTags(meta) {
 }
 
 // beforeEach guard to update meta tags on route change
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   if (to.meta) {
     // Use nextTick to ensure DOM is updated after route change
     next();
