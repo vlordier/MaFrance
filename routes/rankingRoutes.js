@@ -186,13 +186,13 @@ router.get(
 router.get(
   '/departements',
   [validateSort, validateDirection, validatePagination],
-  (req, res, next) => {
+  (_req, res, _next) => {
     const {
       limit = 101,
       offset = 0,
       sort = 'insecurite_score',
       direction = 'DESC'
-    } = req.query;
+    } = _req.query;
 
     const cacheService = require('../services/cacheService');
     const cachedData = cacheService.get('department_rankings');
@@ -227,7 +227,7 @@ router.get(
   }
 );
 // GET /api/rankings/politique
-router.get('/politique', cacheMiddleware(() => 'politique_rankings'), (req, res, next) => {
+router.get('/politique', cacheMiddleware(() => 'politique_rankings'), (_req, res, next) => {
   const handleDbError = createDbHandler(res, next);
   // Check if we have cached data
   const cacheService = require('../services/cacheService');
@@ -336,7 +336,7 @@ router.get('/politique', cacheMiddleware(() => 'politique_rankings'), (req, res,
 });
 
 // GET /api/rankings/ranking
-router.get('/ranking', (req, res) => {
+router.get('/ranking', (_req, res) => {
   res.json({ message: 'Ranking endpoint' });
 });
 

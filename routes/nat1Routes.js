@@ -62,7 +62,7 @@ const computePercentageFields = (row) => {
 };
 
 // GET /api/nat1/country
-router.get('/country', cacheMiddleware(() => 'nat1_country_all'), (req, res, next) => {
+router.get('/country', cacheMiddleware(() => 'nat1_country_all'), (_req, res, next) => {
   const handleDbError = createDbHandler(res, next);
 
   db.all(

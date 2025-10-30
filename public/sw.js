@@ -50,17 +50,11 @@ self.addEventListener('fetch', (event) => {
   // Handle API requests
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(handleApiRequest(request));
-  }
-  // Handle francocides images with caching
-  else if (url.pathname.startsWith('/images/francocides/')) {
+  } else if (url.pathname.startsWith('/images/francocides/')) {
     event.respondWith(handleImageRequest(request));
-  }
-  // Handle map tiles from CartoDB with caching
-  else if (url.hostname.includes('basemaps.cartocdn.com')) {
+  } else if (url.hostname.includes('basemaps.cartocdn.com')) {
     event.respondWith(handleTileRequest(request));
-  }
-  // Handle CSV data requests with caching
-  else if (url.pathname.startsWith('/data/')) {
+  } else if (url.pathname.startsWith('/data/')) {
     event.respondWith(handleCsvRequest(request));
   }
   // Let all other requests (HTML, CSS, JS) go directly to network

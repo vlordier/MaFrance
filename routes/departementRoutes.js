@@ -8,7 +8,7 @@ const {
 } = require('../middleware/validate');
 
 // GET /api/departements
-router.get('/', (req, res, next) => {
+router.get('/', (_req, res, next) => {
   const handleDbError = createDbHandler(res, next);
   db.all('SELECT DISTINCT departement FROM departements', [], (err, rows) => {
     if (err) {

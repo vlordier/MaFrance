@@ -95,7 +95,7 @@ router.get('/commune/:cog', validateCOGParam, (req, res, next) => {
   });
 });
 
-router.get('/subventions', validateDepartementParam, (req, res) => {
+router.get('/subventions', validateDepartementParam, (_req, res) => {
   res.json({ message: 'Subventions endpoint' });
 });
 

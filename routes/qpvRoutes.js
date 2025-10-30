@@ -99,7 +99,7 @@ router.get(
 );
 
 // Get QPV GeoJSON data from database
-router.get('/geojson', cacheMiddleware(() => 'qpv:geojson'), (req, res) => {
+router.get('/geojson', cacheMiddleware(() => 'qpv:geojson'), (_req, res) => {
   try {
     const query = `
             SELECT 

@@ -9,6 +9,7 @@ const {
   validateCOG,
   validateSearchQuery
 } = require('../middleware/validate');
+const { HTTP_NOT_FOUND, DEFAULT_LIMIT } = require('../constants');
 
 // GET /api/communes
 router.get('/', [validateDepartement, validateSearchQuery], async(req, res) => {
@@ -45,7 +46,7 @@ router.get('/search', [validateSearchQuery], async(req, res) => {
   }
 
   try {
-    const results = await SearchService.searchCommunesGlobally(q, 15);
+    const results = await SearchService.searchCommunesGlobally(q, DEFAULT_LIMIT);
     res.json(results);
   } catch (error) {
     const dbHandler = createDbHandler(res);
@@ -54,7 +55,7 @@ router.get('/search', [validateSearchQuery], async(req, res) => {
 });
 
 // GET /api/communes/all
-router.get('/all', cacheMiddleware(() => 'communes:all'), (req, res) => {
+router.get('/all', cacheMiddleware(() => 'communes:all'), (_req, res) => {
   const dbHandler = createDbHandler(res);
   db.all(
     'SELECT COG, departement, commune, population, logements_sociaux_pct, insecurite_score, immigration_score, islamisation_score, defrancisation_score, wokisme_score, number_of_mosques, mosque_p100k, total_qpv, pop_in_qpv_pct, total_places_migrants, places_migrants_p1k FROM locations',
@@ -84,7 +85,7 @@ router.get('/names', validateCOG, cacheMiddleware((req) => `communes:names:${req
         return;
       }
       if (!row) {
-        return res.status(404).json({
+        return res.status(HTTP_NOT_FOUND).json({
           error: 'Données de prénoms non trouvées pour la dernière année'
         });
       }
@@ -128,7 +129,7 @@ router.get('/crime', validateCOG, cacheMiddleware((req) => `communes:crime:${req
         return;
       }
       if (!row) {
-        return res.status(404).json({
+        return res.status(HTTP_NOT_FOUND).json({
           error: 'Données criminelles non trouvées pour la dernière année'
         });
       }
@@ -170,7 +171,7 @@ router.get('/details', validateCOG, cacheMiddleware((req) => `communes:details:$
         return;
       }
       if (!row) {
-        return res.status(404).json({ error: 'Commune non trouvée' });
+        return res.status(HTTP_NOT_FOUND).json({ error: 'Commune non trouvée' });
       }
       res.json(row);
     }
@@ -217,7 +218,7 @@ router.get('/maire', validateCOG, cacheMiddleware((req) => `communes:maire:${req
         return;
       }
       if (!row) {
-        return res.status(404).json({ error: 'Maire non trouvé' });
+        return res.status(HTTP_NOT_FOUND).json({ error: 'Maire non trouvé' });
       }
 
       // Map the nuance_politique code to its full description

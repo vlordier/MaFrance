@@ -7,6 +7,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const config = require('./config');
 const db = require('./config/db');
+const { HTTP_OK, HTTP_NOT_FOUND, HTTP_INTERNAL_SERVER_ERROR, HTTP_MOVED_PERMANENTLY } = require('./constants');
 const app = express();
 const compression = require('compression');
 
@@ -43,7 +44,7 @@ app.use((req, res, next) => {
   // Redirect from old Replit domain to new custom domain
   if (host === 'ouvamafrance.replit.app') {
     const newUrl = `https://mafrance.app${req.originalUrl}`;
-    return res.redirect(301, newUrl);
+    return res.redirect(HTTP_MOVED_PERMANENTLY, newUrl);
   }
 
   next();
@@ -108,7 +109,7 @@ app.use('/api', otherRoutes); // Keep this commented to test
 app.use('/api/cache', cacheRoutes);
 
 // Version endpoint for cache validation
-app.get('/api/version', (req, res) => {
+app.get('/api/version', (_req, res) => {
   // Try to read build hash from built index.html
   let buildHash = process.env.BUILD_HASH;
 
@@ -142,14 +143,14 @@ app.get('/api/version', (req, res) => {
 // Health check and root route
 app.get('/', (req, res) => {
   if (req.headers['user-agent']?.includes('GoogleHC')) {
-    return res.status(200).send('OK');
+    return res.status(HTTP_OK).send('OK');
   }
   const filePath = path.resolve(__dirname, 'dist', 'index.html');
   console.log(`Attempting to serve ${filePath} for root request`);
   res.sendFile(filePath, (err) => {
     if (err) {
       console.error(`Error serving ${filePath}:`, err);
-      res.status(500).json({ error: err.message, details: null });
+      res.status(HTTP_INTERNAL_SERVER_ERROR).json({ error: err.message, details: null });
     }
   });
 });
@@ -160,7 +161,7 @@ app.get('/{*path}', (req, res) => {
   if (req.originalUrl.startsWith('/api/') ||
       req.originalUrl.startsWith('/assets/') ||
       req.originalUrl.includes('.')) {
-    return res.status(404).send('Not Found');
+    return res.status(HTTP_NOT_FOUND).send('Not Found');
   }
 
   // Serve index.html for client-side routing

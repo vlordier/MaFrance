@@ -4,6 +4,7 @@ const db = require('../config/db');
 const { createDbHandler } = require('../middleware/errorHandler');
 const { cacheMiddleware } = require('../middleware/cache');
 const { validateCountry } = require('../middleware/validate');
+const { HTTP_NOT_FOUND } = require('../constants');
 
 // GET /api/country/details
 router.get('/details', validateCountry, cacheMiddleware((req) => {
@@ -27,7 +28,7 @@ router.get('/details', validateCountry, cacheMiddleware((req) => {
       return handleDbError(err);
     }
     if (!rows || rows.length === 0) {
-      return res.status(404).json({ error: 'Données pays non trouvées' });
+      return res.status(HTTP_NOT_FOUND).json({ error: 'Données pays non trouvées' });
     }
 
     res.json(rows);
@@ -58,7 +59,7 @@ router.get('/names', validateCountry, cacheMiddleware((req) => {
       return handleDbError(err);
     }
     if (!rows || rows.length === 0) {
-      return res.status(404).json({
+      return res.status(HTTP_NOT_FOUND).json({
         error: 'Données de prénoms non trouvées pour la dernière année'
       });
     }
@@ -121,7 +122,7 @@ router.get('/crime', cacheMiddleware((req) => {
       return handleDbError(err);
     }
     if (!rows || rows.length === 0) {
-      return res.status(404).json({
+      return res.status(HTTP_NOT_FOUND).json({
         error: 'Données criminelles non trouvées pour la dernière année'
       });
     }
@@ -161,7 +162,7 @@ router.get('/crime_history', validateCountry, cacheMiddleware((req) => {
 });
 
 // GET /api/country/ministre
-router.get('/ministre', cacheMiddleware(() => 'ministre_france'), (req, res, next) => {
+router.get('/ministre', cacheMiddleware(() => 'ministre_france'), (_req, res, next) => {
   const handleDbError = createDbHandler(res, next);
 
   const sql = `SELECT country, prenom, nom, date_mandat, famille_nuance, nuance_politique
@@ -174,7 +175,7 @@ router.get('/ministre', cacheMiddleware(() => 'ministre_france'), (req, res, nex
       return handleDbError(err);
     }
     if (!row) {
-      return res.status(404).json({ error: 'Ministre non trouvé' });
+      return res.status(HTTP_NOT_FOUND).json({ error: 'Ministre non trouvé' });
     }
 
     res.json(row);

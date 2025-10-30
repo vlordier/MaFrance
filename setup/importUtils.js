@@ -24,7 +24,7 @@ function parseFrenchDate(dateStr) {
     const [, day, month, year] = frenchDateMatch;
     const date = new Date(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
     // Validate the date is valid
-    if (date.getFullYear() == year && date.getMonth() + 1 == month && date.getDate() == day) {
+    if (date.getFullYear() === year && date.getMonth() + 1 === month && date.getDate() === day) {
       return date;
     }
   }
@@ -63,7 +63,7 @@ function parseShortFrenchDate(dateStr) {
     const [, day, month, year] = match;
     const fullYear = `20${year}`;
     const date = new Date(`${fullYear}-${month}-${day}`);
-    if (date.getFullYear() == fullYear && date.getMonth() + 1 == month && date.getDate() == day) {
+    if (date.getFullYear() === fullYear && date.getMonth() + 1 === month && date.getDate() === day) {
       return `${fullYear}-${month}-${day}`;
     }
   }
