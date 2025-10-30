@@ -20,4 +20,59 @@ export default [
       'array-bracket-spacing': ['error', 'never']
     }
   }
+  ,
+  {
+    // Node / server-side and scripts override: expose common Node globals and allow console
+    files: [
+      'setup/**',
+      'routes/**',
+      'services/**',
+      'config/**',
+      'middleware/**',
+      'server.js',
+      'setup.js'
+    ],
+    languageOptions: {
+      globals: {
+        require: 'readonly',
+        module: 'readonly',
+        exports: 'readonly',
+        process: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        console: 'readonly',
+        Buffer: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly'
+      },
+      parserOptions: {
+        ecmaVersion: 2021
+      }
+    },
+    rules: {
+      // server scripts commonly use console for logging and rely on Node globals
+      'no-console': 'off'
+    }
+  }
+  ,
+  {
+    // Service worker globals for public/sw.js
+    files: ['public/sw.js'],
+    languageOptions: {
+      globals: {
+        self: 'readonly',
+        caches: 'readonly',
+        clients: 'readonly',
+        fetch: 'readonly',
+        URL: 'readonly',
+        console: 'readonly'
+      },
+      parserOptions: { ecmaVersion: 2021 }
+    },
+    rules: {
+      'no-console': 'off'
+    }
+  }
 ];
