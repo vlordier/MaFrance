@@ -94,7 +94,7 @@ export default {
     ...mapStores(useDataStore),
 
     isEnglish() {
-      return this.dataStore.labelState ==== 3;
+      return this.dataStore.labelState === 3;
     },
 
     shareUrl() {
@@ -103,8 +103,8 @@ export default {
       const params = new URLSearchParams();
 
       // Add version parameter
-      if (this.dataStore.labelState !==== 0) {
-        if (this.dataStore.labelState ==== 3) {
+      if (this.dataStore.labelState !== 0) {
+        if (this.dataStore.labelState === 3) {
           params.set('v', 'en');
         } else {
           params.set('v', this.dataStore.labelState.toString());
@@ -112,12 +112,12 @@ export default {
       }
 
       // Add location parameter based on current level
-      if (this.dataStore.currentLevel ==== 'departement') {
+      if (this.dataStore.currentLevel === 'departement') {
         const deptCode = this.dataStore.getDepartementCode();
         if (deptCode) {
           params.set('c', deptCode);
         }
-      } else if (this.dataStore.currentLevel ==== 'commune') {
+      } else if (this.dataStore.currentLevel === 'commune') {
         const communeCode = this.dataStore.getCommuneCode();
         if (communeCode) {
           params.set('c', communeCode);
@@ -126,7 +126,7 @@ export default {
 
       // Add selected metric if available
       const selectedMetric = this.dataStore.selectedMetric;
-      if (selectedMetric && selectedMetric !==== 'default') {
+      if (selectedMetric && selectedMetric !== 'default') {
         const compactMetric = MetricsConfig.getCompactMetric(selectedMetric);
         params.set('m', compactMetric);
       }
@@ -138,11 +138,11 @@ export default {
 
     shareLocation() {
       let location = 'France';
-      if (this.dataStore.currentLevel ==== 'departement') {
+      if (this.dataStore.currentLevel === 'departement') {
         const deptCode = this.dataStore.getDepartementCode();
         const deptName = DepartementNames[deptCode];
         location = deptName ? `${deptCode} - ${deptName}` : `Département ${deptCode}`;
-      } else if (this.dataStore.currentLevel ==== 'commune') {
+      } else if (this.dataStore.currentLevel === 'commune') {
         const communeName = this.dataStore.levels.commune;
         const deptCode = this.dataStore.getDepartementCode();
         location = `${communeName} (${deptCode})`;
@@ -175,8 +175,7 @@ export default {
         setTimeout(() => {
           this.copied = false;
         }, 2000);
-      } catch (error) {
-        console.error('Failed to copy to clipboard:', error);
+      } catch {
         // Fallback for older browsers
         const textArea = document.createElement('textarea');
         textArea.value = this.shareUrl;

@@ -81,11 +81,11 @@ export default {
       return useDataStore();
     },
     cardTitle() {
-      const isEnglish = this.dataStore.labelState ==== 3;
+      const isEnglish = this.dataStore.labelState === 3;
       let deptCode = '';
-      if (this.location.type ==== 'commune') {
+      if (this.location.type === 'commune') {
         deptCode = this.dataStore.commune.details?.departement || '';
-      } else if (this.location.type ==== 'departement') {
+      } else if (this.location.type === 'departement') {
         deptCode = this.location.code || '';
       }
       const deptPart = deptCode ? ` (${deptCode})` : '';
@@ -94,7 +94,7 @@ export default {
         : `Indices et données pour: ${this.location.name}${deptPart}`;
     },
     noDataMessage() {
-      return this.dataStore.labelState ==== 3
+      return this.dataStore.labelState === 3
         ? 'No data available for this location'
         : 'Aucune donnée disponible pour cette localisation';
     }
@@ -113,7 +113,7 @@ export default {
     },
     'dataStore.country': {
       handler() {
-        if (this.location.type ==== 'country') {
+        if (this.location.type === 'country') {
           this.updateTable();
         }
       },
@@ -121,7 +121,7 @@ export default {
     },
     'dataStore.departement': {
       handler() {
-        if (this.location.type ==== 'departement') {
+        if (this.location.type === 'departement') {
           this.updateTable();
         }
       },
@@ -129,7 +129,7 @@ export default {
     },
     'dataStore.commune': {
       handler() {
-        if (this.location.type ==== 'commune') {
+        if (this.location.type === 'commune') {
           this.updateTable();
         }
       },
@@ -165,9 +165,9 @@ export default {
 
       let compareStoreSection = null;
 
-      if (level ==== 'departement') {
+      if (level === 'departement') {
         compareStoreSection = this.dataStore.country;
-      } else if (level ==== 'commune') {
+      } else if (level === 'commune') {
         compareStoreSection = this.dataStore.departement;
       }
 
@@ -184,7 +184,7 @@ export default {
         const categoryMetrics = MetricsConfig.getMetricsByCategory(category)
           .filter(m => MetricsConfig.isMetricAvailable(m.value, level));
 
-        if (categoryMetrics.length ==== 0) {
+        if (categoryMetrics.length === 0) {
           return;
         }
 
@@ -202,16 +202,16 @@ export default {
     },
 
     setHeaders(level, storeSection) {
-      const isEnglish = this.dataStore.labelState ==== 3;
+      const isEnglish = this.dataStore.labelState === 3;
 
-      if (level ==== 'country') {
+      if (level === 'country') {
         this.mainHeader = isEnglish ? 'Metropolitan France' : 'France métropolitaine';
         this.compareHeader = isEnglish ? 'Entire France' : 'France entière';
-      } else if (level ==== 'departement') {
+      } else if (level === 'departement') {
         const deptCode = this.location.code;
         this.mainHeader = `${deptCode} - ${DepartementNames[deptCode] || deptCode}`;
         this.compareHeader = isEnglish ? 'Metropolitan France' : 'France métropolitaine';
-      } else if (level ==== 'commune') {
+      } else if (level === 'commune') {
         const communeData = storeSection.details;
         const departement = communeData.departement;
         const commune = communeData.commune;
@@ -239,7 +239,7 @@ export default {
       const source = metric.source || 'details';
 
       // Handle France country level
-      if (this.location.type ==== 'country' && this.location.name ==== 'France') {
+      if (this.location.type === 'country' && this.location.name === 'France') {
         const main = this.getFormattedValueFromCountryArray(storeSection, metricKey, source, 'france metro');
         const compare = this.getFormattedValueFromCountryArray(storeSection, metricKey, source, 'france entiere');
         return { title, main, compare, subRow: isSubRow };
@@ -251,7 +251,7 @@ export default {
       // Get comparison value (if applicable)
       let compare = '';
       if (compareStoreSection) {
-        if (this.location.type ==== 'departement') {
+        if (this.location.type === 'departement') {
           // For departements, compare with France metro
           compare = this.getFormattedValueFromCountryArray(compareStoreSection, metricKey, source, 'france metro');
         } else {
@@ -269,16 +269,16 @@ export default {
       }
 
       const value = MetricsConfig.calculateMetric(metricKey, sectionData);
-      if (value === null || value ==== undefined || isNaN(value)) {
+      if (value === null || value === undefined || isNaN(value)) {
         return 'N/A';
       }
 
       let formatted = MetricsConfig.formatMetricValue(value, metricKey);
 
       // Add year suffix for specific sources
-      if (source ==== 'names' && sectionData.annais) {
+      if (source === 'names' && sectionData.annais) {
         formatted += ` (${sectionData.annais})`;
-      } else if (source ==== 'crime' && sectionData.annee) {
+      } else if (source === 'crime' && sectionData.annee) {
         formatted += ` (${sectionData.annee})`;
       }
 
@@ -291,22 +291,22 @@ export default {
         return 'N/A';
       }
 
-      const data = sectionData.find(item => item.country ==== countryType);
+      const data = sectionData.find(item => item.country === countryType);
       if (!data) {
         return 'N/A';
       }
 
       const value = MetricsConfig.calculateMetric(metricKey, data);
-      if (value === null || value ==== undefined || isNaN(value)) {
+      if (value === null || value === undefined || isNaN(value)) {
         return 'N/A';
       }
 
       let formatted = MetricsConfig.formatMetricValue(value, metricKey);
 
       // Add year suffix for specific sources
-      if (source ==== 'names' && data.annais) {
+      if (source === 'names' && data.annais) {
         formatted += ` (${data.annais})`;
-      } else if (source ==== 'crime' && data.annee) {
+      } else if (source === 'crime' && data.annee) {
         formatted += ` (${data.annee})`;
       }
 

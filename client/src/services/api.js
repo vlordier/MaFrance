@@ -19,7 +19,6 @@ class ApiService {
       const embeddedBuildHash = window.__BUILD_HASH__;
 
       if (embeddedBuildHash && this.lastBuildHash && this.lastBuildHash !== embeddedBuildHash) {
-        console.log('New build detected (embedded hash), clearing all caches');
         this.clearCache();
 
         if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
@@ -44,7 +43,6 @@ class ApiService {
           const currentBuildHash = versionInfo.buildHash;
 
           if (this.lastBuildHash && this.lastBuildHash !== currentBuildHash) {
-            console.log('New build detected (server hash), clearing all caches');
             this.clearCache();
 
             if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
@@ -70,8 +68,8 @@ class ApiService {
           this.lastBuildHash = embeddedBuildHash;
         }
       }
-    } catch (error) {
-      console.warn('Failed to check build version:', error);
+    } catch {
+      // Ignore errors
     }
   }
 
@@ -92,9 +90,7 @@ class ApiService {
               JSON.stringify(value)
             );
           } catch {
-            console.warn(
-              'Cache storage full, clearing old entries'
-            );
+            // Cache storage full, clearing old entries
             this.clearOldCacheEntries();
           }
         },
@@ -159,9 +155,6 @@ class ApiService {
       if (this.cache.has(cacheKey)) {
         const cached = this.cache.get(cacheKey);
         if (Date.now() - cached.timestamp < this.cacheExpiry) {
-          if (import.meta.env.DEV) {
-            console.log('Using memory cached data for:', endpoint);
-          }
           return cached.data;
         }
         this.cache.delete(cacheKey);
@@ -176,9 +169,6 @@ class ApiService {
         persistentCached &&
                 Date.now() - persistentCached.timestamp < this.cacheExpiry
       ) {
-        if (import.meta.env.DEV) {
-          console.log('Using persistent cached data for:', endpoint);
-        }
         this.cache.set(persistentCached, persistentCached);
         return persistentCached.data;
       } else if (persistentCached) {
@@ -189,9 +179,6 @@ class ApiService {
     // Check if the exact same request (including parameters) is already in progress
     const requestKey = `${endpoint}?${new URLSearchParams(options.body ? JSON.parse(options.body) : {}).toString()}`;
     if (this.activeRequests.has(requestKey)) {
-      if (import.meta.env.DEV) {
-        console.log('Request already in progress, waiting...', requestKey);
-      }
       return this.activeRequests.get(requestKey);
     }
 
@@ -230,8 +217,7 @@ class ApiService {
         }
         return data;
       })
-      .catch((error) => {
-        console.error(`API request failed: ${endpoint}`, error);
+      .catch(() => {
         return null;
       })
       .finally(() => {
@@ -253,7 +239,6 @@ class ApiService {
     );
     keys.forEach((key) => localStorage.removeItem(key));
 
-    console.log('All caches cleared');
   }
 
   /**

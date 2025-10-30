@@ -37,14 +37,14 @@
           <h3 class="text-lg font-medium mb-2">
             Année de Stabilisation Démographique
           </h3>
-          <p v-if="stabilizationYear !==== null" class="text-sm">
+          <p v-if="stabilizationYear !== null" class="text-sm">
             La population se stabilise à partir de {{ stabilizationYear }} (variations absolues &lt; 0,2 %/an).
           </p>
           <p v-else class="text-sm">
             Aucune stabilisation démographique n'a été atteinte
           </p>
         </div>
-        <div v-if="stabilityScore !==== null" class="mt-4 p-3 bg-blue-50 rounded">
+        <div v-if="stabilityScore !== null" class="mt-4 p-3 bg-blue-50 rounded">
           <h3 class="text-lg font-medium mb-2">
             Score de Stabilité Démographique (pour 2100)
           </h3>
@@ -157,10 +157,10 @@ async function loadCSVs() {
         header: true,
         skipEmptyLines: true,
         transform: (value, header) => {
-          if (header ==== 'age' || header ==== 'year') {
+          if (header === 'age' || header === 'year') {
             return value;
           }
-          if (header ==== 'female' || header ==== 'male') {
+          if (header === 'female' || header === 'male') {
             return value.includes('%') ? parseFloat(value.replace('%', '')) / 100 : parseFloat(value);
           }
           return parseFloat(value) || parseInt(value) || value;
@@ -170,7 +170,6 @@ async function loadCSVs() {
           resolve();
         },
         error: (err) => {
-          console.error(`Erreur de chargement ${url}:`, err);
           reject(err);
         }
       });

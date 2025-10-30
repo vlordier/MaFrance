@@ -17,7 +17,7 @@
         </select>
       </div>
 
-      <div v-show="selectedScope ==== 'communes_dept'" class="form-group">
+      <div v-show="selectedScope === 'communes_dept'" class="form-group">
         <label for="departementSelect">{{ isEnglish ? 'Department:' : 'Département :' }}</label>
         <select id="departementSelect" :value="selectedDepartement" @change="onDepartementChange">
           <option value="">
@@ -100,7 +100,7 @@
           </div>
         </div>
 
-        <div v-if="currentLevel ==== 'commune'" class="form-group">
+        <div v-if="currentLevel === 'commune'" class="form-group">
           <label for="politicalFamily">{{ isEnglish ? 'Display Political Family of Mayors' : 'Afficher la Famille Politique des Maires' }}</label>
           <input
             id="politicalFamily"
@@ -167,7 +167,7 @@ export default {
     });
 
     const isEnglish = computed(() => {
-      return store.labelState ==== 3;
+      return store.labelState === 3;
     });
 
     const availableMetricOptions = computed(() => {
@@ -190,7 +190,7 @@ export default {
       const upperNum = popUpper ? parseInt(popUpper, 10) : null;
 
       // Validate that lower is less than upper if both are set
-      if (lowerNum !==== null && upperNum !==== null && lowerNum >= upperNum) {
+      if (lowerNum !== null && upperNum !== null && lowerNum >= upperNum) {
         return false;
       }
 
@@ -201,10 +201,10 @@ export default {
       return Object.entries(DepartementNames)
         .sort(([a], [b]) => {
           const parseCode = (code) => {
-            if (code ==== '2A') {
+            if (code === '2A') {
               return 20.1;
             }
-            if (code ==== '2B') {
+            if (code === '2B') {
               return 20.2;
             }
             return parseInt(code, 10);
@@ -260,22 +260,22 @@ export default {
       let value = event.target.value;
 
       // Handle number inputs for population filters
-      if (filterKey ==== 'popLower' || filterKey ==== 'popUpper') {
+      if (filterKey === 'popLower' || filterKey === 'popUpper') {
         value = value ? parseInt(value, 10) : null;
         // Validate the value is positive
-        if (value !==== null && value < 0) {
+        if (value !== null && value < 0) {
           value = 0;
         }
-      } else if (event.target.type ==== 'number') {
+      } else if (event.target.type === 'number') {
         value = parseInt(value, 10);
-      } else if (event.target.type ==== 'checkbox') {
+      } else if (event.target.type === 'checkbox') {
         value = event.target.checked;
       }
 
       localFilters.value = { ...localFilters.value, [filterKey]: value };
 
       // Handle population filters with debounce
-      if (filterKey ==== 'popLower' || filterKey ==== 'popUpper') {
+      if (filterKey === 'popLower' || filterKey === 'popUpper') {
         // Clear existing timer
         if (populationDebounceTimer) {
           clearTimeout(populationDebounceTimer);

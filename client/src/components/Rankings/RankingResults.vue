@@ -19,7 +19,7 @@
               <th style="width: 20%;">
                 Population
               </th>
-              <th v-if="showPoliticalColor && type ==== 'Commune'" style="width: 15%;">
+              <th v-if="showPoliticalColor && type === 'Commune'" style="width: 15%;">
                 {{ isEnglish ? 'Mayor Political Family' : 'Famille Politique du Maire' }}
               </th>
               <th style="width: 18%;">
@@ -37,7 +37,7 @@
               <td>{{ item.rank }}</td>
               <td>{{ formatLocationName(item) }}</td>
               <td>{{ formatPopulation(item.population) }}</td>
-              <td v-if="showPoliticalColor && type ==== 'Commune'">
+              <td v-if="showPoliticalColor && type === 'Commune'">
                 {{ item.famille_nuance || 'N/A' }}
               </td>
               <td>{{ formatMetricValue(item[metric]) }}</td>
@@ -61,7 +61,7 @@
               <th style="width: 20%;">
                 Population
               </th>
-              <th v-if="showPoliticalColor && type ==== 'Commune'" style="width: 15%;">
+              <th v-if="showPoliticalColor && type === 'Commune'" style="width: 15%;">
                 {{ isEnglish ? 'Mayor Political Family' : 'Famille Politique du Maire' }}
               </th>
               <th style="width: 18%;">
@@ -79,7 +79,7 @@
               <td>{{ item.rank }}</td>
               <td>{{ formatLocationName(item) }}</td>
               <td>{{ formatPopulation(item.population) }}</td>
-              <td v-if="showPoliticalColor && type ==== 'Commune'">
+              <td v-if="showPoliticalColor && type === 'Commune'">
                 {{ item.famille_nuance || 'N/A' }}
               </td>
               <td>{{ formatMetricValue(item[metric]) }}</td>
@@ -124,7 +124,7 @@ export default {
     const store = useDataStore();
     const labelStateKey = ref(store.labelState);
 
-    const isEnglish = computed(() => store.labelState ==== 3);
+    const isEnglish = computed(() => store.labelState === 3);
 
     const metricName = computed(() => {
       // Force reactivity by accessing labelStateKey
@@ -139,18 +139,18 @@ export default {
 
     const getTypeLabel = (type) => {
       if (isEnglish.value) {
-        if (type ==== 'departement') {
+        if (type === 'departement') {
           return 'Department';
         }
-        if (type ==== 'commune') {
+        if (type === 'commune') {
           return 'Municipality';
         }
         return type;
       } else {
-        if (type ==== 'departement') {
+        if (type === 'departement') {
           return 'Département';
         }
-        if (type ==== 'commune') {
+        if (type === 'commune') {
           return 'Commune';
         }
         return type;
@@ -158,10 +158,10 @@ export default {
     };
 
     const getEnglishTypePlural = (type) => {
-      if (type ==== 'departement') {
+      if (type === 'departement') {
         return 'departments';
       }
-      if (type ==== 'commune') {
+      if (type === 'commune') {
         return 'municipalities';
       }
       return type + 's';
@@ -186,7 +186,7 @@ export default {
     });
 
     const formatLocationName = (item) => {
-      if (props.type ==== 'departement') {
+      if (props.type === 'departement') {
         return item.nom || item.name || (isEnglish.value ? `Department ${item.departement}` : `Département ${item.departement}`);
       } else {
         return `${item.commune || item.name || item.nom} (${item.departement || item.deptCode})`;
@@ -219,16 +219,16 @@ export default {
     };
 
     const getRowColor = (famille_nuance) => {
-      if (famille_nuance ==== 'Gauche') {
+      if (famille_nuance === 'Gauche') {
         return 'rgba(255, 100, 100, 0.2)';
       }
-      if (famille_nuance ==== 'Droite') {
+      if (famille_nuance === 'Droite') {
         return 'rgba(100, 100, 255, 0.2)';
       }
-      if (famille_nuance ==== 'Extrême droite') {
+      if (famille_nuance === 'Extrême droite') {
         return 'rgba(0, 0, 128, 0.2)';
       }
-      if (famille_nuance ==== 'Centre') {
+      if (famille_nuance === 'Centre') {
         return 'rgba(255, 165, 0, 0.2)';
       }
       return '';

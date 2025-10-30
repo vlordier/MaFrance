@@ -143,8 +143,8 @@ export default {
   setup(props, { emit }) {
     const dataStore = useDataStore();
     const locationStore = useLocationStore();
-    const isEnglish = computed(() => dataStore.labelState ==== 3);
-    const isInclusive = computed(() => dataStore.labelState ==== 1);
+    const isEnglish = computed(() => dataStore.labelState === 3);
+    const isInclusive = computed(() => dataStore.labelState === 1);
 
     // Layer visibility toggles
     const showMigrantCenters = computed({
@@ -210,9 +210,9 @@ export default {
     const onOverlaySelectionChange = (newSelection) => {
       selectedOverlay.value = newSelection;
       // Update the store based on selection
-      const showDepartements = newSelection ==== 'Départements';
-      const showRegions = newSelection ==== 'Régions';
-      const showCirconscriptions = newSelection ==== 'Circonscriptions';
+      const showDepartements = newSelection === 'Départements';
+      const showRegions = newSelection === 'Régions';
+      const showCirconscriptions = newSelection === 'Circonscriptions';
       locationStore.setOverlayStates({ showDepartements, showRegions, showCirconscriptions });
     };
 
@@ -236,7 +236,7 @@ export default {
     // Function to fetch cadastral data
     const fetchCadastralData = async(newCenter) => {
       isLoadingCadastral.value = true;
-      const shouldFetch = lastFetchLat.value ==== null || lastFetchLng.value ==== null || haversineDistance(newCenter.lat, newCenter.lng, lastFetchLat.value, lastFetchLng.value) > 1;
+      const shouldFetch = lastFetchLat.value === null || lastFetchLng.value === null || haversineDistance(newCenter.lat, newCenter.lng, lastFetchLat.value, lastFetchLng.value) > 1;
       if (!shouldFetch) {
         // Skipping cadastral fetch: distance from last fetch < 1km
         // Emit current accumulated data
@@ -255,7 +255,7 @@ export default {
           throw new Error('Failed to fetch departement');
         }
         const deps = await depResponse.json();
-        if (deps.length ==== 0) {
+        if (deps.length === 0) {
           throw new Error('No departement found');
         }
         const departementCode = deps[0].codeDepartement;
@@ -345,7 +345,7 @@ export default {
           const dvfMap = new Map();
           if (dvfData.data && Array.isArray(dvfData.data)) {
             dvfData.data.forEach(section => {
-              if (section.c && section.m_am !==== null && section.m_am !==== undefined) {
+              if (section.c && section.m_am !== null && section.m_am !== undefined) {
                 dvfMap.set(section.c, section.m_am);
               }
             });
@@ -389,8 +389,7 @@ export default {
         locationStore.setCadastralData(combinedGeoJSON);
         lastFetchLat.value = newCenter.lat;
         lastFetchLng.value = newCenter.lng;
-      } catch (e) {
-        console.error('Failed to load cadastral data:', e);
+      } catch {
         const emptyData = { type: 'SectionCollection', sections: [] };
         emit('cadastral-data-loaded', emptyData);
         locationStore.setCadastralData(emptyData);

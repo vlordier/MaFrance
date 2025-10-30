@@ -230,7 +230,7 @@ export default {
       return this.dataStore.getCurrentPageTitle();
     },
     menuItems() {
-      const isEnglish = this.dataStore.labelState ==== 3;
+      const isEnglish = this.dataStore.labelState === 3;
 
       if (isEnglish) {
         return [
@@ -283,32 +283,32 @@ export default {
       }
     },
     twitterTooltip() {
-      return this.dataStore.labelState ==== 3
+      return this.dataStore.labelState === 3
         ? 'Follow us on X (Twitter) for the latest updates'
         : 'Suivez-nous sur X (Twitter) pour les dernières mises à jour';
     },
     kofiTooltip() {
-      return this.dataStore.labelState ==== 3
+      return this.dataStore.labelState === 3
         ? 'Support the project'
         : 'Soutenez le projet';
     },
     versionTooltip() {
-      return this.dataStore.labelState ==== 3
+      return this.dataStore.labelState === 3
         ? 'Change the site cosmetics, not the data'
         : 'Modifiez la cosmétique du site, pas les données';
     },
     shareTooltip() {
-      return this.dataStore.labelState ==== 3
+      return this.dataStore.labelState === 3
         ? 'Share this visualization with a custom link'
         : 'Partagez cette visualisation avec un lien personnalisé';
     },
     mobileTwitterText() {
-      return this.dataStore.labelState ==== 3
+      return this.dataStore.labelState === 3
         ? '@ou_va_ma_France'
         : '@ou_va_ma_France';
     },
     mobileKofiText() {
-      return this.dataStore.labelState ==== 3
+      return this.dataStore.labelState === 3
         ? 'Buy me a coffee'
         : 'Offrez-moi un café';
     }

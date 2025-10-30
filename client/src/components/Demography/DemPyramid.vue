@@ -37,9 +37,15 @@ Chart.register();
 
 // Props du composant
 const props = defineProps({
-  pyramid: Object, // { popF: [], popM: [] } - populations par âge (tableaux de 101 éléments)
+  pyramid: {
+    type: Object,
+    default: () => ({ popF: [], popM: [] })
+  }, // { popF: [], popM: [] } - populations par âge (tableaux de 101 éléments)
   selectedYear: { type: [Number, String], default: 2024 },
-  year2100Pyramid: Object, // Pyramide spécifique pour 2100 (pour le score de stabilité)
+  year2100Pyramid: {
+    type: Object,
+    default: () => ({ popF: [], popM: [] })
+  }, // Pyramide spécifique pour 2100 (pour le score de stabilité)
   minYear: { type: Number, default: 2024 },
   maxYear: { type: Number, default: 2100 },
   showSlider: { type: Boolean, default: true }

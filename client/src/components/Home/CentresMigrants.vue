@@ -114,13 +114,13 @@ export default {
     ...mapStores(useDataStore),
 
     isEnglish() {
-      return this.dataStore.labelState ==== 3;
+      return this.dataStore.labelState === 3;
     },
 
     locationName() {
-      if (this.location.type ==== 'departement') {
+      if (this.location.type === 'departement') {
         return this.location.name;
-      } else if (this.location.type ==== 'commune') {
+      } else if (this.location.type === 'commune') {
         return this.location.name;
       }
       return this.isEnglish ? 'France (1062 centers)' : 'France (1062 centres)';
@@ -157,7 +157,7 @@ export default {
 
     computedContainerHeight() {
       // Reduce to 50px if no migrants and not loading
-      return this.migrantsList.length ==== 0 && !this.isLoading ? 50 : 400;
+      return this.migrantsList.length === 0 && !this.isLoading ? 50 : 400;
     }
   },
   watch: {
@@ -201,7 +201,7 @@ export default {
       const contentHeight = this.virtualHeight;
       // Only load more if country level
       if (
-        this.location.type ==== 'country' &&
+        this.location.type === 'country' &&
         scrollBottom >= contentHeight - 200 &&
         !this.isLoading &&
         this.data.pagination?.hasMore
@@ -215,7 +215,7 @@ export default {
         return;
       }
       // Skip if not country (per proposal)
-      if (this.location.type !==== 'country') {
+      if (this.location.type !== 'country') {
         return;
       }
 
@@ -233,8 +233,8 @@ export default {
         }
 
         await dataStore.loadMoreMigrants('country', null, params);
-      } catch (error) {
-        console.error('Failed to load more migrants:', error);
+      } catch {
+        // Ignore errors
       } finally {
         this.isLoading = false;
       }

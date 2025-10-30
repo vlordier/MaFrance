@@ -17,7 +17,7 @@
     <!-- Results Section -->
     <div class="results-section">
       <div v-if="loading" class="loading">
-        {{ store.labelState ==== 3 ? 'Loading...' : 'Chargement...' }}
+        {{ store.labelState === 3 ? 'Loading...' : 'Chargement...' }}
       </div>
 
       <div v-else-if="error" class="error">
@@ -34,7 +34,7 @@
       />
 
       <div v-else class="no-data">
-        {{ store.labelState ==== 3 ? 'Select a metric to view the ranking.' : 'Sélectionnez une métrique pour voir le classement.' }}
+        {{ store.labelState === 3 ? 'Select a metric to view the ranking.' : 'Sélectionnez une métrique pour voir le classement.' }}
       </div>
     </div>
   </div>
@@ -76,7 +76,7 @@ export default {
 
     // Computed properties
     const currentType = computed(() => {
-      return currentLevel.value ==== 'commune' ? 'Commune' : 'Département';
+      return currentLevel.value === 'commune' ? 'Commune' : 'Département';
     });
 
     const fetchDepartmentRankings = async(metric, limit) => {
@@ -206,7 +206,7 @@ export default {
         const finalRankings = [...topRankings];
         bottomRankings.forEach(bottomRanking => {
           // Only add bottom ranking if it's not already in top rankings
-          if (!finalRankings.some(topRanking => topRanking.rank ==== bottomRanking.rank)) {
+          if (!finalRankings.some(topRanking => topRanking.rank === bottomRanking.rank)) {
             finalRankings.push(bottomRanking);
           }
         });
@@ -217,7 +217,6 @@ export default {
           ? `Erreur lors du chargement des communes département: ${err.message}`
           : `Erreur lors du chargement des communes France: ${err.message}`;
         error.value = errorMsg;
-        console.error('Erreur fetchCommuneRankings:', err);
         return [];
       }
     };
@@ -230,7 +229,7 @@ export default {
 
       // Validate metric availability for current scope
       if (!MetricsConfig.isMetricAvailable(selectedMetric.value, currentLevel.value)) {
-        error.value = `Erreur : La métrique sélectionnée n'est pas disponible au niveau ${currentLevel.value ==== 'commune' ? 'communal' : 'départemental'}.`;
+        error.value = `Erreur : La métrique sélectionnée n'est pas disponible au niveau ${currentLevel.value === 'commune' ? 'communal' : 'départemental'}.`;
         return;
       }
 
@@ -241,12 +240,12 @@ export default {
         const populationRange = constructPopulationRange();
         const limit = Math.min(filters.value.topLimit || 10, 100);
 
-        if (selectedScope.value ==== 'departements') {
+        if (selectedScope.value === 'departements') {
           rankings.value = await fetchDepartmentRankings(selectedMetric.value, limit);
-        } else if (selectedScope.value ==== 'communes_france') {
+        } else if (selectedScope.value === 'communes_france') {
           // France-wide commune rankings (empty deptCode)
           rankings.value = await fetchCommuneRankings('', selectedMetric.value, limit, populationRange);
-        } else if (selectedScope.value ==== 'communes_dept') {
+        } else if (selectedScope.value === 'communes_dept') {
           if (!selectedDepartement.value) {
             error.value = 'Veuillez sélectionner un département.';
             return;
@@ -255,7 +254,6 @@ export default {
         }
       } catch (err) {
         error.value = `Erreur lors de la mise à jour des classements : ${err.message}`;
-        console.error('Erreur updateRankings:', err);
       } finally {
         loading.value = false;
       }
@@ -269,12 +267,12 @@ export default {
       const upperNum = popUpper ? parseInt(popUpper, 10) : null;
 
       // Both limits specified
-      if (lowerNum !==== null && upperNum !==== null) {
+      if (lowerNum !== null && upperNum !== null) {
         return `${lowerNum}-${upperNum}`;
-      } else if (lowerNum !==== null) {
+      } else if (lowerNum !== null) {
         // Only lower limit
         return `${lowerNum}+`;
-      } else if (upperNum !==== null) {
+      } else if (upperNum !== null) {
         // Only upper limit
         return `0-${upperNum}`;
       }
@@ -293,7 +291,7 @@ export default {
       error.value = '';
 
       // Reset population filters when changing scope
-      if (selection.scope ==== 'departements') {
+      if (selection.scope === 'departements') {
         filters.value.popLower = null;
         filters.value.popUpper = null;
       }

@@ -52,12 +52,12 @@ export default {
       required: true
     },
     labels: {
-      type: Array
-      // default: null
+      type: Array,
+      default: () => []
     },
     data: {
-      type: Object
-      // default: null
+      type: Object,
+      default: () => ({})
     }
   },
   data() {
@@ -79,13 +79,13 @@ export default {
     ...mapStores(useDataStore),
 
     cardTitle() {
-      const isEnglish = this.dataStore.labelState ==== 3;
+      const isEnglish = this.dataStore.labelState === 3;
       const baseTitle = isEnglish ? 'Crime Charts for' : 'Graphiques de Criminalité pour';
       return `${baseTitle}: ${this.locationName}`;
     },
 
     sourceText() {
-      return this.dataStore.labelState ==== 3 ? 'source SSMSI' : 'source SSMSI';
+      return this.dataStore.labelState === 3 ? 'source SSMSI' : 'source SSMSI';
     },
 
     locationName() {
@@ -93,7 +93,7 @@ export default {
         return '';
       }
 
-      const isEnglish = this.dataStore.labelState ==== 3;
+      const isEnglish = this.dataStore.labelState === 3;
 
       switch (this.location.type) {
       case 'country':
@@ -131,7 +131,7 @@ export default {
             .map(key => this.data[key] && this.data[key][level])
             .filter(serie => serie); // Filtrer les séries undefined/null
 
-          if (inputSeries.length ==== 0) {
+          if (inputSeries.length === 0) {
             continue;
           }
 
@@ -168,7 +168,6 @@ export default {
     }
   },
   mounted() {
-    // console.log('data', this.data)
   },
   methods: {
     toggleCollapse() {

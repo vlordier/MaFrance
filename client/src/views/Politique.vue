@@ -2,17 +2,17 @@
   <div class="politique-container">
     <v-card class="mb-4">
       <v-card-title class="text-h6 pb-0" style="white-space: normal; word-break: break-word;">
-        {{ store.labelState ==== 3 ? 'Average commune values depending on mayor\'s political family' : 'Calcul des valeurs moyennes par commune suivant la famille politique du maire.' }}
+        {{ store.labelState === 3 ? 'Average commune values depending on mayor\'s political family' : 'Calcul des valeurs moyennes par commune suivant la famille politique du maire.' }}
       </v-card-title>
 
       <v-card-text>
         <p style="white-space: normal; word-break: break-word;">
-          <template v-if="store.labelState ==== 3">
-            The political family is as officially defined in the list of mayors from the 
+          <template v-if="store.labelState === 3">
+            The political family is as officially defined in the list of mayors from the
             <a href="https://www.data.gouv.fr/datasets/repertoire-national-des-elus-1/" target="_blank">national directory of elected officials</a>
           </template>
           <template v-else>
-            La famille politique est telle que définie officiellement dans la liste des maires du 
+            La famille politique est telle que définie officiellement dans la liste des maires du
             <a href="https://www.data.gouv.fr/datasets/repertoire-national-des-elus-1/" target="_blank">répertoire national des élus</a>
           </template>
         </p>
@@ -31,22 +31,22 @@
           <thead>
             <tr class="politique-header">
               <th class="metric-column">
-                {{ store.labelState ==== 3 ? 'Metric' : 'Métrique' }}
+                {{ store.labelState === 3 ? 'Metric' : 'Métrique' }}
               </th>
               <th class="value-column gauche-header">
-                {{ store.labelState ==== 3 ? 'Left' : 'Gauche' }}
+                {{ store.labelState === 3 ? 'Left' : 'Gauche' }}
               </th>
               <th class="value-column centre-header">
-                {{ store.labelState ==== 3 ? 'Center' : 'Centre' }}
+                {{ store.labelState === 3 ? 'Center' : 'Centre' }}
               </th>
               <th class="value-column autres-header">
-                {{ store.labelState ==== 3 ? 'Others' : 'Autres' }}
+                {{ store.labelState === 3 ? 'Others' : 'Autres' }}
               </th>
               <th class="value-column droite-header">
-                {{ store.labelState ==== 3 ? 'Right' : 'Droite' }}
+                {{ store.labelState === 3 ? 'Right' : 'Droite' }}
               </th>
               <th class="value-column extreme-droite-header">
-                {{ store.labelState ==== 3 ? 'Far Right' : 'Extrême droite' }}
+                {{ store.labelState === 3 ? 'Far Right' : 'Extrême droite' }}
               </th>
             </tr>
           </thead>
@@ -82,7 +82,7 @@
 
         <!-- No data message -->
         <div v-else class="text-center py-8 text-grey">
-          {{ store.labelState ==== 3 ? 'No data available' : 'Aucune donnée disponible' }}
+          {{ store.labelState === 3 ? 'No data available' : 'Aucune donnée disponible' }}
         </div>
       </v-card-text>
     </v-card>
@@ -105,8 +105,8 @@ export default {
     const data = ref({});
 
     const getCategoryLabel = (category) => {
-      if (category ==== 'général') {
-        return store.labelState ==== 3 ? 'General' : 'Général';
+      if (category === 'général') {
+        return store.labelState === 3 ? 'General' : 'Général';
       }
       return articleCategoriesRef[category] || category;
     };
@@ -118,7 +118,7 @@ export default {
 
         const originalData = await api.getPolitique();
         if (!originalData) {
-          throw new Error(store.labelState ==== 3 ? 'Failed to fetch data' : 'Échec de récupération des données');
+          throw new Error(store.labelState === 3 ? 'Failed to fetch data' : 'Échec de récupération des données');
         }
 
         const availableMetrics = new Set(Object.keys(originalData.Gauche || {}));
@@ -131,7 +131,7 @@ export default {
 
         categories.forEach(category => {
           const categoryMetrics = MetricsConfig.getMetricsByCategory(category).filter(metric => availableMetrics.has(metric.value));
-          if (categoryMetrics.length ==== 0) {
+          if (categoryMetrics.length === 0) {
             return;
           }
 
@@ -147,10 +147,9 @@ export default {
 
         tableRows.value = addGroupIds(rows);
       } catch (err) {
-        error.value = store.labelState ==== 3
+        error.value = store.labelState === 3
           ? `Error loading data: ${err.message}`
           : `Erreur lors du chargement des données : ${err.message}`;
-        console.error('Erreur fetchPolitiqueData:', err);
       } finally {
         loading.value = false;
       }

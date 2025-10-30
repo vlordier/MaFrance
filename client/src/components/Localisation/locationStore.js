@@ -62,7 +62,7 @@ export const useLocationStore = defineStore('location', {
 
     // Utility functions
     isValidCoordinates: () => (latitude, longitude) => {
-      if (latitude == null || longitude == null) {
+      if (latitude === null || longitude === null) {
         return false;
       }
       if (isNaN(latitude) || isNaN(longitude)) {
@@ -148,7 +148,7 @@ export const useLocationStore = defineStore('location', {
       this.cadastralData = data;
       // Auto-adjust bounds if not manually set
       if (!this.isManual && data?.sections?.length > 0) {
-        const prices = data.sections.map(s => s.price).filter(p => p != null && p !== undefined);
+        const prices = data.sections.map(s => s.price).filter(p => p !== null && p !== undefined);
         if (prices.length > 0) {
           const calcMin = Math.round(Math.max(Math.min(...prices), 500) * 1.1);
           const calcMax = Math.round(Math.min(Math.max(...prices), 20000) * 0.9);
@@ -185,8 +185,7 @@ export const useLocationStore = defineStore('location', {
             this.isMetropolitan(center.departement)
           );
           this.loadingMigrants = false;
-        }).catch(error => {
-          console.error('Error loading migrant centers:', error);
+        }).catch(() => {
           this.loadingMigrants = false;
         });
 
@@ -198,16 +197,15 @@ export const useLocationStore = defineStore('location', {
             this.isMetropolitan(mosque.departement)
           );
           this.loadingMosques = false;
-        }).catch(error => {
-          console.error('Error loading mosques:', error);
+        }).catch(() => {
           this.loadingMosques = false;
         });
 
         // Start both async loads
         migrantsPromise;
         mosquesPromise;
-      } catch (error) {
-        console.error('Error loading QPV data:', error);
+      } catch {
+        // Ignore errors
       }
     }
   }

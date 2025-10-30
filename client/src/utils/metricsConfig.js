@@ -915,7 +915,7 @@ const MetricsConfig = {
   },
 
   formatMetricValue(value, metricKey) {
-    if (value == null || isNaN(value)) {
+    if (value === null || isNaN(value)) {
       return 'N/A';
     }
 

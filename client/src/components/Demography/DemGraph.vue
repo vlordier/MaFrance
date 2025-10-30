@@ -15,7 +15,7 @@
           variant="outlined"
           color="primary"
           class="max-w-xs"
-          @update:model-value="$emit('update:selectedScale', $event)"
+          @update:model-value="emit('update:selectedScale', $event)"
         />
       </v-col>
       <v-col cols="auto">
@@ -42,14 +42,35 @@ import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue';
 import Chart from 'chart.js/auto';
 import Papa from 'papaparse';
 
+// Emits
+const emit = defineEmits(['update:selectedScale']);
+
 // Props
 const props = defineProps({
-  historical: Array, // { year, pop }
-  projected: Array, // { year, totalPop, births, deaths, netMig }
-  yearRange: Array, // [startYear, endYear]
-  selectedScale: String,
-  targetTFR: Number,
-  targetTFRYear: Number
+  historical: {
+    type: Array,
+    default: () => []
+  }, // { year, pop }
+  projected: {
+    type: Array,
+    default: () => []
+  }, // { year, totalPop, births, deaths, netMig }
+  yearRange: {
+    type: Array,
+    default: () => []
+  }, // [startYear, endYear]
+  selectedScale: {
+    type: String,
+    default: ''
+  },
+  targetTFR: {
+    type: Number,
+    default: 0
+  },
+  targetTFRYear: {
+    type: Number,
+    default: 0
+  }
 });
 
 // Scale options
@@ -90,8 +111,7 @@ onMounted(() => {
       tfrData.value = results.data.filter(d => d.year && d.TFR);
       tfrLoaded.value = true;
       updateChart();
-    })
-    .catch(err => console.error('Error loading TFR data:', err));
+    });
 });
 
 onBeforeUnmount(() => {
@@ -102,7 +122,7 @@ onBeforeUnmount(() => {
 
 // Function to interpolate historical data
 function interpolateHistoricalData(data, startYear, endYear) {
-  if (!data || data.length ==== 0) {
+  if (!data || data.length === 0) {
     return [];
   }
 
@@ -133,7 +153,7 @@ function interpolateHistoricalData(data, startYear, endYear) {
     }
 
     let pop;
-    if (prev && next && prev.year ==== next.year) {
+    if (prev && next && prev.year === next.year) {
       pop = parseInt(prev.pop);
     } else if (prev && next) {
       // Interpolate
@@ -172,11 +192,11 @@ function updateChart() {
       .filter(d => d.year >= props.yearRange[0] && d.year <= props.yearRange[1] && d.year > 2024)
       .map(d => {
         let tfr;
-        if (d.year ==== 2025) {
+        if (d.year === 2025) {
           tfr = 1.56;
-        } else if (d.year ==== 2026) {
+        } else if (d.year === 2026) {
           tfr = 1.53;
-        } else if (d.year ==== 2027) {
+        } else if (d.year === 2027) {
           tfr = 1.5;
         } else {
           // Interpolate from 1.5 in 2027 to targetTFR at targetTFRYear, then stable
@@ -191,10 +211,6 @@ function updateChart() {
         }
         return { x: d.year, y: tfr };
       });
-
-    console.log('TFR data loaded:', tfrData.value.length, 'entries');
-    console.log('Projected TFR data:', projectedTfr.length, 'entries');
-    console.log('Sample projected TFR:', projectedTfr.slice(0, 5));
 
     const datasets = [
       {

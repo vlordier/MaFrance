@@ -90,6 +90,7 @@ export default {
       })
     }
   },
+  emits: ['load-more'],
   data() {
     return {
       isLoading: false,
@@ -106,13 +107,13 @@ export default {
     ...mapStores(useDataStore),
 
     isEnglish() {
-      return this.dataStore.labelState ==== 3;
+      return this.dataStore.labelState === 3;
     },
 
     locationName() {
-      if (this.location.type ==== 'departement') {
+      if (this.location.type === 'departement') {
         return this.location.name;
-      } else if (this.location.type ==== 'commune') {
+      } else if (this.location.type === 'commune') {
         return this.location.name;
       }
       return this.isEnglish ? 'France' : 'France';
@@ -149,7 +150,7 @@ export default {
 
     computedContainerHeight() {
       // Reduce to 50px if no mosques and not loading
-      return this.mosquesList.length ==== 0 && !this.isLoading ? 50 : 400;
+      return this.mosquesList.length === 0 && !this.isLoading ? 50 : 400;
     }
   },
   watch: {

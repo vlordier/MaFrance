@@ -103,17 +103,16 @@ const formatDistance = (distance) => {
 // Calculate centroid from GeoJSON geometry
 const calculateGeometryCentroid = (geometry) => {
   try {
-    if (geometry.type ==== 'MultiPolygon') {
+    if (geometry.type === 'MultiPolygon') {
       // For MultiPolygon, use the first polygon's first ring
       const coordinates = geometry.coordinates[0][0];
       return getPolygonCentroid(coordinates);
-    } else if (geometry.type ==== 'Polygon') {
+    } else if (geometry.type === 'Polygon') {
       const coordinates = geometry.coordinates[0];
       return getPolygonCentroid(coordinates);
     }
     return null;
-  } catch (error) {
-    console.error('Error calculating centroid:', error);
+  } catch {
     return null;
   }
 };
@@ -142,7 +141,7 @@ export default defineComponent({
   setup() {
     const dataStore = useDataStore();
     const locationStore = useLocationStore();
-    const isEnglish = computed(() => dataStore.labelState ==== 3);
+    const isEnglish = computed(() => dataStore.labelState === 3);
 
     /**
      * Calculate distance between two points using Haversine formula
@@ -224,7 +223,7 @@ export default defineComponent({
             latitude: centroid.lat,
             longitude: centroid.lng
           };
-        }).filter(qpv => qpv !==== null);
+        }).filter(qpv => qpv !== null);
 
         const qpvsWithDistances = allQpvs
           .filter(qpv => locationStore.isValidCoordinates(qpv.latitude, qpv.longitude))

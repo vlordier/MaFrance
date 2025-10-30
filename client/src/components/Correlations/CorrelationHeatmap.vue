@@ -90,7 +90,7 @@ export default {
     let chartInstance = null;
 
     const dataStore = useDataStore();
-    const isEnglish = computed(() => dataStore.labelState ==== 3);
+    const isEnglish = computed(() => dataStore.labelState === 3);
 
     // Color scale for correlations (from -1 to +1)
     const createColorScale = () => {
@@ -119,7 +119,7 @@ export default {
       const labelsX = props.labels?.x || [];
       const labelsY = props.labels?.y || [];
 
-      if (!props.matrix || !Array.isArray(props.matrix) || props.matrix.length ==== 0) {
+      if (!props.matrix || !Array.isArray(props.matrix) || props.matrix.length === 0) {
         return data;
       }
 
@@ -130,7 +130,7 @@ export default {
 
         for (let j = 0; j < props.matrix[i].length; j++) {
           const value = props.matrix[i][j];
-          const isInsufficientData = value ==== null || value ==== undefined || isNaN(value);
+          const isInsufficientData = value === null || value === undefined || isNaN(value);
           const displayValue = isInsufficientData ? 0 : Number(value);
 
           data.push({
@@ -159,7 +159,7 @@ export default {
       const labelsX = props.labels?.x || [];
       const labelsY = props.labels?.y || [];
 
-      if (labelsX.length ==== 0 || labelsY.length ==== 0) {
+      if (labelsX.length === 0 || labelsY.length === 0) {
         return;
       }
 
@@ -202,7 +202,7 @@ export default {
               if (point && point.isInsufficientData) {
                 return '#f0f0f0';
               }
-              if (point && typeof point.v ==== 'number') {
+              if (point && typeof point.v === 'number') {
                 return getCorrelationColor(point.v);
               }
               return '#f0f0f0';
@@ -226,8 +226,8 @@ export default {
                 return;
               }
 
-              const value = point.originalValue !==== undefined ? point.originalValue : point.v;
-              if (value ==== null || isNaN(value)) {
+              const value = point.originalValue !== undefined ? point.originalValue : point.v;
+              if (value === null || isNaN(value)) {
                 return;
               }
 
@@ -332,7 +332,7 @@ export default {
               max: labelsX.length * 2,
               ticks: {
                 callback: (value) => {
-                  if (Number.isInteger(value) && value % 2 ==== 1) {
+                  if (Number.isInteger(value) && value % 2 === 1) {
                     const labelIndex = Math.floor(value / 2);
                     if (labelIndex >= 0 && labelIndex < labelsX.length) {
                       const label = labelsX[labelIndex];
@@ -376,7 +376,7 @@ export default {
                 display: true,
                 color: (context) => {
                   const value = context.tick.value;
-                  return Number.isInteger(value) && value % 2 ==== 0 ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0)';
+                  return Number.isInteger(value) && value % 2 === 0 ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0)';
                 },
                 lineWidth: 2, // Increased for visibility
                 drawOnChartArea: true,
@@ -395,7 +395,7 @@ export default {
               max: labelsY.length * 2,
               ticks: {
                 callback: (value) => {
-                  if (Number.isInteger(value) && value % 2 ==== 1) {
+                  if (Number.isInteger(value) && value % 2 === 1) {
                     const actualIndex = Math.floor((labelsY.length * 2 - value) / 2);
                     if (actualIndex >= 0 && actualIndex < labelsY.length) {
                       const label = labelsY[actualIndex];
@@ -422,7 +422,7 @@ export default {
                 display: true,
                 color: (context) => {
                   const value = context.tick.value;
-                  return Number.isInteger(value) && value % 2 ==== 0 ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0)';
+                  return Number.isInteger(value) && value % 2 === 0 ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0)';
                 },
                 lineWidth: 2, // Increased for visibility
                 drawOnChartArea: true,
@@ -454,7 +454,7 @@ export default {
               emit('correlation-click', {
                 metric1: data.xMetricKey || data.xLabel,
                 metric2: data.yMetricKey || data.yLabel,
-                correlation: data.originalValue !==== undefined ? data.originalValue : data.v
+                correlation: data.originalValue !== undefined ? data.originalValue : data.v
               });
             }
           }

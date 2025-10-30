@@ -37,7 +37,7 @@ export default defineComponent({
   emits: ['location-found'],
   setup(props, { emit }) {
     const dataStore = useDataStore();
-    const isEnglish = computed(() => dataStore.labelState ==== 3);
+    const isEnglish = computed(() => dataStore.labelState === 3);
 
     const addressInput = ref('');
     const searchingAddress = ref(false);
@@ -65,8 +65,7 @@ export default defineComponent({
         } else {
           alert(isEnglish.value ? 'Address not found. Please try another address.' : 'Adresse non trouvée. Veuillez essayer une autre adresse.');
         }
-      } catch (error) {
-        console.error('Error searching address:', error);
+      } catch {
         alert(isEnglish.value ? 'Error during address search.' : 'Erreur lors de la recherche d\'adresse.');
       } finally {
         searchingAddress.value = false;
@@ -89,8 +88,7 @@ export default defineComponent({
           });
           gettingLocation.value = false;
         },
-        (error) => {
-          console.error('Error getting location:', error);
+        () => {
           alert(isEnglish.value ? 'Error during geolocation. Please check your location settings.' : 'Erreur lors de la géolocalisation. Veuillez vérifier vos paramètres de localisation.');
           gettingLocation.value = false;
         },

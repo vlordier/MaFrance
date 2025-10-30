@@ -139,11 +139,11 @@ export default {
   beforeRouteEnter(to, from, next) {
     next(vm => {
       // When navigating to Home from another route, ensure map refreshes
-      if (from.name && from.name !==== 'Home') {
+      if (from.name && from.name !== 'Home') {
         vm.$nextTick(() => {
           // Trigger map update after component is ready
           const mapComponent = vm.$refs.mapComponent;
-          if (mapComponent && typeof mapComponent.updateData ==== 'function') {
+          if (mapComponent && typeof mapComponent.updateData === 'function') {
             mapComponent.updateData();
           }
         });
@@ -197,7 +197,7 @@ export default {
 
     namesData(){
       const level = this.dataStore.currentLevel;
-      if (level ==== 'commune') {
+      if (level === 'commune') {
         return null;
       }
 
@@ -211,19 +211,18 @@ export default {
 
       for (const level of this.levels) {
         const years = this.dataStore[level]?.crimeSeries?.labels || [];
-        if (allYears ==== null){
+        if (allYears === null){
           allYears = new Set(years);
         } else {
           allYears = new Set([...allYears, ...years]);
         }
 
-        if (level ==== this.dataStore.currentLevel) {
+        if (level === this.dataStore.currentLevel) {
           break;
         }
       }
 
       const labels = Array.from(allYears).sort();
-      // console.log('labels', labels)
 
       for (const level of this.levels) {
         const data = this.dataStore[level]?.crimeSeries?.data || {};
@@ -235,7 +234,7 @@ export default {
           result[k][level] = data[k];
         }
 
-        if (level ==== this.dataStore.currentLevel) {
+        if (level === this.dataStore.currentLevel) {
           break;
         }
       }
@@ -351,55 +350,54 @@ export default {
     },
 
     async loadLocationData(location) {
-      if (!location || !location.code && location.type !==== 'country') {
-        console.warn('loadLocationData called with invalid location:', location);
+      if (!location || !location.code && location.type !== 'country') {
         return;
       }
 
       const level = location.type;
 
       // Fetch data based on the selected level
-      if (level ==== 'country') {
+      if (level === 'country') {
         await this.dataStore.fetchCountryData('france');
-      } else if (level ==== 'departement') {
+      } else if (level === 'departement') {
         await this.dataStore.fetchDepartementData(location.code);
-      } else if (level ==== 'commune') {
+      } else if (level === 'commune') {
         await this.dataStore.fetchCommuneData(location.code);
       }
 
       // Fetch subventions data
-      if (location.type ==== 'country') {
+      if (location.type === 'country') {
         await this.dataStore.fetchCountrySubventions('france');
-      } else if (location.type ==== 'departement') {
+      } else if (location.type === 'departement') {
         await this.dataStore.fetchDepartementSubventions(location.code);
-      } else if (location.type ==== 'commune') {
+      } else if (location.type === 'commune') {
         await this.dataStore.fetchCommuneSubventions(location.code);
       }
 
       // Fetch migrants data
-      if (location.type ==== 'country') {
+      if (location.type === 'country') {
         await this.dataStore.fetchDepartementMigrants('all');
-      } else if (location.type ==== 'departement') {
+      } else if (location.type === 'departement') {
         await this.dataStore.fetchDepartementMigrants(location.code);
-      } else if (location.type ==== 'commune') {
+      } else if (location.type === 'commune') {
         await this.dataStore.fetchCommuneMigrants(location.code);
       }
 
       // Fetch QPV data
-      if (location.type ==== 'country') {
+      if (location.type === 'country') {
         await this.dataStore.fetchCountryQpv();
-      } else if (location.type ==== 'departement') {
+      } else if (location.type === 'departement') {
         await this.dataStore.fetchDepartementQpv(location.code);
-      } else if (location.type ==== 'commune') {
+      } else if (location.type === 'commune') {
         await this.dataStore.fetchCommuneQpv(location.code);
       }
 
       // Fetch mosques data
-      if (location.type ==== 'country') {
+      if (location.type === 'country') {
         await this.dataStore.fetchMosques('country');
-      } else if (location.type ==== 'departement') {
+      } else if (location.type === 'departement') {
         await this.dataStore.fetchMosques('departement', location.code);
-      } else if (location.type ==== 'commune') {
+      } else if (location.type === 'commune') {
         await this.dataStore.fetchMosques('commune', location.code);
       }
     },
@@ -408,9 +406,9 @@ export default {
       const level = this.dataStore.currentLevel;
       let code = null;
 
-      if (level ==== 'departement') {
+      if (level === 'departement') {
         code = this.dataStore.getDepartementCode();
-      } else if (level ==== 'commune') {
+      } else if (level === 'commune') {
         code = this.dataStore.getCommuneCode();
       }
 

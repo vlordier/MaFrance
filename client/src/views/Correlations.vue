@@ -189,7 +189,7 @@ export default {
     const rawData = ref([]);
 
     // Computed properties
-    const isEnglish = computed(() => dataStore.labelState ==== 3);
+    const isEnglish = computed(() => dataStore.labelState === 3);
 
     // Options
     const scopeOptions = computed(() => [
@@ -198,12 +198,12 @@ export default {
     ]);
 
     const availableMetricOptions = computed(() => {
-      const currentLevel = selectedScope.value ==== 'departements' ? 'departement' : 'commune';
+      const currentLevel = selectedScope.value === 'departements' ? 'departement' : 'commune';
 
       return MetricsConfig.metrics
         .filter(metric => {
           const isAvailable = MetricsConfig.isMetricAvailable(metric.value, currentLevel);
-          const notPopulation = metric.value !==== 'population';
+          const notPopulation = metric.value !== 'population';
           return isAvailable && notPopulation;
         })
         .map(metric => ({
@@ -213,7 +213,7 @@ export default {
         }))
         .sort((a, b) => {
           // Sort by group first, then by title
-          if (a.group !==== b.group) {
+          if (a.group !== b.group) {
             return a.group.localeCompare(b.group);
           }
           return a.title.localeCompare(b.title);
@@ -222,7 +222,7 @@ export default {
 
     // Computed properties
     const currentType = computed(() => {
-      return selectedScope.value ==== 'departements' ? (isEnglish.value ? 'Departments' : 'Départements') : (isEnglish.value ? 'Municipalities' : 'Communes');
+      return selectedScope.value === 'departements' ? (isEnglish.value ? 'Departments' : 'Départements') : (isEnglish.value ? 'Municipalities' : 'Communes');
     });
 
     const maxCorrelation = computed(() => {
@@ -233,13 +233,13 @@ export default {
       for (let i = 0; i < correlationMatrix.value.length; i++) {
         for (let j = 0; j < correlationMatrix.value[i].length; j++) {
           const val = correlationMatrix.value[i][j];
-          // Skip diagonal (i ==== j) and null values, find highest positive correlation
-          if (i !==== j && val !==== null && !isNaN(val) && val > max) {
+          // Skip diagonal (i === j) and null values, find highest positive correlation
+          if (i !== j && val !== null && !isNaN(val) && val > max) {
             max = val;
           }
         }
       }
-      return max ==== -Infinity ? 0 : max;
+      return max === -Infinity ? 0 : max;
     });
 
     const minCorrelation = computed(() => {
@@ -250,13 +250,13 @@ export default {
       for (let i = 0; i < correlationMatrix.value.length; i++) {
         for (let j = 0; j < correlationMatrix.value[i].length; j++) {
           const val = correlationMatrix.value[i][j];
-          // Skip diagonal (i ==== j) and null values, find lowest (most negative) correlation
-          if (i !==== j && val !==== null && !isNaN(val) && val < min) {
+          // Skip diagonal (i === j) and null values, find lowest (most negative) correlation
+          if (i !== j && val !== null && !isNaN(val) && val < min) {
             min = val;
           }
         }
       }
-      return min ==== Infinity ? 0 : min;
+      return min === Infinity ? 0 : min;
     });
 
     const topCorrelations = computed(() => {
@@ -271,7 +271,7 @@ export default {
       for (let i = 0; i < correlationMatrix.value.length; i++) {
         for (let j = 0; j < correlationMatrix.value[i].length; j++) {
           const value = correlationMatrix.value[i][j];
-          if (value !==== null && !isNaN(value) && Math.abs(value) > 0.1) {
+          if (value !== null && !isNaN(value) && Math.abs(value) > 0.1) {
             correlations.push({
               key: `${i}-${j}`,
               metric1: labelsX[j],
@@ -300,7 +300,7 @@ export default {
     };
 
     const getSelectedMetrics = () => {
-      const currentLevel = selectedScope.value ==== 'departements' ? 'departement' : 'commune';
+      const currentLevel = selectedScope.value === 'departements' ? 'departement' : 'commune';
 
       const metricsX = MetricsConfig.metrics.filter(metric => {
         return selectedMetricsX.value.includes(metric.value) &&
@@ -316,7 +316,7 @@ export default {
     };
 
     const calculatePearsonCorrelation = (x, y) => {
-      if (x.length !==== y.length || x.length ==== 0) {
+      if (x.length !== y.length || x.length === 0) {
         return null;
       }
 
@@ -330,7 +330,7 @@ export default {
       const numerator = n * sumXY - sumX * sumY;
       const denominator = Math.sqrt((n * sumXX - sumX * sumX) * (n * sumYY - sumY * sumY));
 
-      if (denominator ==== 0) {
+      if (denominator === 0) {
         return null;
       }
       return numerator / denominator;
@@ -388,7 +388,7 @@ export default {
           });
           departmentData = response?.data || [];
 
-          if (departmentData.length ==== 0) {
+          if (departmentData.length === 0) {
             throw new Error('Aucune donnée de département trouvée.');
           }
         } catch (err) {
@@ -399,7 +399,7 @@ export default {
       // Filter out overseas départements (971, 972, 973, 974, 976)
       const overseasDepts = ['971', '972', '973', '974', '976'];
       return departmentData.filter(dept => {
-        if (!dept || typeof dept !==== 'object') {
+        if (!dept || typeof dept !== 'object') {
           return false;
         }
         const deptCode = dept.departement || dept.code || '';
@@ -435,7 +435,7 @@ export default {
     };
 
     const updateCorrelations = async() => {
-      if (selectedMetricsX.value.length ==== 0 || selectedMetricsY.value.length ==== 0) {
+      if (selectedMetricsX.value.length === 0 || selectedMetricsY.value.length === 0) {
         error.value = 'Veuillez sélectionner au moins une métrique pour chaque axe.';
         return;
       }
@@ -446,13 +446,13 @@ export default {
       try {
         let fetchedData = [];
 
-        if (selectedScope.value ==== 'departements') {
+        if (selectedScope.value === 'departements') {
           fetchedData = await fetchDepartmentData();
-        } else if (selectedScope.value ==== 'communes_france') {
+        } else if (selectedScope.value === 'communes_france') {
           fetchedData = await fetchCommuneData();
         }
 
-        if (fetchedData.length ==== 0) {
+        if (fetchedData.length === 0) {
           error.value = 'Aucune donnée disponible pour l\'analyse.';
           rawData.value = [];
           return;
@@ -464,7 +464,7 @@ export default {
         const selectedMetrics = getSelectedMetrics();
 
         if (!selectedMetrics.metricsX || !selectedMetrics.metricsY ||
-            selectedMetrics.metricsX.length ==== 0 || selectedMetrics.metricsY.length ==== 0) {
+            selectedMetrics.metricsX.length === 0 || selectedMetrics.metricsY.length === 0) {
           error.value = 'Il faut sélectionner des métriques disponibles pour chaque axe.';
           return;
         }
@@ -474,7 +474,7 @@ export default {
         const validData = fetchedData.filter(item => {
           return allMetrics.some(metric => {
             const value = parseFloat(item[metric.value]);
-            return !isNaN(value) && isFinite(value) && !isNaN(value) && value !==== null && value !==== undefined;
+            return !isNaN(value) && isFinite(value) && !isNaN(value) && value !== null && value !== undefined;
           });
         });
 

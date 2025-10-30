@@ -66,9 +66,9 @@ const createIcon = (type, zoom, isInclusive) => {
 
   const color = ICON_COLORS[type];
   let symbol = '';
-  if (type ==== 'migrant') {
+  if (type === 'migrant') {
     symbol = isInclusive ? '🧸' : '↑';
-  } else if (type ==== 'mosque') {
+  } else if (type === 'mosque') {
     symbol = isInclusive ? '🦄' : '🕌';
   }
 
@@ -84,7 +84,7 @@ const createIcon = (type, zoom, isInclusive) => {
       justify-content: center;
       font-weight: bold;
       font-size: ${Math.max(12, size - 4)}px;
-      border: 2px solid ${type ==== 'migrant' ? '#333333' : '#1b5e20'};
+      border: 2px solid ${type === 'migrant' ? '#333333' : '#1b5e20'};
       box-shadow: 0 2px 4px rgba(0,0,0,0.3);
     ">${symbol}</div>`,
     className: `${type}-icon`,
@@ -120,8 +120,8 @@ export default {
   setup() {
     const dataStore = useDataStore();
     const locationStore = useLocationStore();
-    const isEnglish = computed(() => dataStore.labelState ==== 3);
-    const isInclusive = computed(() => dataStore.labelState ==== 1);
+    const isEnglish = computed(() => dataStore.labelState === 3);
+    const isInclusive = computed(() => dataStore.labelState === 1);
 
     const labels = computed(() => ({
       qpvLabel: {
@@ -214,7 +214,7 @@ export default {
       }
     }));
 
-    // ============================== REACTIVE DATA ==============================
+    // ======================= REACTIVE DATA =======================
 
     // Layer visibility toggles - now computed from store
     const showMigrantCenters = computed(() => locationStore.overlayStates.showMigrantCenters);
@@ -225,7 +225,7 @@ export default {
     const showRegions = computed(() => locationStore.overlayStates.showRegions);
     const showCirconscriptions = computed(() => locationStore.overlayStates.showCirconscriptions);
 
-    // ============================== MAP STATE ==============================
+    // ======================= MAP STATE =======================
 
     // Map instance and layers
     let map = null;
@@ -250,7 +250,7 @@ export default {
     const visibleMosques = ref([]);
     const visibleQpvFeatures = ref([]);
 
-    // ============================== UTILITY FUNCTIONS ==============================
+    // ======================= UTILITY FUNCTIONS =======================
 
     // Format distance as "X.Xkm" or "XXXm"
     const formatDistance = (distance) => {
@@ -297,7 +297,7 @@ export default {
       }
     };
 
-    // ============================== MAP MANAGEMENT ==============================
+    // ======================= MAP MANAGEMENT =======================
     /**
      * Initialize the Leaflet map with default settings
      */
@@ -377,7 +377,7 @@ export default {
       locationStore.setSelectedLocation({ lat: e.latlng.lat, lng: e.latlng.lng });
     };
 
-    // ============================== LAYER MANAGEMENT ==============================
+    // ======================= LAYER MANAGEMENT =======================
 
     /**
      * Display migrant centers as markers on the map using filtered data
@@ -556,8 +556,8 @@ export default {
         });
 
         departementsLayer.addTo(map);
-      } catch (error) {
-        console.error('Error loading départements GeoJSON:', error);
+      } catch {
+        // Ignore errors
       }
     };
 
@@ -603,15 +603,14 @@ export default {
         });
 
         regionsLayer.addTo(map);
-      } catch (error) {
-        console.error('Error loading régions GeoJSON:', error);
+      } catch {
+        // Ignore errors
       }
     };
 
     // Load circonscriptions boundary layer
     const loadCirconscriptionsLayer = async() => {
       if (!map) {
-        console.warn('loadCirconscriptionsLayer: Map not initialized');
         return;
       }
 
@@ -640,7 +639,6 @@ export default {
           }),
           onEachFeature: (feature, layer) => {
             if (!feature || !feature.properties) {
-              console.warn('loadCirconscriptionsLayer: Feature missing properties:', feature);
               return;
             }
 
@@ -655,8 +653,7 @@ export default {
 
         circonscriptionsLayer.addTo(map);
 
-      } catch (error) {
-        console.error('loadCirconscriptionsLayer: Error occurred while loading circonscriptions layer:', error);
+      } catch {
         // Reset layer reference on error
         circonscriptionsLayer = null;
       }
@@ -692,7 +689,7 @@ export default {
         const getColor = (price) => {
           const minPrice = locationStore.minPrice;
           const maxPrice = locationStore.maxPrice;
-          if (price ==== null || price ==== undefined || minPrice ==== null || maxPrice ==== null) {
+          if (price === null || price === undefined || minPrice === null || maxPrice === null) {
             return '#808080'; // gray for null or no data
           }
           if (price < minPrice) {
@@ -753,7 +750,7 @@ export default {
             const sectionID = feature.properties.sectionID || 'N/A';
             const communeName = feature.properties.communeName || 'N/A';
             const mam = feature.properties.price;
-            const priceText = mam !==== null && mam !==== undefined ? `${mam.toLocaleString()}` : 'N/A';
+            const priceText = mam !== null && mam !== undefined ? `${mam.toLocaleString()}` : 'N/A';
             layer.bindPopup(`<strong>${isEnglish.value ? labels.value.sectionID.en : labels.value.sectionID.fr}:</strong> ${sectionID}<br><strong>${isEnglish.value ? labels.value.commune.en : labels.value.commune.fr}:</strong> ${communeName}<br><strong>${isEnglish.value ? labels.value.price.en : labels.value.price.fr}:</strong> ${priceText} €/m²`);
 
             layer.on('mouseover', () => {
@@ -777,12 +774,12 @@ export default {
         cadastralLayer.addTo(map);
 
         map.invalidateSize();
-      } catch (error) {
-        console.error('loadCadastralLayer: Error occurred:', error);
+      } catch {
+        // Ignore errors
       }
     };
 
-    // ============================== SELECTED LOCATION MANAGEMENT ==============================
+    // ======================= SELECTED LOCATION MANAGEMENT =======================
 
     // Set selected location and create arrows to closest locations
     const setSelectedLocation = (lat, lng, address = null) => {
@@ -820,7 +817,6 @@ export default {
     // Create arrows pointing to closest locations using provided closestLocations
     const createArrowsFromClosestLocations = (lat, lng, locations) => {
       if (!map) {
-        console.log('Map not initialized yet, skipping arrow creation');
         return;
       }
       clearArrows();
@@ -829,8 +825,8 @@ export default {
         locations.forEach(location => {
           createArrowToLocation(lat, lng, location);
         });
-      } catch (error) {
-        console.error('Error creating arrows from closest locations:', error);
+      } catch {
+        // Ignore errors
       }
     };
 
@@ -858,10 +854,10 @@ export default {
 
       // Determine arrow color based on location type
       let arrowColor = '#000000'; // Black for migrant centers (consistent with icon)
-      if (location.type ==== 'qpv') {
+      if (location.type === 'qpv') {
         arrowColor = isInclusive.value ? '#0000ff' : '#ff0000';
       }
-      if (location.type ==== 'mosque') {
+      if (location.type === 'mosque') {
         arrowColor = '#2e7d32';
       }
 
@@ -927,23 +923,23 @@ export default {
 
       // Add popup to arrow line
       let locationName;
-      if (location.type ==== 'migrant') {
+      if (location.type === 'migrant') {
         locationName = `${isEnglish.value ? labels.value.migrantCenter.en : labels.value.migrantCenter.fr} - ${location.commune || 'N/A'}`;
-      } else if (location.type ==== 'qpv') {
+      } else if (location.type === 'qpv') {
         locationName = `${isEnglish.value ? labels.value.qpvLabel.en : labels.value.qpvLabel.fr} ${location.lib_qp || location.code_qp || 'N/A'}`;
-      } else if (location.type ==== 'mosque') {
+      } else if (location.type === 'mosque') {
         locationName = `${location.name || (isEnglish.value ? labels.value.mosque.en : labels.value.mosque.fr)} - ${location.commune || 'N/A'}`;
       }
 
       arrowLine.bindPopup(
         `<strong>${locationName}</strong><br>` +
         `<strong>${isEnglish.value ? labels.value.distance.en : labels.value.distance.fr}</strong> ${formattedDistance}` +
-        (location.type ==== 'migrant'
+        (location.type === 'migrant'
           ? `<br><strong>${isEnglish.value ? labels.value.type.en : labels.value.type.fr}</strong> ${location.type_centre || location.type || 'N/A'} | <strong>${isEnglish.value ? labels.value.places.en : labels.value.places.fr}</strong> ${location.places || 'N/A'} | <strong>${isEnglish.value ? labels.value.manager.en : labels.value.manager.fr}</strong> ${location.gestionnaire || 'N/A'}`
-          : location.type ==== 'qpv'
+          : location.type === 'qpv'
             ? `<br><strong>${isEnglish.value ? labels.value.commune.en : labels.value.commune.fr}</strong> ${location.lib_com || 'N/A'}` +
             `<br><strong>${isEnglish.value ? labels.value.departement.en : labels.value.departement.fr}</strong> ${location.lib_dep || 'N/A'}`
-            : location.type ==== 'mosque'
+            : location.type === 'mosque'
               ? `<br><strong>${isEnglish.value ? labels.value.name.en : labels.value.name.fr}</strong> ${location.name || (isEnglish.value ? labels.value.mosque.en : labels.value.mosque.fr)}` +
             `<br><strong>${isEnglish.value ? labels.value.address.en : labels.value.address.fr}</strong> ${location.address || 'N/A'}` +
             `<br><strong>${isEnglish.value ? labels.value.commune.en : labels.value.commune.fr}</strong> ${location.commune || 'N/A'}`

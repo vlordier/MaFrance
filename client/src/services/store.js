@@ -114,8 +114,9 @@ export const useDataStore = defineStore('data', {
         country.crimeAggreg = aggregateStats(country.crimeSeries.data, MetricsConfig.calculatedMetrics);
 
         return country;
-      } catch (error) {
-        console.error(error);
+      } catch {
+        // Ignore errors
+      }
         return null;
       }
     },
@@ -168,8 +169,7 @@ export const useDataStore = defineStore('data', {
         );
 
         return departement;
-      } catch (error) {
-        console.error(error);
+      } catch {
         return null;
       }
     },
@@ -210,8 +210,7 @@ export const useDataStore = defineStore('data', {
         commune.crimeAggreg = aggregateStats(commune.crimeSeries.data, MetricsConfig.calculatedMetrics);
 
         return commune;
-      } catch (error) {
-        console.error(error);
+      } catch {
         return null;
       }
     },
@@ -265,7 +264,7 @@ export const useDataStore = defineStore('data', {
       }
 
       // Vérifier si on doit charger les données du département
-      if (deptCode != null && deptCode !== currentDeptCode) {
+      if (deptCode !== null && deptCode !== currentDeptCode) {
         promises.push(this.fetchDepartementData(deptCode));
       } else {
         promises.push(Promise.resolve(null)); // Placeholder pour maintenir l'ordre
@@ -287,7 +286,6 @@ export const useDataStore = defineStore('data', {
 
       // on vérifie que le département de la commune est bien celui chargé pour être sûr
       if (this.getCommuneDepartementCode() !== this.getDepartementCode()) {
-        console.log('departement code mismatch');
         this.setDepartement(this.commune.departement);
       }
 
@@ -397,8 +395,7 @@ export const useDataStore = defineStore('data', {
         setTimeout(() => {
           this.triggerLocationSelectorAutoZoom();
         }, 500);
-      } catch (error) {
-        console.error('Error handling shared navigation:', error);
+      } catch {
         sessionStorage.removeItem('pendingNavigation');
       }
     },
@@ -438,8 +435,7 @@ export const useDataStore = defineStore('data', {
         if (data) {
           this.departement.subventions = data.subventions || [];
         }
-      } catch (error) {
-        console.error('Failed to load departement subventions:', error);
+      } catch {
       }
     },
 
@@ -453,8 +449,7 @@ export const useDataStore = defineStore('data', {
         if (data) {
           this.commune.subventions = data.subventions || [];
         }
-      } catch (error) {
-        console.error('Failed to load commune subventions:', error);
+      } catch {
       }
     },
 
@@ -504,8 +499,7 @@ export const useDataStore = defineStore('data', {
         }
 
         return articlesResponse;
-      } catch (error) {
-        console.error('Failed to fetch filtered articles:', error);
+      } catch {
         return null;
       }
     },
@@ -525,8 +519,7 @@ export const useDataStore = defineStore('data', {
 
         const migrants = await api.getMigrants(params);
         this[level].migrants = migrants || { list: [], pagination: { hasMore: false, nextCursor: null, limit: params.limit } };
-      } catch (error) {
-        console.error(`Error fetching ${level} migrants:`, error);
+      } catch {
         this[level].migrants = { list: [], pagination: { hasMore: false, nextCursor: null, limit: 20 } };
       }
     },
@@ -550,8 +543,7 @@ export const useDataStore = defineStore('data', {
           this[level].migrants.list.push(...moreMigrants.list);
           this[level].migrants.pagination = moreMigrants.pagination;
         }
-      } catch (error) {
-        console.error(`Error loading more ${level} migrants:`, error);
+      } catch {
       }
     },
 
@@ -566,8 +558,7 @@ export const useDataStore = defineStore('data', {
 
         const mosques = await api.getMosques(params);
         this[level].mosques = mosques || { list: [], pagination: { hasMore: false, nextCursor: null, limit: params.limit } };
-      } catch (error) {
-        console.error(`Error fetching ${level} mosques:`, error);
+      } catch {
         this[level].mosques = { list: [], pagination: { hasMore: false, nextCursor: null, limit: 20 } };
       }
     },
@@ -591,8 +582,7 @@ export const useDataStore = defineStore('data', {
           this[level].mosques.list.push(...moreMosques.list);
           this[level].mosques.pagination = moreMosques.pagination;
         }
-      } catch (error) {
-        console.error(`Error loading more ${level} mosques:`, error);
+      } catch {
       }
     },
 
@@ -607,8 +597,7 @@ export const useDataStore = defineStore('data', {
 
         const qpv = await api.getQpv(params);
         this[level].qpv = qpv || { list: [], pagination: { hasMore: false, nextCursor: null, limit: params.limit } };
-      } catch (error) {
-        console.error(`Error fetching ${level} QPV:`, error);
+      } catch {
         this[level].qpv = { list: [], pagination: { hasMore: false, nextCursor: null, limit: 20 } };
       }
     },
@@ -632,8 +621,7 @@ export const useDataStore = defineStore('data', {
           this[level].qpv.list.push(...moreQpv.list);
           this[level].qpv.pagination = moreQpv.pagination;
         }
-      } catch (error) {
-        console.error(`Error loading more ${level} QPV:`, error);
+      } catch {
       }
     },
 
@@ -656,9 +644,7 @@ export const useDataStore = defineStore('data', {
             }
           });
           localStorage.setItem('locationCache', JSON.stringify(this.locationCache));
-        } catch (error) {
-          console.error('Error fetching location data:', error);
-        }
+      } catch {
       }
     }
   },
@@ -743,5 +729,4 @@ export const useDataStore = defineStore('data', {
       const level = this.currentLevel;
       return this[level]?.mosques || { list: [], pagination: { hasMore: false, nextCursor: null, limit: 20 } };
     }
-  }
-});
+  });

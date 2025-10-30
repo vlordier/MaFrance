@@ -216,8 +216,8 @@ watch([targetTFR, targetTFRYear], () => emit('update:fertility', { targetTFR: ta
 
 // Preset watches
 watch(preset, (newPreset) => {
-  if (newPreset !==== 'custom') {
-    const p = presets.find(preset => preset.name ==== newPreset);
+  if (newPreset !== 'custom') {
+    const p = presets.find(preset => preset.name === newPreset);
     if (p) {
       targetTFR.value = p.targetTFR;
       targetTFRYear.value = p.targetTFRYear;
@@ -236,12 +236,12 @@ watch(preset, (newPreset) => {
 watch([targetTFR, targetTFRYear, constantMigration, remigrationTotal, remigrationStart, remigrationEnd], () => {
   let matched = false;
   for (const p of presets) {
-    if (targetTFR.value ==== p.targetTFR &&
-        targetTFRYear.value ==== p.targetTFRYear &&
-        constantMigration.value ==== p.constantMigration &&
-        remigrationTotal.value ==== p.remigrationTotal &&
-        remigrationStart.value ==== p.remigrationStart &&
-        remigrationEnd.value ==== p.remigrationEnd) {
+    if (targetTFR.value === p.targetTFR &&
+        targetTFRYear.value === p.targetTFRYear &&
+        constantMigration.value === p.constantMigration &&
+        remigrationTotal.value === p.remigrationTotal &&
+        remigrationStart.value === p.remigrationStart &&
+        remigrationEnd.value === p.remigrationEnd) {
       preset.value = p.name;
       matched = true;
       break;

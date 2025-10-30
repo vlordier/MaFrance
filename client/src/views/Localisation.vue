@@ -46,14 +46,14 @@ export default {
     MapContainer
   },
   setup() {
-    // ============================== STORES ==============================
+    // ======================= STORES =======================
     const dataStore = useDataStore();
     const locationStore = useLocationStore();
 
-    // ============================== COMPUTED PROPERTIES ==============================
-    const isEnglish = computed(() => dataStore.labelState ==== 3);
+    // ======================= COMPUTED PROPERTIES =======================
+    const isEnglish = computed(() => dataStore.labelState === 3);
 
-    // ============================== HANDLER FUNCTIONS ==============================
+    // ======================= HANDLER FUNCTIONS =======================
 
     const handleLocationSelected = (location) => {
       locationStore.setSelectedLocation(location);

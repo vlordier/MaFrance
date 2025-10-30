@@ -81,9 +81,9 @@ export default {
       // If current level is 'country', show departement metrics (departement data on map)
       // If current level is 'departement', show commune metrics (commune data on map)
       let dataLevel;
-      if (this.currentLevel ==== 'country') {
+      if (this.currentLevel === 'country') {
         dataLevel = 'departement';
-      } else if (this.currentLevel ==== 'departement') {
+      } else if (this.currentLevel === 'departement') {
         dataLevel = 'commune';
       } else {
         // Fallback to current level for other cases
@@ -113,7 +113,7 @@ export default {
     mapState() {
       const level = this.currentLevel;
       const dept = this.currentdepartement;
-      const mapLevel = level ==== 'country' ? 'country' : 'departement';
+      const mapLevel = level === 'country' ? 'country' : 'departement';
       return {
         level: mapLevel,
         departement: dept
@@ -123,17 +123,17 @@ export default {
   watch: {
     mapState(newState, oldState) {
       if (!oldState ||
-          newState.level !==== oldState.level ||
-          newState.departement !==== oldState.departement) {
+          newState.level !== oldState.level ||
+          newState.departement !== oldState.departement) {
         this.updateData();
       }
     },
     currentLevel(newLevel, oldLevel) {
       // Use level-1 logic for determining data level
       let dataLevel;
-      if (newLevel ==== 'country') {
+      if (newLevel === 'country') {
         dataLevel = 'departement';
-      } else if (newLevel ==== 'departement') {
+      } else if (newLevel === 'departement') {
         dataLevel = 'commune';
       } else {
         dataLevel = newLevel;
@@ -142,21 +142,21 @@ export default {
       const newMetrics = MetricsConfig.getAvailableMetricOptions(dataLevel);
 
       const isCurrentMetricAvailable = newMetrics.some(metric =>
-        metric.value ==== this.selectedMetric.value
+        metric.value === this.selectedMetric.value
       );
       if (!isCurrentMetricAvailable && newMetrics.length > 0) {
         // Find the metric object from availableMetrics to get the proper labels
-        const defaultMetric = this.availableMetrics.find(m => m.value ==== newMetrics[0].value) || newMetrics[0];
+        const defaultMetric = this.availableMetrics.find(m => m.value === newMetrics[0].value) || newMetrics[0];
         this.selectedMetric = defaultMetric;
         this.onMetricChange(this.selectedMetric);
       }
 
-      if (newLevel ==== 'commune' && oldLevel !==== 'commune') {
+      if (newLevel === 'commune' && oldLevel !== 'commune') {
         this.showCommuneTooltipWhenReady();
       }
     },
     'dataStore.levels.commune'(newCommune, oldCommune) {
-      if (newCommune && newCommune !==== oldCommune && this.currentLevel ==== 'commune') {
+      if (newCommune && newCommune !== oldCommune && this.currentLevel === 'commune') {
         this.showCommuneTooltipWhenReady();
       }
     },
@@ -164,8 +164,8 @@ export default {
       handler(newMetric) {
         if (newMetric) {
           // Find the metric object that matches the value
-          const metricObj = this.availableMetrics.find(m => m.value ==== newMetric);
-          if (metricObj && metricObj.value !==== this.selectedMetric.value) {
+          const metricObj = this.availableMetrics.find(m => m.value === newMetric);
+          if (metricObj && metricObj.value !== this.selectedMetric.value) {
             this.selectedMetric = metricObj;
             // Trigger update immediately if data is available, or defer until data loads
             this.$nextTick(() => {
@@ -213,7 +213,7 @@ export default {
   methods: {
     updateColorScale() {
       const labelStateName = this.dataStore.getLabelStateName();
-      if (labelStateName ==== 'alt1') {
+      if (labelStateName === 'alt1') {
         this.scaleColors = MetricsConfig.colorScale.alt1Colors;
       } else {
         this.scaleColors = MetricsConfig.colorScale.defaultColors;
@@ -222,8 +222,8 @@ export default {
     },
     handleMetricUpdate(event) {
       const newMetricValue = event.detail.metric;
-      const metricObj = this.availableMetrics.find(m => m.value ==== newMetricValue);
-      if (metricObj && metricObj.value !==== this.selectedMetric.value) {
+      const metricObj = this.availableMetrics.find(m => m.value === newMetricValue);
+      if (metricObj && metricObj.value !== this.selectedMetric.value) {
         this.selectedMetric = metricObj;
         this.onMetricChange(this.selectedMetric);
       }
@@ -271,8 +271,8 @@ export default {
     updateData(){
       // Sync selected metric with store
       if (this.dataStore.selectedMetric) {
-        const metricObj = this.availableMetrics.find(m => m.value ==== this.dataStore.selectedMetric);
-        if (metricObj && metricObj.value !==== this.selectedMetric.value) {
+        const metricObj = this.availableMetrics.find(m => m.value === this.dataStore.selectedMetric);
+        if (metricObj && metricObj.value !== this.selectedMetric.value) {
           this.selectedMetric = metricObj;
         }
       }
@@ -283,7 +283,7 @@ export default {
       this.updateLegend();
     },
     updateGeoJson(){
-      if (this.mapState.level ==== 'country') {
+      if (this.mapState.level === 'country') {
         this.showDepartementLayer();
       } else {
         const deptCode = this.dataStore.getDepartementCode();
@@ -294,12 +294,11 @@ export default {
       let rankingData;
       let codeKey;
       const rankingsRef = {};
-      const isCountryLevel = this.mapState.level ==== 'country';
+      const isCountryLevel = this.mapState.level === 'country';
       const level = isCountryLevel ? 'departement' : 'commune';
 
       // Debug: Check if MetricsConfig and getMetricColorScale are defined
-      if (!MetricsConfig || typeof MetricsConfig.getMetricColorScale !==== 'function') {
-        console.error('MetricsConfig is undefined or getMetricColorScale is not a function:', MetricsConfig);
+      if (!MetricsConfig || typeof MetricsConfig.getMetricColorScale !== 'function') {
         return;
       }
 
@@ -348,7 +347,7 @@ export default {
       this.dataRef = rankingsRef;
     },
     updateLayerColors(){
-      const isCountryLevel = this.mapState.level ==== 'country';
+      const isCountryLevel = this.mapState.level === 'country';
       if (isCountryLevel && this.departementsLayer) {
         this.departementsLayer.eachLayer((layer) => {
           const newStyle = this.getStyle(layer.feature);
@@ -370,8 +369,8 @@ export default {
           onEachFeature: this.onEachDepartementFeature.bind(this)
         }));
         this.layerGroup.addLayer(this.departementsLayer);
-      } catch (error) {
-        console.error('Erreur chargement GeoJSON:', error);
+      } catch {
+        // Ignore errors
       }
     },
     async loadCommunesGeoJson(deptCode) {
@@ -383,7 +382,7 @@ export default {
           this.layerGroup.removeLayer(this.departementsLayer);
         }
         let geoUrl = '';
-        if (deptCode ==== '75') {
+        if (deptCode === '75') {
           geoUrl = 'https://geo.api.gouv.fr/communes?codeDepartement=75&type=arrondissement-municipal&format=geojson&geometry=contour';
         } else {
           geoUrl = `https://geo.api.gouv.fr/departements/${deptCode}/communes?format=geojson&geometry=contour`;
@@ -391,8 +390,8 @@ export default {
         const response = await fetch(geoUrl);
         const geoJson = await response.json();
         this.updateCommunesLayer(geoJson);
-      } catch (error) {
-        console.error('Erreur chargement GeoJSON:', error);
+      } catch {
+        // Ignore errors
       }
     },
     showDepartementLayer() {
@@ -433,7 +432,7 @@ export default {
     },
     getStyle(feature) {
       const value = this.getFeatureValue(feature);
-      if (value ==== null) {
+      if (value === null) {
         return {
           fillColor: '#ffffff',
           weight: 1,
@@ -482,7 +481,7 @@ export default {
       });
     },
     getColor(value) {
-      const level = this.mapState.level ==== 'country' ? 'departement' : 'commune';
+      const level = this.mapState.level === 'country' ? 'departement' : 'commune';
       const colorScaleConfig = MetricsConfig.getMetricColorScale(this.selectedMetric.value, level);
       let normalized;
 
@@ -503,7 +502,7 @@ export default {
         // Dynamic scaling logic (original behavior)
         normalized = (value - this.scaleDomain.min) / this.scaleDomain.delta;
         // Invert for specific metric (original behavior)
-        if (this.selectedMetric.value ==== 'prenom_francais_pct') {
+        if (this.selectedMetric.value === 'prenom_francais_pct') {
           normalized = 1 - normalized;
         }
       }
@@ -547,7 +546,7 @@ export default {
         opacity: 0.8
       });
       const value = this.getFeatureValue(feature);
-      const formattedValue = value !==== null ? MetricsConfig.formatMetricValue(value, this.selectedMetric.value) : 'N/A';
+      const formattedValue = value !== null ? MetricsConfig.formatMetricValue(value, this.selectedMetric.value) : 'N/A';
       const indiceName = this.getIndiceName();
       const content = `<b>${properties.nom}</b><br>${indiceName}: ${formattedValue}`;
       this.globalTooltip
@@ -601,7 +600,7 @@ export default {
       div.innerHTML = content;
     },
     generateVerticalGradient() {
-      const level = this.mapState.level ==== 'country' ? 'departement' : 'commune';
+      const level = this.mapState.level === 'country' ? 'departement' : 'commune';
       const colorScaleConfig = MetricsConfig.getMetricColorScale(this.selectedMetric.value, level);
 
       const step = 100 / (this.scaleColors.length - 1);
@@ -609,7 +608,7 @@ export default {
 
       // For inverted metrics (or prenom_francais_pct in dynamic mode), reverse the color order in legend
       const shouldInvertLegend = (colorScaleConfig.useFixedRange && colorScaleConfig.invert) ||
-                                 (!colorScaleConfig.useFixedRange && this.selectedMetric.value ==== 'prenom_francais_pct');
+                                 (!colorScaleConfig.useFixedRange && this.selectedMetric.value === 'prenom_francais_pct');
 
       if (shouldInvertLegend) {
         colors = colors.reverse();
@@ -623,7 +622,7 @@ export default {
     },
     generateLegendSteps(numSteps = 5, strength = 2) {
       const steps = [];
-      const level = this.mapState.level ==== 'country' ? 'departement' : 'commune';
+      const level = this.mapState.level === 'country' ? 'departement' : 'commune';
       const colorScaleConfig = MetricsConfig.getMetricColorScale(this.selectedMetric.value, level);
 
       if (colorScaleConfig.useFixedRange) {
@@ -649,7 +648,7 @@ export default {
           const transformedPosition = i / (numSteps - 1);
           const normalizedValue = this.inverseLogTransform(transformedPosition, strength);
           const realValue = normalizedValue * this.scaleDomain.delta + this.scaleDomain.min;
-          const cssPosition = (this.selectedMetric.value ==== 'prenom_francais_pct' ? (1 - transformedPosition) : transformedPosition) * 100;
+          const cssPosition = (this.selectedMetric.value === 'prenom_francais_pct' ? (1 - transformedPosition) : transformedPosition) * 100;
           steps.push({
             value: realValue,
             position: cssPosition,
@@ -673,7 +672,7 @@ export default {
       this.updateLegend();
 
       // Update commune tooltip if at commune level and tooltip is active
-      if (this.currentLevel ==== 'commune' && this.globalTooltip && this.map.hasLayer(this.globalTooltip)) {
+      if (this.currentLevel === 'commune' && this.globalTooltip && this.map.hasLayer(this.globalTooltip)) {
         this.showCommuneTooltip();
       }
     },
@@ -689,7 +688,7 @@ export default {
       return metricConfig[labelProperty] || metricConfig.label;
     },
     showCommuneTooltipWhenReady() {
-      if (this.mapState.level ==== 'departement' || !this.communesLayer) {
+      if (this.mapState.level === 'departement' || !this.communesLayer) {
         this.waitForMapOperationsComplete().then(() => {
           this.showCommuneTooltip();
         });
@@ -725,7 +724,7 @@ export default {
       });
     },
     showCommuneTooltip() {
-      if (!this.communesLayer || this.currentLevel !==== 'commune') {
+      if (!this.communesLayer || this.currentLevel !== 'commune') {
         return;
       }
       const selectedCommune = this.dataStore.levels.commune;
@@ -740,11 +739,11 @@ export default {
           return;
         }
         const layerCode = this.removeTrailingZero(feature.properties.code);
-        if (layerCode ==== selectedCommuneCode) {
+        if (layerCode === selectedCommuneCode) {
           layerFound = true;
           const center = layer.getCenter();
           const value = this.getFeatureValue(feature);
-          const formattedValue = value !==== null ? MetricsConfig.formatMetricValue(value, this.selectedMetric.value) : 'N/A';
+          const formattedValue = value !== null ? MetricsConfig.formatMetricValue(value, this.selectedMetric.value) : 'N/A';
           const indiceName = this.getIndiceName();
           const content = `<b>${selectedCommune}</b><br>${indiceName}: ${formattedValue}`;
           if (this.globalTooltip && this.map.hasLayer(this.globalTooltip)) {
@@ -767,7 +766,6 @@ export default {
           this.showCommuneTooltip();
         }, 500);
       } else if (!layerFound) {
-        console.log('Commune layer not ready, waiting...');
         this.waitForCommuneLayerReady().then(() => {
           this.showCommuneTooltip();
         });

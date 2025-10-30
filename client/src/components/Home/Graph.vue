@@ -16,8 +16,8 @@ export default {
   name: 'Graph',
   props: {
     dataLabels: {
-      type: Array
-      // required: true
+      type: Array,
+      default: () => []
     },
     data: {
       type: Object,
@@ -106,8 +106,8 @@ export default {
     },
 
     getYAxisTitle() {
-      const isEnglish = this.dataStore.labelState ==== 3;
-      const isHomicides = this.metricKey ==== 'homicides_p100k' || this.metricKey ==== 'homicides_total_p100k';
+      const isEnglish = this.dataStore.labelState === 3;
+      const isHomicides = this.metricKey === 'homicides_p100k' || this.metricKey === 'homicides_total_p100k';
 
       if (isEnglish) {
         return isHomicides ? 'Rate (per 100k inhabitants)' : 'Rate (per thousand inhabitants)';
@@ -122,8 +122,8 @@ export default {
         return [];
       }
 
-      const currentLocationLevel = this.location.type ==== 'commune' ? 'commune' :
-        this.location.type ==== 'departement' ? 'departement' : 'country';
+      const currentLocationLevel = this.location.type === 'commune' ? 'commune' :
+        this.location.type === 'departement' ? 'departement' : 'country';
 
       const datasets = [];
 
@@ -143,13 +143,13 @@ export default {
         let label;
         const color = metricColors[this.metricKey] || '#dc3545'; // Use metric-specific color or default
 
-        if (currentLocationLevel ==== 'country') {
+        if (currentLocationLevel === 'country') {
           label = this.countryLabel;
-        } else if (currentLocationLevel ==== 'departement') {
+        } else if (currentLocationLevel === 'departement') {
           const deptName = this.dataStore.levels.departement;
           const deptCode = this.dataStore.getDepartementCode();
           label = deptName ? (deptCode ? `${deptCode} - ${deptName}` : deptName) : 'Departement';
-        } else if (currentLocationLevel ==== 'commune') {
+        } else if (currentLocationLevel === 'commune') {
           label = this.location.name;
         }
 
@@ -168,7 +168,7 @@ export default {
 
       // Add reference datasets (dashed lines for higher levels)
       for (const level of this.levels) {
-        if (level ==== currentLocationLevel || !this.data[level]) {
+        if (level === currentLocationLevel || !this.data[level]) {
           continue;
         }
 
@@ -176,11 +176,11 @@ export default {
         let color;
         let borderDash;
 
-        if (level ==== 'country') {
+        if (level === 'country') {
           label = this.countryLabel;
           color = '#808080'; // Gray for country reference
           borderDash = [5, 5];
-        } else if (level ==== 'departement') {
+        } else if (level === 'departement') {
           const deptName = this.dataStore.levels.departement;
           const deptCode = this.dataStore.getDepartementCode();
           label = deptName ? (deptCode ? `${deptCode} - ${deptName}` : deptName) : 'Departement';
@@ -269,7 +269,7 @@ export default {
                     label += ': ';
                   }
                   // Check if it's homicides metric by looking at the metric key
-                  const isHomicides = this.metricKey ==== 'homicides_p100k' || this.metricKey ==== 'homicides_total_p100k';
+                  const isHomicides = this.metricKey === 'homicides_p100k' || this.metricKey === 'homicides_total_p100k';
                   const unit = isHomicides ? ' (pour 100k hab.)' : ' (pour mille hab.)';
                   return label + context.parsed.y.toFixed(1) + unit;
                 }

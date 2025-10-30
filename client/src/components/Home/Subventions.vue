@@ -93,7 +93,7 @@ export default {
     ...mapStores(useDataStore),
 
     isEnglish() {
-      return this.dataStore.labelState ==== 3;
+      return this.dataStore.labelState === 3;
     },
 
     locationName() {
@@ -136,7 +136,7 @@ export default {
       let countryPopulation = 0;
       if (this.countryData.details && Array.isArray(this.countryData.details)) {
         const selectedCountry = countrySubventions?.country || 'france metro';
-        const countryDetails = this.countryData.details.find(item => item.country ==== selectedCountry);
+        const countryDetails = this.countryData.details.find(item => item.country === selectedCountry);
         countryPopulation = countryDetails?.population || 0;
       } else if (this.countryData.details?.population) {
         // Fallback for old structure
@@ -244,12 +244,12 @@ export default {
         // New structure - array of country entries
         if (Array.isArray(this.countryData.subventions)) {
           // Prefer "france metro", fallback to "france entiere" or first available
-          const franceMetro = this.countryData.subventions.find(item => item.country ==== 'france metro');
+          const franceMetro = this.countryData.subventions.find(item => item.country === 'france metro');
           if (franceMetro) {
             return franceMetro;
           }
 
-          const franceEntiere = this.countryData.subventions.find(item => item.country ==== 'france entiere');
+          const franceEntiere = this.countryData.subventions.find(item => item.country === 'france entiere');
           if (franceEntiere) {
             return franceEntiere;
           }

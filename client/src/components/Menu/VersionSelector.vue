@@ -14,7 +14,7 @@
       <v-list-item
         v-for="(option, index) in versionOptions"
         :key="index"
-        :class="{ 'v-list-item--active': labelState ==== index }"
+        :class="{ 'v-list-item--active': labelState === index }"
         @click="selectVersion(index)"
       >
         <v-list-item-title>{{ option.label }}</v-list-item-title>
@@ -78,7 +78,7 @@ export default {
       document.title = newTitle;
 
       // Update header h1 only on Home page
-      if (this.$route.name ==== 'Home') {
+      if (this.$route.name === 'Home') {
         const headerH1 = document.querySelector('h1');
         if (headerH1) {
           headerH1.textContent = newTitle;

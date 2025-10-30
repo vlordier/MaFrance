@@ -7,7 +7,7 @@
 
     <v-expand-transition>
       <v-card-text v-show="!isCollapsed">
-        <div v-if="location?.type ==== 'commune'" class="lieu-filter-container mb-0">
+        <div v-if="location?.type === 'commune'" class="lieu-filter-container mb-0">
           <v-select
             v-model="selectedLieu"
             :items="lieuOptions"
@@ -74,7 +74,7 @@
             <span class="loading-text">{{ isEnglish ? 'Loading...' : 'Chargement...' }}</span>
           </div>
 
-          <div v-if="filteredArticles.length ==== 0 && !isLoading" class="no-articles">
+          <div v-if="filteredArticles.length === 0 && !isLoading" class="no-articles">
             {{ noArticlesMessage }}
           </div>
 
@@ -115,7 +115,8 @@ export default {
   name: 'ArticleList',
   props: {
     location: {
-      type: Object
+      type: Object,
+      default: () => ({})
     },
     articles: {
       type: Object,
@@ -152,7 +153,7 @@ export default {
     ...mapStores(useDataStore),
 
     isEnglish() {
-      return this.dataStore.labelState ==== 3;
+      return this.dataStore.labelState === 3;
     },
 
     locationName() {
@@ -189,7 +190,7 @@ export default {
   watch: {
     location: {
       handler(newLocation) {
-        if (newLocation?.type ==== 'commune') {
+        if (newLocation?.type === 'commune') {
           this.selectedLieu = null;
           this.fetchLieux();
         } else {
@@ -235,19 +236,19 @@ export default {
         limit: 20
       };
 
-      if (this.location.type ==== 'departement') {
+      if (this.location.type === 'departement') {
         params.dept = this.location.code;
-      } else if (this.location.type ==== 'commune') {
+      } else if (this.location.type === 'commune') {
         params.cog = this.location.code;
         params.dept = dataStore.getCommuneDepartementCode();
         if (this.selectedLieu) {
           params.lieu = this.selectedLieu;
         }
-      } else if (this.location.type ==== 'country') {
+      } else if (this.location.type === 'country') {
         params.country = 'France';
       }
 
-      if (category !==== 'tous') {
+      if (category !== 'tous') {
         params.category = category;
       }
 
@@ -267,32 +268,32 @@ export default {
           limit: 20
         };
 
-        if (this.location.type ==== 'departement') {
+        if (this.location.type === 'departement') {
           params.dept = this.location.code;
-        } else if (this.location.type ==== 'commune') {
+        } else if (this.location.type === 'commune') {
           params.cog = this.location.code;
           params.dept = dataStore.getCommuneDepartementCode();
           if (this.selectedLieu) {
             params.lieu = this.selectedLieu;
           }
-        } else if (this.location.type ==== 'country') {
+        } else if (this.location.type === 'country') {
           params.country = 'France';
         }
 
-        if (this.selectedCategory !==== 'tous') {
+        if (this.selectedCategory !== 'tous') {
           params.category = this.selectedCategory;
         }
 
         await dataStore.loadMoreArticles(params);
-      } catch (error) {
-        console.error('Failed to load more articles:', error);
+      } catch {
+        // Ignore errors
       } finally {
         this.isLoading = false;
       }
     },
 
     async fetchLieux() {
-      if (this.location?.type !==== 'commune') {
+      if (this.location?.type !== 'commune') {
         return;
       }
 
@@ -302,8 +303,7 @@ export default {
         const deptCode = dataStore.getCommuneDepartementCode();
         const lieuxData = await api.getLieux(deptCode, this.location.code);
         this.lieux = lieuxData ? lieuxData.map(item => item.lieu).sort() : [];
-      } catch (error) {
-        console.error('Failed to fetch lieux:', error);
+      } catch {
         this.lieux = [];
       }
     },

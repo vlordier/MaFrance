@@ -157,7 +157,7 @@
         </div>
 
         <div v-else class="text-center">
-          <p v-if="location.type ==== 'country'">
+          <p v-if="location.type === 'country'">
             {{ isEnglish ? 'No priority districts in this area.' : 'Aucun quartier prioritaire dans cette zone.' }}
           </p>
           <p v-else>
@@ -206,7 +206,7 @@ export default {
     ...mapStores(useDataStore),
 
     isEnglish() {
-      return this.dataStore.labelState ==== 3;
+      return this.dataStore.labelState === 3;
     },
 
     locationName() {
@@ -266,7 +266,7 @@ export default {
 
     computedContainerHeight() {
       // Reduce to 50px if no QPVs and not loading
-      return this.qpvList.length ==== 0 && !this.isLoading ? 50 : 400;
+      return this.qpvList.length === 0 && !this.isLoading ? 50 : 400;
     }
   },
   watch: {
@@ -317,7 +317,7 @@ export default {
       const contentHeight = this.virtualHeight;
       // Only load more if country level
       if (
-        this.location.type ==== 'country' &&
+        this.location.type === 'country' &&
         scrollBottom >= contentHeight - 200 &&
         !this.isLoading &&
         this.data.pagination?.hasMore
@@ -331,7 +331,7 @@ export default {
         return;
       }
       // Skip if not country
-      if (this.location.type !==== 'country') {
+      if (this.location.type !== 'country') {
         return;
       }
 
@@ -349,8 +349,8 @@ export default {
         }
 
         await dataStore.loadMoreQpv('country', null, params);
-      } catch (error) {
-        console.error('Failed to load more QPVs:', error);
+      } catch {
+        // Ignore errors
       } finally {
         this.isLoading = false;
       }

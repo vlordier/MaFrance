@@ -8,7 +8,7 @@
         <v-row>
           <v-col cols="12" sm="3">
             <v-btn
-              :color="location.type ==== 'country' ? 'primary' : 'grey'"
+              :color="location.type === 'country' ? 'primary' : 'grey'"
               variant="elevated"
               block
               @click="selectFrance"
@@ -66,8 +66,8 @@ export default {
   name: 'LocationSelector',
   props: {
     location: {
-      type: Object
-      // required: true
+      type: Object,
+      default: () => ({})
     }
   },
   data() {
@@ -85,17 +85,17 @@ export default {
   computed: {
     ...mapStores(useDataStore),
     cardTitle() {
-      return this.dataStore.labelState ==== 3
+      return this.dataStore.labelState === 3
         ? 'Visualization level selection'
         : 'Sélection du niveau de visualisation';
     },
     departementLabel() {
-      return this.dataStore.labelState ==== 3
+      return this.dataStore.labelState === 3
         ? 'Choose a department'
         : 'Choisir un département';
     },
     communeLabel() {
-      return this.dataStore.labelState ==== 3
+      return this.dataStore.labelState === 3
         ? 'Search for a municipality'
         : 'Rechercher une commune';
     },
@@ -103,10 +103,10 @@ export default {
       return Object.entries(this.departementNames)
         .sort(([a], [b]) => {
           const parseCode = (code) => {
-            if (code ==== '2A') {
+            if (code === '2A') {
               return 20.1;
             }
-            if (code ==== '2B') {
+            if (code === '2B') {
               return 20.2;
             }
             return parseInt(code, 10);
@@ -120,7 +120,6 @@ export default {
     }
   },
   mounted() {
-    // console.log("dataStore", this.dataStore)
   },
   methods: {
     selectFrance() {
@@ -152,8 +151,6 @@ export default {
       const cog = commune.COG;
       const departement = commune.departement;
 
-      // console.log('onCommuneSelect', commune, cog, departement)
-
       this.dataStore.setCommune(cog, commune.commune, departement);
     },
 
@@ -165,7 +162,6 @@ export default {
 
       this.loading = true;
       try {
-        // console.log('communeQuery', this.communeQuery)
         const communes = await this.dataStore.searchCommunes(this.communeQuery);
 
         this.communeSuggestions = communes.map(commune => ({
@@ -176,8 +172,7 @@ export default {
         }));
 
         this.communesData = this.communeSuggestions;
-      } catch (error) {
-        console.error('Erreur recherche communes:', error);
+      } catch {
         this.communeSuggestions = [];
       } finally {
         this.loading = false;

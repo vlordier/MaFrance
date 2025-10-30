@@ -44,12 +44,12 @@ export default {
   name: 'NamesGraph',
   props: {
     data: {
-      type: Object
-      // required: true
+      type: Object,
+      default: () => ({})
     },
     location: {
-      type: Object
-      // required: true
+      type: Object,
+      default: () => ({})
     }
   },
   data() {
@@ -80,7 +80,7 @@ export default {
     ...mapStores(useDataStore),
 
     isEnglish() {
-      return this.dataStore.labelState ==== 3;
+      return this.dataStore.labelState === 3;
     },
 
     titleBase() {
@@ -122,7 +122,7 @@ export default {
     },
 
     currentCategories() {
-      return this.currentView ==== 'detailed' ? this.detailedCategories : this.simplifiedCategories;
+      return this.currentView === 'detailed' ? this.detailedCategories : this.simplifiedCategories;
     }
   },
   watch: {
@@ -151,14 +151,14 @@ export default {
   methods: {
     getViewToggleText() {
       if (this.isEnglish) {
-        return this.currentView ==== 'detailed' ? 'Simplified view' : 'Detailed view';
+        return this.currentView === 'detailed' ? 'Simplified view' : 'Detailed view';
       } else {
-        return this.currentView ==== 'detailed' ? 'Vue simplifiée' : 'Vue détaillée';
+        return this.currentView === 'detailed' ? 'Vue simplifiée' : 'Vue détaillée';
       }
     },
 
     toggleView() {
-      this.currentView = this.currentView ==== 'detailed' ? 'simplified' : 'detailed';
+      this.currentView = this.currentView === 'detailed' ? 'simplified' : 'detailed';
       this.updateChart();
     },
 
@@ -234,13 +234,13 @@ export default {
         let values = data[key] || [];
 
         // Handle calculated metrics for simplified view
-        if (key ==== 'prenom_francais_pct' && this.currentView ==== 'simplified') {
+        if (key === 'prenom_francais_pct' && this.currentView === 'simplified') {
           values = data.traditionnel_pct?.map((val, index) =>
             val + (data.moderne_pct?.[index] || 0)
           ) || [];
         }
 
-        if (key ==== 'extra_europeen_pct' && this.currentView ==== 'simplified') {
+        if (key === 'extra_europeen_pct' && this.currentView === 'simplified') {
           values = data.musulman_pct?.map((val, index) =>
             val + (data.africain_pct?.[index] || 0) + (data.asiatique_pct?.[index] || 0)
           ) || [];
@@ -266,7 +266,7 @@ export default {
       if (chart) {
         // Mise à jour des labels
         chart.data.labels = this.data.labels;
-        const title = `${this.titleBase} (${this.location.code ==== null ? '' : this.location.code + ' - '}${this.location.name})`;
+        const title = `${this.titleBase} (${this.location.code === null ? '' : this.location.code + ' - '}${this.location.name})`;
 
         chart.options.plugins.title.text = title;
 

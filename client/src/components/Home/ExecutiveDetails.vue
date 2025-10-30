@@ -23,13 +23,13 @@
         </div>
 
         <div v-else class="text-center py-8 text-grey">
-          <p v-if="location.type ==== 'country'">
+          <p v-if="location.type === 'country'">
             {{ noDataMessages.country }}
           </p>
-          <p v-else-if="location.type ==== 'departement'">
+          <p v-else-if="location.type === 'departement'">
             {{ noDataMessages.departement }}
           </p>
-          <p v-else-if="location.type ==== 'commune'">
+          <p v-else-if="location.type === 'commune'">
             {{ noDataMessages.commune }}
           </p>
           <p v-else>
@@ -64,13 +64,13 @@ export default {
     ...mapStores(useDataStore),
 
     cardTitle() {
-      const isEnglish = this.dataStore.labelState ==== 3;
+      const isEnglish = this.dataStore.labelState === 3;
       const baseTitle = isEnglish ? 'Executive leader of' : 'Responsable exécutif de';
       return `${baseTitle}: ${this.locationName}`;
     },
 
     politicalFamilyLabel() {
-      return this.dataStore.labelState ==== 3 ? 'Political family' : 'Famille politique';
+      return this.dataStore.labelState === 3 ? 'Political family' : 'Famille politique';
     },
 
     locationName() {
@@ -78,7 +78,7 @@ export default {
         return '';
       }
 
-      const isEnglish = this.dataStore.labelState ==== 3;
+      const isEnglish = this.dataStore.labelState === 3;
 
       switch (this.location.type) {
       case 'country':
@@ -93,7 +93,7 @@ export default {
     },
 
     noDataMessages() {
-      const isEnglish = this.dataStore.labelState ==== 3;
+      const isEnglish = this.dataStore.labelState === 3;
 
       if (isEnglish) {
         return {
@@ -121,7 +121,7 @@ export default {
       let position = '';
       let locationName = '';
 
-      const isEnglish = this.dataStore.labelState ==== 3;
+      const isEnglish = this.dataStore.labelState === 3;
 
       switch (this.location.type) {
       case 'country':
@@ -208,8 +208,7 @@ export default {
           month: 'long',
           day: 'numeric'
         });
-      } catch (error) {
-        console.error('Error formatting date:', error);
+      } catch {
         return dateString;
       }
     },

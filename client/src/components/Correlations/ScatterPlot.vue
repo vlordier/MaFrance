@@ -91,7 +91,7 @@ export default {
     let chartInstance = null;
 
     const dataStore = useDataStore();
-    const isEnglish = computed(() => dataStore.labelState ==== 3);
+    const isEnglish = computed(() => dataStore.labelState === 3);
 
     // Color scale for correlations (same as heatmap)
     const createColorScale = () => {
@@ -153,7 +153,7 @@ export default {
 
       for (const item of props.rawData) {
         // Ensure item exists and is an object
-        if (!item || typeof item !==== 'object') {
+        if (!item || typeof item !== 'object') {
           continue;
         }
 
@@ -218,7 +218,7 @@ export default {
         chartInstance = null;
       }
 
-      if (points.length ==== 0) {
+      if (points.length === 0) {
         // Force a retry if we have raw data but no points
         if (props.rawData.length > 0) {
           setTimeout(createChart, 100);
@@ -294,7 +294,7 @@ export default {
                 },
                 label: (context) => {
                   const point = context.raw;
-                  if (context.datasetIndex ==== 0) { // Data points
+                  if (context.datasetIndex === 0) { // Data points
                     return [
                       `${getMetricDisplayName(props.selectedMetrics.metric1)}: ${point.x.toFixed(2)}`,
                       `${getMetricDisplayName(props.selectedMetrics.metric2)}: ${point.y.toFixed(2)}`
