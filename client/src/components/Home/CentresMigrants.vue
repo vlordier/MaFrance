@@ -221,8 +221,8 @@ export default {
 
       this.isLoading = true;
       try {
-        const { useDataStore } = await import('../../services/store.js');
-        const dataStore = useDataStore();
+        const { useDataStore: useDataStoreFn } = await import('../../services/store.js');
+        const dataStore = useDataStoreFn();
         const params = {
           limit: 20
         };

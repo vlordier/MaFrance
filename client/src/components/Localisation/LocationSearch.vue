@@ -35,7 +35,7 @@ import { useDataStore } from '../../services/store.js';
 export default defineComponent({
   name: 'LocationSearch',
   emits: ['location-found'],
-  setup(props, { emit }) {
+  setup(_props, { emit }) {
     const dataStore = useDataStore();
     const isEnglish = computed(() => dataStore.labelState === 3);
 

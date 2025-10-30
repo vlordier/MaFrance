@@ -140,7 +140,7 @@ const labels = {
 export default {
   name: 'LocationDataBox',
   emits: ['cadastral-data-loaded'],
-  setup(props, { emit }) {
+  setup(_props, { emit }) {
     const dataStore = useDataStore();
     const locationStore = useLocationStore();
     const isEnglish = computed(() => dataStore.labelState === 3);

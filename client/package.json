@@ -7,11 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-  "lint": "eslint src --ext .js,.vue --max-warnings=0"
+    "lint": "eslint src --ext .js,.vue --max-warnings=0"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
-    "chart.js": "^4.5.0",
+    "chart.js": "^4.5.1",
     "chartjs-adapter-date-fns": "^3.0.0",
     "chroma-js": "^3.1.2",
     "leaflet": "^1.9.4",
@@ -21,14 +21,14 @@
     "pinia": "^3.0.3",
     "vue": "^3.5.17",
     "vue-matomo": "^4.2.0",
-    "vue-router": "^4.5.1",
-    "vuetify": "^3.5.0"
+    "vue-router": "^4.6.3",
+    "vuetify": "^3.10.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.38.0",
     "@vitejs/plugin-vue": "^6.0.0",
     "eslint": "^9.38.0",
     "eslint-plugin-vue": "^10.5.1",
-    "vite": "^7.0.4"
+    "vite": "^7.1.12"
   }
 }

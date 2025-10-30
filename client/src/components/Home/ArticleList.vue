@@ -230,8 +230,8 @@ export default {
         this.$refs.articlesContainer.scrollTop = 0;
       }
 
-      const { useDataStore } = await import('../../services/store.js');
-      const dataStore = useDataStore();
+      const { useDataStore: useDataStoreFn } = await import('../../services/store.js');
+      const dataStore = useDataStoreFn();
       const params = {
         limit: 20
       };
@@ -261,8 +261,8 @@ export default {
 
       this.isLoading = true;
       try {
-        const { useDataStore } = await import('../../services/store.js');
-        const dataStore = useDataStore();
+        const { useDataStore: useDataStoreFn } = await import('../../services/store.js');
+        const dataStore = useDataStoreFn();
         const params = {
           cursor: this.articles.pagination.nextCursor,
           limit: 20
@@ -298,8 +298,8 @@ export default {
       }
 
       try {
-        const { useDataStore } = await import('../../services/store.js');
-        const dataStore = useDataStore();
+        const { useDataStore: useDataStoreFn } = await import('../../services/store.js');
+        const dataStore = useDataStoreFn();
         const deptCode = dataStore.getCommuneDepartementCode();
         const lieuxData = await api.getLieux(deptCode, this.location.code);
         this.lieux = lieuxData ? lieuxData.map(item => item.lieu).sort() : [];
@@ -316,8 +316,8 @@ export default {
       }
 
       // Refetch articles with new lieu filter
-      const { useDataStore } = await import('../../services/store.js');
-      const dataStore = useDataStore();
+      const { useDataStore: useDataStoreFn } = await import('../../services/store.js');
+      const dataStore = useDataStoreFn();
       const params = {
         limit: 20,
         cog: this.location.code,

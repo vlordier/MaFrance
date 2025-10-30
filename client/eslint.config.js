@@ -80,10 +80,16 @@ export default [
       'no-multi-spaces': 'error',
       'no-shadow': 'error',
       'no-redeclare': 'error',
-      'no-magic-numbers': ['error', { 'ignore': [0, 1, -1, 2, 3, 4, 5, 10, 50, 100, 500, 1000] }],
+      'no-magic-numbers': ['error', { 'ignore': [0, 1, -1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20, 50, 100, 500, 1000] }],
       'complexity': ['error', 20],
       'max-lines-per-function': ['error', 100],
       'max-params': ['error', 6],
+    }
+  },
+  {
+    files: ['src/utils/constants.js'],
+    rules: {
+      'no-magic-numbers': 'off'
     }
   }
 ];
