@@ -91,7 +91,7 @@ class ApiService {
                             `api_cache_${key}`,
                             JSON.stringify(value),
                         );
-                    } catch (e) {
+                    } catch {
                         console.warn(
                             "Cache storage full, clearing old entries",
                         );
@@ -100,7 +100,7 @@ class ApiService {
                 },
                 remove: (key) => localStorage.removeItem(`api_cache_${key}`),
             };
-        } catch (e) {
+        } catch {
             return { get: () => null, set: () => {}, remove: () => {} };
         }
     }

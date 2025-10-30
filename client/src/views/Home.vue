@@ -342,14 +342,11 @@ export default {
 
     },
 
-    getComposites(level){
+    getComposites(){
 
-      const result = {}
       const data = this.dataStore.country.crimeAggreg
 
-      for(const k in data) {
 
-      }
     },
 
     async loadLocationData(location) {

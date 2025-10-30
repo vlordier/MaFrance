@@ -504,7 +504,7 @@ export default {
     }
 
     // Scatter plot methods
-    const handleCorrelationHover = (data) => {
+    const handleCorrelationHover = () => {
       // Optional: Could show additional info on hover
     }
 

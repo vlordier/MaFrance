@@ -285,7 +285,7 @@ export const useDataStore = defineStore("data", {
         this.levels.departement = DepartementNames[deptCode];
       }
 
-      const newDeptCode = this.getDepartementCode();
+
 
       // on vérifie que le département de la commune est bien celui chargé pour être sûr
       if (this.getCommuneDepartementCode() !== this.getDepartementCode()) {
@@ -728,7 +728,7 @@ export const useDataStore = defineStore("data", {
       );
     },
 
-    getMetricLabel: (state) => (metricKey) => {
+    getMetricLabel: () => (metricKey) => {
       return MetricsConfig.getMetricLabel
         ? MetricsConfig.getMetricLabel(metricKey)
         : metricKey;

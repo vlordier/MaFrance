@@ -324,7 +324,7 @@ export default {
 
     // Listen for label state changes from MetricsConfig
     onMounted(() => {
-      const handleLabelChange = (event) => {
+      const handleLabelChange = () => {
         if (selectedMetric.value) {
           updateRankings()
         }

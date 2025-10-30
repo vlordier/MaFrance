@@ -300,10 +300,7 @@ function projectPopulation(startYear = 2024, endYear = 2100) {
   return results;
 }
 
-// Mettre à jour la pyramide lors du changement d'année
-function updatePyramid() {
-  // La computed gère cela
-}
+
 
 // Lancer la projection lors des changements de paramètres ou clic bouton
 async function runProjection() {
