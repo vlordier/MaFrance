@@ -4,10 +4,7 @@ const db = require('../config/db');
 const { createDbHandler } = require('../middleware/errorHandler');
 const { cacheMiddleware } = require('../middleware/cache');
 const {
-  validateDepartement,
-  validateSort,
-  validateDirection,
-  validatePagination
+  validateDepartement
 } = require('../middleware/validate');
 
 // GET /api/departements

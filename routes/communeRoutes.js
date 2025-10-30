@@ -7,12 +7,7 @@ const { cacheMiddleware } = require('../middleware/cache');
 const {
   validateDepartement,
   validateCOG,
-  validateSearchQuery,
-  validateSort,
-  validateDirection,
-  validatePagination,
-  validatePopulationRange,
-  validateDeptAndCOG
+  validateSearchQuery
 } = require('../middleware/validate');
 
 // GET /api/communes
@@ -59,7 +54,7 @@ router.get('/search', [validateSearchQuery], async (req, res) => {
 });
 
 // GET /api/communes/all
-router.get('/all', cacheMiddleware((req) => 'communes:all'), (req, res) => {
+router.get('/all', cacheMiddleware(() => 'communes:all'), (req, res) => {
   const dbHandler = createDbHandler(res);
   db.all(
     'SELECT COG, departement, commune, population, logements_sociaux_pct, insecurite_score, immigration_score, islamisation_score, defrancisation_score, wokisme_score, number_of_mosques, mosque_p100k, total_qpv, pop_in_qpv_pct, total_places_migrants, places_migrants_p1k FROM locations',

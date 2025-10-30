@@ -12,7 +12,7 @@ const {
 router.get(
   '/',
   [validateOptionalDepartement, validateOptionalCOG, cacheMiddleware((req) => `mosques:${req.query.dept || 'all'}:${req.query.cog || 'all'}:${req.query.cursor || 0}:${req.query.limit || 20}`)],
-  (req, res, next) => {
+  (req, res) => {
     const db = req.app.locals.db;
     const dbHandler = createDbHandler(res);
     const { dept, cog, cursor, limit = '20' } = req.query;
@@ -73,7 +73,7 @@ router.get(
   });
 
 // GET /api/mosques/closest - Get closest mosques to coordinates
-router.get('/closest', cacheMiddleware((req) => `mosques:closest:${req.query.lat}:${req.query.lng}:${req.query.limit || 5}`), (req, res, next) => {
+router.get('/closest', cacheMiddleware((req) => `mosques:closest:${req.query.lat}:${req.query.lng}:${req.query.limit || 5}`), (req, res) => {
   const db = req.app.locals.db;
   const dbHandler = createDbHandler(res);
   const { lat, lng, limit = 5 } = req.query;

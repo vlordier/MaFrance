@@ -57,18 +57,21 @@ router.get(
                   ? centers[centers.length - 1].rowid
                   : null;
 
-      const migrants = centers.map(({ rowid, commune_name, ...row }) => ({
-        type: row.type || row.type,
-        gestionnaire:
-                    row.gestionnaire || row.gestionnaire,
-        adresse: row.adresse,
-        places: row.places,
-        COG: row.COG,
-        departement: row.departement,
-        commune: commune_name,
-        latitude: row.latitude,
-        longitude: row.longitude
-      }));
+      const migrants = centers.map(row => {
+        const commune_name = row.commune_name;
+        delete row.rowid;
+        return {
+          type: row.type || row.type,
+          gestionnaire: row.gestionnaire || row.gestionnaire,
+          adresse: row.adresse,
+          places: row.places,
+          COG: row.COG,
+          departement: row.departement,
+          commune: commune_name,
+          latitude: row.latitude,
+          longitude: row.longitude
+        };
+      });
 
       res.json({
         list: migrants,

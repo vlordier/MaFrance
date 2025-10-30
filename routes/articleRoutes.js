@@ -106,7 +106,7 @@ router.get(
         const nextCursor = hasMore && articles.length > 0 ? articles[articles.length - 1].rowid : null;
 
         // Remove rowid from response
-        const cleanArticles = articles.map(({ rowid, ...article }) => article);
+        const cleanArticles = articles.map(row => { delete row.rowid; return row; });
 
         res.json({
           list: cleanArticles,
@@ -129,6 +129,8 @@ router.get(
   (req, res, next) => {
     const handleDbError = createDbHandler(res, next);
     const { dept, cog, lieu } = req.query;
+
+    const baseCondition = getBaseCondition(!!dept);
 
     let sql = `
     SELECT
@@ -170,7 +172,7 @@ router.get(
   [validateCOG, validateLieu],
   (req, res, next) => {
     const handleDbError = createDbHandler(res, next);
-    const { cog, lieu } = req.query;
+    const { cog } = req.query;
 
     const sql = 'SELECT DISTINCT lieu FROM lieux WHERE cog = ? ORDER BY lieu';
     const params = [cog];

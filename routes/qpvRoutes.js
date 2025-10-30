@@ -78,11 +78,11 @@ router.get(
 
       // If we have filters (dept, cog, commune), return simple array for backward compatibility
       if (dept || cog || commune) {
-        res.json(qpvs.map(({ rowid, ...row }) => row));
+        res.json(qpvs.map(row => { delete row.rowid; return row; }));
       } else {
         // For country-level requests, return paginated format
         res.json({
-          list: qpvs.map(({ rowid, ...row }) => row),
+          list: qpvs.map(row => { delete row.rowid; return row; }),
           pagination: {
             hasMore: hasMore,
             nextCursor: nextCursor,
@@ -95,7 +95,7 @@ router.get(
 );
 
 // Get QPV GeoJSON data from database
-router.get('/geojson', cacheMiddleware((req) => 'qpv:geojson'), (req, res) => {
+router.get('/geojson', cacheMiddleware(() => 'qpv:geojson'), (req, res) => {
   try {
     const query = `
             SELECT 

@@ -7,7 +7,7 @@ const TILE_CACHE_NAME = `ma-france-tiles-${BUILD_HASH}`;
 // All API routes are cached automatically based on /api/ prefix
 
 // Install event - no static asset caching
-self.addEventListener('install', (event) => {
+self.addEventListener('install', () => {
   console.log('Service Worker installing with build hash:', BUILD_HASH);
   // Skip waiting to activate immediately
   self.skipWaiting();
@@ -192,7 +192,7 @@ async function doBackgroundSync() {
           await cache.put(request, response);
         }
       } catch (error) {
-        console.log('Failed to refresh cached request:', request.url);
+        console.log('Failed to refresh cached request:', request.url, error);
       }
     }
   } catch (error) {
