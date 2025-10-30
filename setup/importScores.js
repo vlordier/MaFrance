@@ -221,10 +221,10 @@ function createLocationsTable() {
         reject(err);
         return;
       }
-      this.db.run('CREATE INDEX IF NOT EXISTS idx_locations_dept_commune ON locations(departement, commune)', (err) => {
-        if (err) {
-          console.error('Erreur création index locations:', err.message);
-          reject(err);
+      this.db.run('CREATE INDEX IF NOT EXISTS idx_locations_dept_commune ON locations(departement, commune)', (indexErr) => {
+        if (indexErr) {
+          console.error('Erreur création index locations:', indexErr.message);
+          reject(indexErr);
           return;
         }
         resolve();

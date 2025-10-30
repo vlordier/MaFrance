@@ -40,79 +40,79 @@ function initializeDatabase() {
 function runImports() {
   const db = initializeDatabase();
 
-  importScores(db, (err) => {
-    if (err) {
-      console.error('Échec importation scores:', err.message);
+  importScores(db, (scoresErr) => {
+    if (scoresErr) {
+      console.error('Échec importation scores:', scoresErr.message);
       process.exit(1);
     }
     console.log('✓ Importation scores terminée');
 
-    importArticles(db, (err) => {
-      if (err) {
-        console.error('Échec importation articles:', err.message);
+    importArticles(db, (articlesErr) => {
+      if (articlesErr) {
+        console.error('Échec importation articles:', articlesErr.message);
         process.exit(1);
       }
       console.log('✓ Importation articles terminée');
 
-      importElus(db, (err) => {
-        if (err) {
-          console.error('Échec importation élus:', err.message);
+      importElus(db, (elusErr) => {
+        if (elusErr) {
+          console.error('Échec importation élus:', elusErr.message);
           process.exit(1);
         }
         console.log('✓ Importation élus terminée');
 
-        importNames(db, (err) => {
-          if (err) {
-            console.error('Échec importation noms:', err.message);
+        importNames(db, (namesErr) => {
+          if (namesErr) {
+            console.error('Échec importation noms:', namesErr.message);
             process.exit(1);
           }
           console.log('✓ Importation noms terminée');
 
-          importCrimeData(db, (err) => {
-            if (err) {
-              console.error('Échec importation données criminalité:', err.message);
+          importCrimeData(db, (crimeErr) => {
+            if (crimeErr) {
+              console.error('Échec importation données criminalité:', crimeErr.message);
               process.exit(1);
             }
             console.log('✓ Importation données criminalité terminée');
 
-            importQPV(db, (err) => {
-              if (err) {
-                console.error('Échec importation données QPV:', err.message);
+            importQPV(db, (qpvErr) => {
+              if (qpvErr) {
+                console.error('Échec importation données QPV:', qpvErr.message);
                 process.exit(1);
               }
               console.log('✓ Importation données QPV terminée');
 
-              importQpvGeoJson(db, (err) => {
-                if (err) {
-                  console.error('Échec importation QPV GeoJSON:', err.message);
+              importQpvGeoJson(db, (geoJsonErr) => {
+                if (geoJsonErr) {
+                  console.error('Échec importation QPV GeoJSON:', geoJsonErr.message);
                   process.exit(1);
                 }
                 console.log('✓ Importation QPV GeoJSON terminée');
 
-                importSubventions(db, (err) => {
-                  if (err) {
-                    console.error('Échec importation données subventions:', err.message);
+                importSubventions(db, (subventionsErr) => {
+                  if (subventionsErr) {
+                    console.error('Échec importation données subventions:', subventionsErr.message);
                     process.exit(1);
                   }
                   console.log('✓ Importation données subventions terminée');
 
-                  importMigrants(db, (err) => {
-                    if (err) {
-                      console.error('Échec importation données centres migrants:', err.message);
+                  importMigrants(db, (migrantsErr) => {
+                    if (migrantsErr) {
+                      console.error('Échec importation données centres migrants:', migrantsErr.message);
                       process.exit(1);
                     }
                     console.log('✓ Importation données centres migrants terminée');
 
-                    importMosques(db, (err) => {
-                      if (err) {
-                        console.error('Échec importation données mosquées:', err.message);
+                    importMosques(db, (mosquesErr) => {
+                      if (mosquesErr) {
+                        console.error('Échec importation données mosquées:', mosquesErr.message);
                         process.exit(1);
                       }
                       console.log('✓ Importation données mosquées terminée');
 
-                      importNat1(db, (err) => {
-                        if (err) {
-                          console.error('Échec importation données NAT1:', err.message);
+                      importNat1(db, (nat1Err) => {
+                        if (nat1Err) {
+                          console.error('Échec importation données NAT1:', nat1Err.message);
                           process.exit(1);
                         }
                         console.log('✓ Importation données NAT1 terminée');
@@ -148,8 +148,8 @@ runImports();
 // Create indexes for better search performance
 async function createSearchIndexes() {
   return new Promise((resolve, reject) => {
-    const sqlite3 = require('sqlite3').verbose();
-    const indexDb = new sqlite3.Database(config.database.path);
+    const sqlite = require('sqlite3').verbose();
+    const indexDb = new sqlite.Database(config.database.path);
 
     console.log('Creating search indexes...');
 

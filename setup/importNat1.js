@@ -208,9 +208,9 @@ function importNat1(db, callback) {
     ];
   }
 
-  function insertCountryNat1(db, fieldNames, countryBatch) {
+  function insertCountryNat1(dbParam, fieldNames, countryBatchParam) {
     return new Promise((resolve, reject) => {
-      if (countryBatch.length === 0) {
+      if (countryBatchParam.length === 0) {
         resolve();
         return;
       }
@@ -219,23 +219,23 @@ function importNat1(db, callback) {
       const importer = new BaseImporter({
         tableName: 'country_nat1',
         columns,
-        db,
+        db: dbParam,
         indexes: ['CREATE INDEX IF NOT EXISTS idx_country_nat1 ON country_nat1(Code)'],
         insertMode: 'INSERT OR IGNORE'
       });
 
       importer.createTable().then(() => {
-        importer.insertBatch(countryBatch).then(() => {
-          console.log(`Importation de ${countryBatch.length} lignes dans country_nat1 terminée`);
+        importer.insertBatch(countryBatchParam).then(() => {
+          console.log(`Importation de ${countryBatchParam.length} lignes dans country_nat1 terminée`);
           resolve();
         }).catch(reject);
       }).catch(reject);
     });
   }
 
-  function insertDepartmentNat1(db, fieldNames, departmentBatch) {
+  function insertDepartmentNat1(dbParam, fieldNames, departmentBatchParam) {
     return new Promise((resolve, reject) => {
-      if (departmentBatch.length === 0) {
+      if (departmentBatchParam.length === 0) {
         resolve();
         return;
       }
@@ -244,23 +244,23 @@ function importNat1(db, callback) {
       const importer = new BaseImporter({
         tableName: 'department_nat1',
         columns,
-        db,
+        db: dbParam,
         indexes: ['CREATE INDEX IF NOT EXISTS idx_department_nat1 ON department_nat1(Code)'],
         insertMode: 'INSERT OR IGNORE'
       });
 
       importer.createTable().then(() => {
-        importer.insertBatch(departmentBatch).then(() => {
-          console.log(`Importation de ${departmentBatch.length} lignes dans department_nat1 terminée`);
+        importer.insertBatch(departmentBatchParam).then(() => {
+          console.log(`Importation de ${departmentBatchParam.length} lignes dans department_nat1 terminée`);
           resolve();
         }).catch(reject);
       }).catch(reject);
     });
   }
 
-  function insertCommuneNat1(db, fieldNames, communeBatch) {
+  function insertCommuneNat1(dbParam, fieldNames, communeBatchParam) {
     return new Promise((resolve, reject) => {
-      if (communeBatch.length === 0) {
+      if (communeBatchParam.length === 0) {
         resolve();
         return;
       }
@@ -269,14 +269,14 @@ function importNat1(db, callback) {
       const importer = new BaseImporter({
         tableName: 'commune_nat1',
         columns,
-        db,
+        db: dbParam,
         indexes: ['CREATE INDEX IF NOT EXISTS idx_commune_nat1 ON commune_nat1(Code)'],
         insertMode: 'INSERT OR IGNORE'
       });
 
       importer.createTable().then(() => {
-        importer.insertBatch(communeBatch).then(() => {
-          console.log(`Importation de ${communeBatch.length} lignes dans commune_nat1 terminée`);
+        importer.insertBatch(communeBatchParam).then(() => {
+          console.log(`Importation de ${communeBatchParam.length} lignes dans commune_nat1 terminée`);
           resolve();
         }).catch(reject);
       }).catch(reject);

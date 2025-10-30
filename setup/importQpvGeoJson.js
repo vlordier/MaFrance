@@ -72,11 +72,11 @@ function importQpvGeoJson(db, callback) {
           insertBatch(db, batch);
         }
 
-        db.run('COMMIT', (err) => {
-          if (err) {
-            console.error('Error committing QPV coordinates:', err.message);
+        db.run('COMMIT', (commitErr) => {
+          if (commitErr) {
+            console.error('Error committing QPV coordinates:', commitErr.message);
             db.run('ROLLBACK');
-            return callback(err);
+            return callback(commitErr);
           }
 
           console.log(`Imported ${processedCount} QPV coordinates`);
@@ -120,8 +120,8 @@ function calculateCentroid(geometry) {
       return getPolygonCentroid(coordinates);
     }
     return null;
-  } catch (error) {
-    console.error('Error calculating centroid:', error);
+  } catch (calcError) {
+    console.error('Error calculating centroid:', calcError);
     return null;
   }
 }

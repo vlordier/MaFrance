@@ -71,10 +71,10 @@ class BaseImporter {
         if (this.indexes.length > 0) {
           let indexCount = 0;
           this.indexes.forEach(indexSql => {
-            this.db.run(indexSql, (err) => {
-              if (err) {
-                console.error('Error creating index:', err.message);
-                reject(err);
+            this.db.run(indexSql, (indexErr) => {
+              if (indexErr) {
+                console.error('Error creating index:', indexErr.message);
+                reject(indexErr);
                 return;
               }
               indexCount++;
@@ -185,10 +185,10 @@ class BaseImporter {
 
         const insertNextBatch = () => {
           if (batchIndex >= data.length) {
-            this.db.run('COMMIT', (err) => {
-              if (err) {
-                console.error('Error committing transaction:', err.message);
-                reject(err);
+            this.db.run('COMMIT', (commitErr) => {
+              if (commitErr) {
+                console.error('Error committing transaction:', commitErr.message);
+                reject(commitErr);
               } else {
                 resolve();
               }
@@ -202,10 +202,10 @@ class BaseImporter {
 
           const sql = `${this.insertMode} INTO ${this.tableName} (${this.columns.map(col => col.name).join(', ')}) VALUES ${placeholders}`;
 
-          this.db.run(sql, flatBatch, (err) => {
-            if (err) {
-              console.error('Error inserting batch:', err.message);
-              this.db.run('ROLLBACK', () => reject(err));
+          this.db.run(sql, flatBatch, (insertErr) => {
+            if (insertErr) {
+              console.error('Error inserting batch:', insertErr.message);
+              this.db.run('ROLLBACK', () => reject(insertErr));
               return;
             }
             batchIndex += this.batchSize;

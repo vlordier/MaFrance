@@ -101,10 +101,10 @@ function importQPV(db, callback) {
         if (this.indexes.length > 0) {
           let indexCount = 0;
           this.indexes.forEach(indexSql => {
-            this.db.run(indexSql, (err) => {
-              if (err) {
-                console.error('Error creating index:', err.message);
-                reject(err);
+            this.db.run(indexSql, (indexErr) => {
+              if (indexErr) {
+                console.error('Error creating index:', indexErr.message);
+                reject(indexErr);
                 return;
               }
               indexCount++;

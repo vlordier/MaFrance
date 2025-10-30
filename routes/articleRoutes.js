@@ -100,9 +100,9 @@ router.get(
       params.push(pageLimit + 1); // Get one extra to check if there are more
 
       // Get articles
-      db.all(sql, params, (err, rows) => {
-        if (err) {
-          return handleDbError(err);
+      db.all(sql, params, (articlesErr, rows) => {
+        if (articlesErr) {
+          return handleDbError(articlesErr);
         }
 
         const hasMore = rows.length > pageLimit;

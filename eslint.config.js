@@ -72,21 +72,13 @@ export default [
   }
   ,
   {
-    // Service worker globals for public/sw.js
-    files: ['public/sw.js'],
+    // Constants file override: allow CommonJS module
+    files: ['constants.js'],
     languageOptions: {
       globals: {
-        self: 'readonly',
-        caches: 'readonly',
-        clients: 'readonly',
-        fetch: 'readonly',
-        URL: 'readonly',
-        console: 'readonly'
-      },
-      parserOptions: { ecmaVersion: 2021 }
-    },
-    rules: {
-      'no-console': 'off'
+        module: 'readonly',
+        exports: 'readonly'
+      }
     }
   }
 ];

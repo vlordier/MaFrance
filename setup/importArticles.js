@@ -32,10 +32,10 @@ function createTables(db) {
 
           db.run(
             'CREATE INDEX IF NOT EXISTS idx_articles_dept_commune ON articles(departement, cog, commune, lieu)',
-            (err) => {
-              if (err) {
-                console.error('Erreur création index articles:', err.message);
-                reject(err);
+            (indexErr) => {
+              if (indexErr) {
+                console.error('Erreur création index articles:', indexErr.message);
+                reject(indexErr);
                 return;
               }
 
@@ -46,10 +46,10 @@ function createTables(db) {
                                     lieu TEXT
                                 )
                                 `,
-                (err) => {
-                  if (err) {
-                    console.error('Erreur création table lieux:', err.message);
-                    reject(err);
+                (lieuErr) => {
+                  if (lieuErr) {
+                    console.error('Erreur création table lieux:', lieuErr.message);
+                    reject(lieuErr);
                     return;
                   }
                   resolve();
@@ -198,10 +198,10 @@ function insertBatches(db, allArticles) {
 
       function insertNextBatch() {
         if (batchIndex >= allArticles.length) {
-          db.run('COMMIT', (err) => {
-            if (err) {
-              console.error('Erreur commit:', err.message);
-              reject(err);
+          db.run('COMMIT', (commitErr) => {
+            if (commitErr) {
+              console.error('Erreur commit:', commitErr.message);
+              reject(commitErr);
             } else {
               resolve();
             }
@@ -220,10 +220,10 @@ function insertBatches(db, allArticles) {
         db.run(
           `INSERT INTO articles (date, departement, cog, commune, lieu, title, url, insecurite, immigration, islamisme, defrancisation, wokisme) VALUES ${placeholders}`,
           flatBatch,
-          (err) => {
-            if (err) {
-              console.error('Erreur insertion batch:', err.message);
-              db.run('ROLLBACK', () => reject(err));
+          (insertErr) => {
+            if (insertErr) {
+              console.error('Erreur insertion batch:', insertErr.message);
+              db.run('ROLLBACK', () => reject(insertErr));
               return;
             }
             batchIndex += batchSize;
