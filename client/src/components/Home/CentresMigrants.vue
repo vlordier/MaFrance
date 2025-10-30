@@ -110,13 +110,6 @@ export default {
       bufferSize: 5
     }
   },
-  mounted() {
-    this.updateContainerHeight()
-    window.addEventListener('resize', this.updateContainerHeight)
-  },
-  beforeUnmount() {
-    window.removeEventListener('resize', this.updateContainerHeight)
-  },
   computed: {
     ...mapStores(useDataStore),
     
@@ -233,6 +226,13 @@ export default {
       },
       deep: true
     }
+  },
+  mounted() {
+    this.updateContainerHeight()
+    window.addEventListener('resize', this.updateContainerHeight)
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.updateContainerHeight)
   }
 }
 </script>

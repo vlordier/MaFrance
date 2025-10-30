@@ -36,14 +36,14 @@ export default {
       default: false
     }
   },
-  computed: {
-    ...mapStores(useDataStore) // Maps useDataStore to this.dataStore
-  },
   data() {
     return {
       levels: ['country', 'departement', 'commune'],
       countryLabel: 'France'
     }
+  },
+  computed: {
+    ...mapStores(useDataStore) // Maps useDataStore to this.dataStore
   },
   watch: {
     // Surveillance des changements de data

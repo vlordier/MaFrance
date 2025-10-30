@@ -75,9 +75,6 @@ export default {
       isCollapsed: false
     }
   },
-  mounted() {
-    // console.log('data', this.data)
-  },
   computed: {
     ...mapStores(useDataStore),
     
@@ -171,7 +168,9 @@ export default {
       }
     }
   },
-  
+  mounted() {
+    // console.log('data', this.data)
+  }
 }
 </script>
 
