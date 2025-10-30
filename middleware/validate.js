@@ -1,10 +1,17 @@
 const { query, param, validationResult } = require('express-validator');
+const {
+  HTTP_BAD_REQUEST,
+  MAX_PAGINATION_LIMIT,
+  MAX_POPULATION_RANGE,
+  MAX_LIEU_LENGTH,
+  MIN_SEARCH_QUERY_LENGTH
+} = require('../constants');
 
 // Middleware to handle validation errors
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    return res.status(HTTP_BAD_REQUEST).json({ errors: errors.array() });
   }
   next();
 };
@@ -68,7 +75,7 @@ function validateOptionalCOG(req, res, next) {
     cog &&
     !/^(?:[0-9]{5}|2[AB][0-9]{3}|97[1-6][0-9]{2}|[0-9]{4})$/.test(cog)
   ) {
-    return res.status(400).json({
+    return res.status(HTTP_BAD_REQUEST).json({
       errors: [
         {
           type: 'field',
@@ -144,8 +151,8 @@ const validateDirection = [
 const validatePagination = [
   query('limit')
     .optional()
-    .isInt({ min: 1, max: 3001 })
-    .withMessage('Limit doit être un entier entre 1 et 3000')
+    .isInt({ min: 1, max: MAX_PAGINATION_LIMIT + 1 })
+    .withMessage(`Limit doit être un entier entre 1 et ${MAX_PAGINATION_LIMIT}`)
     .toInt(),
   query('cursor')
     .optional()
@@ -168,22 +175,22 @@ const validatePopulationRange = [
       if (rangeMatch) {
         const minPop = parseInt(rangeMatch[1], 10);
         const maxPop = parseInt(rangeMatch[2], 10);
-        if (minPop >= 0 && maxPop > minPop && maxPop <= 1000000) {
+        if (minPop >= 0 && maxPop > minPop && maxPop <= MAX_POPULATION_RANGE) {
           return true;
         }
-        throw new Error('Plage de population invalide. Format: \'min-max\' où min < max et max <= 1000000');
+        throw new Error(`Plage de population invalide. Format: 'min-max' où min < max et max <= ${MAX_POPULATION_RANGE}`);
       } else if (minOnlyMatch) {
         const minPop = parseInt(minOnlyMatch[1], 10);
-        if (minPop >= 0 && minPop <= 1000000) {
+        if (minPop >= 0 && minPop <= MAX_POPULATION_RANGE) {
           return true;
         }
-        throw new Error('Population minimum invalide. Doit être entre 0 et 1000000');
+        throw new Error(`Population minimum invalide. Doit être entre 0 et ${MAX_POPULATION_RANGE}`);
       } else if (maxOnlyMatch) {
         const maxPop = parseInt(maxOnlyMatch[1], 10);
-        if (maxPop > 0 && maxPop <= 1000000) {
+        if (maxPop > 0 && maxPop <= MAX_POPULATION_RANGE) {
           return true;
         }
-        throw new Error('Population maximum invalide. Doit être entre 1 et 1000000');
+        throw new Error(`Population maximum invalide. Doit être entre 1 et ${MAX_POPULATION_RANGE}`);
       }
 
       throw new Error(
@@ -208,7 +215,7 @@ const validateLieu = [
     .optional()
     .trim()
     .escape()
-    .isLength({ max: 100 })
+    .isLength({ max: MAX_LIEU_LENGTH })
     .withMessage('Lieu trop long'),
   handleValidationErrors
 ];
@@ -217,7 +224,7 @@ const validateLieu = [
 const validateOptionalDepartement = (req, res, next) => {
   const { dept } = req.query;
   if (dept && !/^\d{1,3}$/.test(dept)) {
-    return res.status(400).json({ error: 'Le paramètre dept doit être un nombre' });
+    return res.status(HTTP_BAD_REQUEST).json({ error: 'Le paramètre dept doit être un nombre' });
   }
   next();
 };
@@ -227,14 +234,14 @@ function validateSearchQuery(req, res, next) {
   if (
     q !== undefined &&
     q !== '' &&
-    (typeof q !== 'string' || q.length < 2 || q.length > 100)
+    (typeof q !== 'string' || q.length < MIN_SEARCH_QUERY_LENGTH || q.length > MAX_LIEU_LENGTH)
   ) {
-    return res.status(400).json({
+    return res.status(HTTP_BAD_REQUEST).json({
       errors: [
         {
           type: 'field',
           value: q,
-          msg: 'La requête doit contenir entre 2 et 100 caractères',
+          msg: `La requête doit contenir entre ${MIN_SEARCH_QUERY_LENGTH} et ${MAX_LIEU_LENGTH} caractères`,
           path: 'q',
           location: 'query'
         }

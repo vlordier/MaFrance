@@ -10,7 +10,10 @@ const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 1000000;
 const SERVER_PORT = 3000;
 const MAX_PAGINATION_LIMIT = 2000;
-const MAX_POPULATION = 10000000; // Maximum population for validation
+const MAX_POPULATION_RANGE = 1000000; // Maximum population for range validation
+const MAX_POPULATION = 10000000; // Maximum population for filtering
+const MAX_LIEU_LENGTH = 100;
+const MIN_SEARCH_QUERY_LENGTH = 2;
 const DEPARTMENT_RANKINGS_LIMIT = 101; // Default limit for department rankings
 
 module.exports = {
@@ -21,5 +24,11 @@ module.exports = {
   HTTP_MOVED_PERMANENTLY,
   DEFAULT_LIMIT,
   MAX_LIMIT,
-  SERVER_PORT
+  SERVER_PORT,
+  MAX_PAGINATION_LIMIT,
+  MAX_POPULATION_RANGE,
+  MAX_POPULATION,
+  MAX_LIEU_LENGTH,
+  MIN_SEARCH_QUERY_LENGTH,
+  DEPARTMENT_RANKINGS_LIMIT
 };
