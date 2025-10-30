@@ -24,7 +24,6 @@ import { useDataStore } from '../../services/store.js'
 import { DepartementNames } from '../../utils/departementNames.js'
 import { MetricsConfig } from '../../utils/metricsConfig.js'
 import chroma from "chroma-js";
-import api from '../../services/api.js'
 import { markRaw } from 'vue'
 import L from 'leaflet'
 import 'leaflet-fullscreen'
@@ -127,7 +126,7 @@ export default {
         this.updateData();
       }
     },
-    currentLevel(newLevel) {
+    currentLevel(newLevel, oldLevel) {
       // Use level-1 logic for determining data level
       let dataLevel;
       if (newLevel === 'country') {
@@ -139,6 +138,7 @@ export default {
       }
 
       const newMetrics = MetricsConfig.getAvailableMetricOptions(dataLevel);
+
       const isCurrentMetricAvailable = newMetrics.some(metric =>
         metric.value === this.selectedMetric.value
       );
@@ -147,6 +147,15 @@ export default {
         const defaultMetric = this.availableMetrics.find(m => m.value === newMetrics[0].value) || newMetrics[0];
         this.selectedMetric = defaultMetric;
         this.onMetricChange(this.selectedMetric);
+      }
+
+      if (newLevel === 'commune' && oldLevel !== 'commune') {
+        this.showCommuneTooltipWhenReady();
+      }
+    },
+    'dataStore.levels.commune'(newCommune, oldCommune) {
+      if (newCommune && newCommune !== oldCommune && this.currentLevel === 'commune') {
+        this.showCommuneTooltipWhenReady();
       }
     },
     'dataStore.levels.commune'(newCommune, oldCommune) {
@@ -250,7 +259,7 @@ export default {
         opacity: 0.9
       }))
       this.legendControl = markRaw(L.control({ position: "bottomleft" }))
-      this.legendControl.onAdd = (map) => {
+      this.legendControl.onAdd = () => {
         const div = L.DomUtil.create("div", "map-legend");
         this.updateLegendContent(div)
         return div
@@ -391,7 +400,7 @@ export default {
         console.error('Erreur chargement GeoJSON:', error)
       }
     },
-    showDepartementLayer(newGeoJson) {
+    showDepartementLayer() {
       if (this.communesLayer) {
         this.communesLayer.clearLayers()
       }
@@ -449,7 +458,6 @@ export default {
     },
     onEachDepartementFeature(feature, layer) {
       const deptCode = feature.properties.code
-      const deptName = feature.properties.nom
       layer.on({
         click: () => {
           this.dataStore.setDepartement(deptCode)
@@ -517,12 +525,12 @@ export default {
       const { properties } = feature;
       if (!this.dataRef || !properties) return null
       let code = null
-      if (properties.hasOwnProperty('code')) {
+      if (Object.prototype.hasOwnProperty.call(properties, 'code')) {
         code = properties?.code
       } else {
         return null
       }
-      if (properties.hasOwnProperty('codeDepartement')) {
+      if (Object.prototype.hasOwnProperty.call(properties, 'codeDepartement')) {
         code = this.removeTrailingZero(code)
       }
       const metric = this.selectedMetric.value

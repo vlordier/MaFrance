@@ -62,7 +62,6 @@ export default {
       }
     }
   },
-
   mounted(){
     // Register the watermark plugin
     Chart.register(watermarkPlugin);
