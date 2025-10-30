@@ -6,6 +6,7 @@ const { cacheMiddleware } = require('../middleware/cache');
 const {
   validateDepartement
 } = require('../middleware/validate');
+const { HTTP_NOT_FOUND } = require('../constants');
 
 // GET /api/departements
 router.get('/', (_req, res, next) => {
@@ -68,7 +69,7 @@ router.get('/details', validateDepartement, cacheMiddleware((req) => `dept_detai
       return handleDbError(err);
     }
     if (!row) {
-      return res.status(404).json({ error: 'Département non trouvé' });
+      return res.status(HTTP_NOT_FOUND).json({ error: 'Département non trouvé' });
     }
 
     res.json(row);
@@ -90,7 +91,7 @@ router.get('/names', validateDepartement, cacheMiddleware((req) => `dept_names_$
         return handleDbError(err);
       }
       if (!row) {
-        return res.status(404).json({
+        return res.status(HTTP_NOT_FOUND).json({
           error: 'Données de prénoms non trouvées pour la dernière année'
         });
       }
@@ -136,7 +137,7 @@ router.get('/crime', validateDepartement, cacheMiddleware((req) => `dept_crime_$
         return handleDbError(err);
       }
       if (!row) {
-        return res.status(404).json({
+        return res.status(HTTP_NOT_FOUND).json({
           error: 'Données criminelles non trouvées pour la dernière année'
         });
       }
@@ -180,7 +181,7 @@ router.get('/prefet', validateDepartement, cacheMiddleware((req) => `prefet_${re
         return handleDbError(err);
       }
       if (!row) {
-        return res.status(404).json({ error: 'Préfet non trouvé' });
+        return res.status(HTTP_NOT_FOUND).json({ error: 'Préfet non trouvé' });
       }
 
       res.json(row);
