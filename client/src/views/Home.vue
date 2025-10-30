@@ -137,6 +137,26 @@ export default {
     Subventions,
     MosqueTable,
   },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      // When navigating to Home from another route, ensure map refreshes
+      if (from.name && from.name !== 'Home') {
+        vm.$nextTick(() => {
+          // Trigger map update after component is ready
+          const mapComponent = vm.$refs.mapComponent;
+          if (mapComponent && typeof mapComponent.updateData === 'function') {
+            mapComponent.updateData();
+          }
+        });
+      }
+    });
+  },
+  data() {
+    return {
+      levels: ['country', 'departement', 'commune'],
+      crimeData: null
+    }
+  },
   computed: {
     ...mapStores(useDataStore),
     currentLocation(){
@@ -300,28 +320,6 @@ export default {
       return this.dataStore.getCurrentSubventions
     },
 
-    
-
-  },
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      // When navigating to Home from another route, ensure map refreshes
-      if (from.name && from.name !== 'Home') {
-        vm.$nextTick(() => {
-          // Trigger map update after component is ready
-          const mapComponent = vm.$refs.mapComponent;
-          if (mapComponent && typeof mapComponent.updateData === 'function') {
-            mapComponent.updateData();
-          }
-        });
-      }
-    });
-  },
-  data() {
-    return {
-      levels: ['country', 'departement', 'commune'],
-      crimeData: null
-    }
   },
   mounted() {
 
