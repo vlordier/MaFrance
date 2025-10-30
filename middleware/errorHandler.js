@@ -44,7 +44,7 @@ const createDbHandler = (res) => (err, result) => {
   }
 };
 
-const errorHandler = (err, req, res) => {
+const errorHandler = (err, _req, res) => {
   console.error('Error:', err.message);
 
   // Don't expose internal errors in production

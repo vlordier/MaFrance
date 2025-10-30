@@ -52,7 +52,9 @@ router.get(
 
     // Get counts first
     db.get(countSql, countParams, (err, countRow) => {
-      if (err) return handleDbError(err);
+      if (err) {
+        return handleDbError(err);
+      }
 
       const counts = {
         insecurite: countRow?.insecurite_count || 0,
@@ -99,7 +101,9 @@ router.get(
 
       // Get articles
       db.all(sql, params, (err, rows) => {
-        if (err) return handleDbError(err);
+        if (err) {
+          return handleDbError(err);
+        }
 
         const hasMore = rows.length > pageLimit;
         const articles = hasMore ? rows.slice(0, pageLimit) : rows;
@@ -153,7 +157,9 @@ router.get(
     }
 
     db.get(sql, params, (err, row) => {
-      if (err) return handleDbError(err);
+      if (err) {
+        return handleDbError(err);
+      }
       const result = {
         insecurite: row?.insecurite_count || 0,
         immigration: row?.immigration_count || 0,
@@ -178,7 +184,9 @@ router.get(
     const params = [cog];
 
     db.all(sql, params, (err, rows) => {
-      if (err) return handleDbError(err);
+      if (err) {
+        return handleDbError(err);
+      }
       const lieux = rows.map(row => ({ lieu: row.lieu }));
       res.json(lieux);
     });

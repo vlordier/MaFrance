@@ -9,7 +9,7 @@ const uploadLimiter = rateLimit({
 });
 
 // Sanitize input to prevent XSS
-const sanitizeInput = (req, res, next) => {
+const sanitizeInput = (req, _res, next) => {
   const sanitize = (obj) => {
     if (typeof obj === 'string') {
       return obj.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
