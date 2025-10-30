@@ -158,16 +158,6 @@ export default {
         this.showCommuneTooltipWhenReady();
       }
     },
-    'dataStore.levels.commune'(newCommune, oldCommune) {
-      if (newCommune && newCommune !== oldCommune && this.currentLevel === 'commune') {
-        this.showCommuneTooltipWhenReady();
-      }
-    },
-    currentLevel(newLevel, oldLevel) {
-      if (newLevel === 'commune' && oldLevel !== 'commune') {
-        this.showCommuneTooltipWhenReady();
-      }
-    },
     'dataStore.selectedMetric': {
       handler(newMetric) {
         if (newMetric) {
@@ -534,7 +524,7 @@ export default {
         code = this.removeTrailingZero(code)
       }
       const metric = this.selectedMetric.value
-      if (this.dataRef.hasOwnProperty(code) && this.dataRef[code].hasOwnProperty(metric)) {
+      if (Object.prototype.hasOwnProperty.call(this.dataRef, code) && Object.prototype.hasOwnProperty.call(this.dataRef[code], metric)) {
         return this.dataRef[code][metric]
       }
       return null

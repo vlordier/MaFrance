@@ -159,6 +159,27 @@ export default {
       return this.mosquesList.length === 0 && !this.isLoading ? 50 : 400;
     }
   },
+  watch: {
+    data: {
+      handler() {
+        this.$nextTick(() => {
+          this.updateContainerHeight()
+        })
+      },
+      deep: true
+    },
+    'data.pagination.hasMore': function(newVal) {
+      if (newVal) {
+        this.attachScrollListener()
+      } else {
+        this.removeScrollListener()
+      }
+    }
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.updateContainerHeight)
+    this.removeScrollListener()
+  },
   methods: {
     updateContainerHeight() {
       if (this.$refs.tableContainer) {
@@ -196,27 +217,6 @@ export default {
       this.$emit('load-more');
     }
     }
-  },
-  watch: {
-    data: {
-      handler() {
-        this.$nextTick(() => {
-          this.updateContainerHeight()
-        })
-      },
-      deep: true
-    },
-    'data.pagination.hasMore': function(newVal) {
-      if (newVal) {
-        this.attachScrollListener()
-      } else {
-        this.removeScrollListener()
-      }
-    }
-  },
-  beforeUnmount() {
-    window.removeEventListener('resize', this.updateContainerHeight)
-    this.removeScrollListener()
   }
 }
 </script>

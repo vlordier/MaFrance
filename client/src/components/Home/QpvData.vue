@@ -271,6 +271,19 @@ export default {
       return this.qpvList.length === 0 && !this.isLoading ? 50 : 400;
     }
   },
+  watch: {
+    data: {
+      handler() {
+        this.$nextTick(() => {
+          this.updateContainerHeight()
+        })
+      },
+      deep: true
+    }
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.updateContainerHeight)
+  },
   methods: {
     toggleCollapse() {
       this.isCollapsed = !this.isCollapsed;
@@ -332,19 +345,6 @@ export default {
         this.isLoading = false;
       }
     }
-  },
-  watch: {
-    data: {
-      handler() {
-        this.$nextTick(() => {
-          this.updateContainerHeight()
-        })
-      },
-      deep: true
-    }
-  },
-  beforeUnmount() {
-    window.removeEventListener('resize', this.updateContainerHeight)
   }
 }
 </script>
