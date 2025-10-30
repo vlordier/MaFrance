@@ -1,46 +1,54 @@
 <template>
   <v-card class="mb-4">
-    <v-card-title class="text-h6 pb-0" @click="toggleCollapse" style="cursor: pointer;">
+    <v-card-title class="text-h6 pb-0" style="cursor: pointer;" @click="toggleCollapse">
       {{ cardTitle }}
     </v-card-title>
 
     <v-expand-transition>
       <v-card-text v-show="!isCollapsed">
-      <!-- Show loading indicator while data is being fetched -->
-      <div v-if="loading" class="d-flex justify-center align-center py-8">
-        <v-progress-circular indeterminate color="primary" size="32"></v-progress-circular>
-      </div>
+        <!-- Show loading indicator while data is being fetched -->
+        <div v-if="loading" class="d-flex justify-center align-center py-8">
+          <v-progress-circular indeterminate color="primary" size="32" />
+        </div>
 
-      <!-- Display table if there are rows -->
-      <v-table v-else-if="tableRows.length > 0" class="score-table">
-        <thead>
-          <tr class="score-header">
-            <th class="row-title" :style="getHeaderWidthStyle()"></th>
-            <th class="score-main" :style="getMainColumnWidthStyle()">{{ mainHeader }}</th>
-            <th v-if="compareHeader" class="score-compare" :style="getCompareColumnWidthStyle()">{{ compareHeader }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="(row, index) in tableRows"
-            :key="index"
-            :class="getRowClasses(row)"
-            :data-group-id="row.groupId"
-            @click="handleRowClick(row)"
-          >
-            <td :class="getTitleClasses(row)">
-              <span>{{ row.title }}</span>
-            </td>
-            <td class="score-main">{{ row.main }}</td>
-            <td v-if="compareHeader" class="score-compare">{{ row.compare || '' }}</td>
-          </tr>
-        </tbody>
-      </v-table>
+        <!-- Display table if there are rows -->
+        <v-table v-else-if="tableRows.length > 0" class="score-table">
+          <thead>
+            <tr class="score-header">
+              <th class="row-title" :style="getHeaderWidthStyle()" />
+              <th class="score-main" :style="getMainColumnWidthStyle()">
+                {{ mainHeader }}
+              </th>
+              <th v-if="compareHeader" class="score-compare" :style="getCompareColumnWidthStyle()">
+                {{ compareHeader }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(row, index) in tableRows"
+              :key="index"
+              :class="getRowClasses(row)"
+              :data-group-id="row.groupId"
+              @click="handleRowClick(row)"
+            >
+              <td :class="getTitleClasses(row)">
+                <span>{{ row.title }}</span>
+              </td>
+              <td class="score-main">
+                {{ row.main }}
+              </td>
+              <td v-if="compareHeader" class="score-compare">
+                {{ row.compare || '' }}
+              </td>
+            </tr>
+          </tbody>
+        </v-table>
 
-      <!-- Show message if no data is available -->
-      <div v-else class="text-center py-8 text-grey">
-        {{ noDataMessage }}
-      </div>
+        <!-- Show message if no data is available -->
+        <div v-else class="text-center py-8 text-grey">
+          {{ noDataMessage }}
+        </div>
       </v-card-text>
     </v-expand-transition>
   </v-card>
@@ -248,7 +256,7 @@ export default {
       const sectionData = storeSection[source]
       if (!sectionData) return 'N/A'
 
-      let value = MetricsConfig.calculateMetric(metricKey, sectionData)
+      const value = MetricsConfig.calculateMetric(metricKey, sectionData)
       if (value == null || value === undefined || isNaN(value)) return 'N/A'
 
       let formatted = MetricsConfig.formatMetricValue(value, metricKey)
@@ -270,7 +278,7 @@ export default {
       const data = sectionData.find(item => item.country === countryType)
       if (!data) return 'N/A'
 
-      let value = MetricsConfig.calculateMetric(metricKey, data)
+      const value = MetricsConfig.calculateMetric(metricKey, data)
       if (value == null || value === undefined || isNaN(value)) return 'N/A'
 
       let formatted = MetricsConfig.formatMetricValue(value, metricKey)

@@ -1,64 +1,76 @@
 
 <template>
   <v-card class="mb-4">
-    <v-card-title class="text-h6 pb-0" @click="toggleCollapse" style="cursor: pointer;">
+    <v-card-title class="text-h6 pb-0" style="cursor: pointer;" @click="toggleCollapse">
       {{ isEnglish ? 'Migrant centers for:' : 'Centres de migrants pour:' }} {{ locationName }}
     </v-card-title>
 
     <v-expand-transition>
       <v-card-text v-show="!isCollapsed">
-      <div
-        class="table-container"
-        ref="tableContainer"
-        @scroll="handleScroll"
-        v-if="visibleMigrants && visibleMigrants.length > 0"
-        :style="{ maxHeight: computedContainerHeight + 'px' }"
-      >
-        <!-- Fixed header outside of virtual scroll -->
-        <table class="centres-table centres-table-header">
-          <thead>
-            <tr>
-              <th>{{ isEnglish ? 'Type' : 'Type' }}</th>
-              <th>{{ isEnglish ? 'Capacity' : 'Places' }}</th>
-              <th>{{ isEnglish ? 'Manager' : 'Gestionnaire' }}</th>
-              <th>{{ isEnglish ? 'Dept.' : 'Dept.' }}</th>
-              <th>{{ isEnglish ? 'Municipality' : 'Commune' }}</th>
-              <th>{{ isEnglish ? 'Address' : 'Adresse' }}</th>
-            </tr>
-          </thead>
-        </table>
+        <div
+          v-if="visibleMigrants && visibleMigrants.length > 0"
+          ref="tableContainer"
+          class="table-container"
+          :style="{ maxHeight: computedContainerHeight + 'px' }"
+          @scroll="handleScroll"
+        >
+          <!-- Fixed header outside of virtual scroll -->
+          <table class="centres-table centres-table-header">
+            <thead>
+              <tr>
+                <th>{{ isEnglish ? 'Type' : 'Type' }}</th>
+                <th>{{ isEnglish ? 'Capacity' : 'Places' }}</th>
+                <th>{{ isEnglish ? 'Manager' : 'Gestionnaire' }}</th>
+                <th>{{ isEnglish ? 'Dept.' : 'Dept.' }}</th>
+                <th>{{ isEnglish ? 'Municipality' : 'Commune' }}</th>
+                <th>{{ isEnglish ? 'Address' : 'Adresse' }}</th>
+              </tr>
+            </thead>
+          </table>
         
-        <!-- Virtual scrolled content -->
-        <div class="virtual-scroll-wrapper" :style="{ height: virtualHeight + 'px' }">
-          <div class="virtual-scroll-content" :style="{ transform: `translateY(${offsetY}px)`, paddingTop: '40px' }">
-            <table class="centres-table centres-table-body">
-              <tbody>
-                <tr
-                  v-for="(centre, i) in visibleMigrants"
-                  :key="centre.COG + '-' + centre.gestionnaire + '-' + i"
-                  :style="{ height: itemHeight + 'px' }"
-                >
-                  <td class="row-title">{{ centre.type || 'N/A' }}</td>
-                  <td class="score-main">{{ formatNumber(centre.places) }}</td>
-                  <td class="score-main">{{ centre.gestionnaire || 'N/A' }}</td>
-                  <td class="score-main">{{ centre.departement || 'N/A' }}</td>
-                  <td class="score-main">{{ centre.commune || 'N/A' }}</td>
-                  <td class="score-main">{{ centre.adresse || 'N/A' }}</td>
-                </tr>
-              </tbody>
-            </table>
+          <!-- Virtual scrolled content -->
+          <div class="virtual-scroll-wrapper" :style="{ height: virtualHeight + 'px' }">
+            <div class="virtual-scroll-content" :style="{ transform: `translateY(${offsetY}px)`, paddingTop: '40px' }">
+              <table class="centres-table centres-table-body">
+                <tbody>
+                  <tr
+                    v-for="(centre, i) in visibleMigrants"
+                    :key="centre.COG + '-' + centre.gestionnaire + '-' + i"
+                    :style="{ height: itemHeight + 'px' }"
+                  >
+                    <td class="row-title">
+                      {{ centre.type || 'N/A' }}
+                    </td>
+                    <td class="score-main">
+                      {{ formatNumber(centre.places) }}
+                    </td>
+                    <td class="score-main">
+                      {{ centre.gestionnaire || 'N/A' }}
+                    </td>
+                    <td class="score-main">
+                      {{ centre.departement || 'N/A' }}
+                    </td>
+                    <td class="score-main">
+                      {{ centre.commune || 'N/A' }}
+                    </td>
+                    <td class="score-main">
+                      {{ centre.adresse || 'N/A' }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        
+          <div v-if="isLoading" class="loading">
+            <v-progress-circular indeterminate size="24" color="primary" />
+            {{ isEnglish ? 'Loading...' : 'Chargement...' }}
           </div>
         </div>
-        
-        <div v-if="isLoading" class="loading">
-          <v-progress-circular indeterminate size="24" color="primary"></v-progress-circular>
-          {{ isEnglish ? 'Loading...' : 'Chargement...' }}
-        </div>
-      </div>
 
-      <div v-else class="text-center">
-        <p>{{ isEnglish ? 'No migrant accommodation centers in this area.' : 'Aucun centre d\'hébergement de migrants dans cette zone.' }}</p>
-      </div>
+        <div v-else class="text-center">
+          <p>{{ isEnglish ? 'No migrant accommodation centers in this area.' : 'Aucun centre d\'hébergement de migrants dans cette zone.' }}</p>
+        </div>
       </v-card-text>
     </v-expand-transition>
   </v-card>

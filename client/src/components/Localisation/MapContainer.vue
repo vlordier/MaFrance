@@ -2,7 +2,7 @@
   <div class="map-container">
     <v-card class="mb-4">
       <v-card-text class="pa-0 position-relative">
-        <div id="localisationMap" class="localisation-map"></div>
+        <div id="localisationMap" class="localisation-map" />
 
         <LocationDataBox @cadastral-data-loaded="$emit('cadastral-data-loaded', $event)" />
       </v-card-text>
@@ -103,13 +103,13 @@ L.Icon.Default.mergeOptions({
 
 export default {
   name: 'MapContainer',
+  components: {
+    LocationDataBox
+  },
   props: {
     // Props no longer needed as data comes from store
   },
   emits: ['location-selected', 'cadastral-data-loaded'],
-  components: {
-    LocationDataBox
-  },
   setup(props, { emit }) {
     const dataStore = useDataStore()
     const locationStore = useLocationStore()

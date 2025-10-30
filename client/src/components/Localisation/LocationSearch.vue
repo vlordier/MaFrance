@@ -10,18 +10,18 @@
       variant="outlined"
       density="compact"
       append-inner-icon="mdi-magnify"
-      @click:append-inner="searchAddress"
-      @keyup.enter="searchAddress"
       :loading="searchingAddress"
       class="mb-3"
+      @click:append-inner="searchAddress"
+      @keyup.enter="searchAddress"
     />
     <v-btn
       color="primary"
       variant="outlined"
       prepend-icon="mdi-crosshairs-gps"
-      @click="getCurrentLocation"
       :loading="gettingLocation"
       block
+      @click="getCurrentLocation"
     >
       {{ isEnglish ? 'My position' : 'Ma position' }}
     </v-btn>

@@ -1,17 +1,16 @@
 <template>
   <div class="rankings-container">
-
     <!-- Controls Section -->
     <div class="controls-section">
       <!-- All controls moved to RankingFilters -->
       <RankingFilters
-        :selectedScope="selectedScope"
-        :selectedDepartement="selectedDepartement"
-        :selectedMetric="selectedMetric"
+        ref="rankingFilters"
+        :selected-scope="selectedScope"
+        :selected-departement="selectedDepartement"
+        :selected-metric="selectedMetric"
         :filters="filters"
         @filters-changed="onFiltersChanged"
         @selection-changed="onSelectionChanged"
-        ref="rankingFilters"
       />
     </div>
 
@@ -31,7 +30,7 @@
         :metric="selectedMetric"
         :type="currentType"
         :limit="filters.topLimit"
-        :showPoliticalColor="filters.politicalFamily"
+        :show-political-color="filters.politicalFamily"
       />
 
       <div v-else class="no-data">
@@ -240,8 +239,8 @@ export default {
       error.value = ''
 
       try {
-        let populationRange = constructPopulationRange()
-        let limit = Math.min(filters.value.topLimit || 10, 100)
+        const populationRange = constructPopulationRange()
+        const limit = Math.min(filters.value.topLimit || 10, 100)
 
         if (selectedScope.value === 'departements') {
           rankings.value = await fetchDepartmentRankings(selectedMetric.value, limit)

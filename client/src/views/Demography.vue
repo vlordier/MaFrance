@@ -1,36 +1,56 @@
 <template>
   <div class="container mx-auto p-4">
-    <h1 class="text-2xl font-bold mb-4">Projection Démographique en France</h1>
+    <h1 class="text-2xl font-bold mb-4">
+      Projection Démographique en France
+    </h1>
     <!-- Paramètres d'entrée -->
     <DemParameters
-      :initialTFR="initialTFR"
+      :initial-t-f-r="initialTFR"
       @update:fertility="fertilityParams = $event"
       @update:migration="migrationEvol = $event"
       @run="runProjection"
     />
     <!-- Graphique des tendances de population (en premier) -->
-    <DemGraph :historical="historicalData" :projected="projectedData" :yearRange="yearRange" :selectedScale="selectedScale" :targetTFR="fertilityParams.targetTFR" :targetTFRYear="fertilityParams.targetTFRYear" @update:selectedScale="selectedScale = $event" />
+    <DemGraph
+      :historical="historicalData"
+      :projected="projectedData"
+      :year-range="yearRange"
+      :selected-scale="selectedScale"
+      :target-t-f-r="fertilityParams.targetTFR"
+      :target-t-f-r-year="fertilityParams.targetTFRYear"
+      @update:selected-scale="selectedScale = $event"
+    />
     <!-- Grille avec pyramide dans la première colonne et score/année dans la seconde -->
     <v-row>
       <v-col cols="12" md="6">
         <DemPyramid
+          v-model:selected-year="selectedYear"
           :pyramid="currentPyramid"
-          v-model:selectedYear="selectedYear"
-          :year2100Pyramid="year2100Pyramid"
-          :minYear="2024"
-          :maxYear="yearRange[1]"
+          :year2100-pyramid="year2100Pyramid"
+          :min-year="2024"
+          :max-year="yearRange[1]"
         />
       </v-col>
       <v-col cols="12" md="6">
         <!-- Année de stabilisation démographique -->
         <div class="bg-green-50 p-4 rounded-lg mb-4">
-          <h3 class="text-lg font-medium mb-2">Année de Stabilisation Démographique</h3>
-          <p class="text-sm" v-if="stabilizationYear !== null">La population se stabilise à partir de {{ stabilizationYear }} (variations absolues < 0,2 %/an).</p>
-          <p class="text-sm" v-else>Aucune stabilisation démographique n'a été atteinte</p>
+          <h3 class="text-lg font-medium mb-2">
+            Année de Stabilisation Démographique
+          </h3>
+          <p v-if="stabilizationYear !== null" class="text-sm">
+            La population se stabilise à partir de {{ stabilizationYear }} (variations absolues < 0,2 %/an).
+          </p>
+          <p v-else class="text-sm">
+            Aucune stabilisation démographique n'a été atteinte
+          </p>
         </div>
         <div v-if="stabilityScore !== null" class="mt-4 p-3 bg-blue-50 rounded">
-          <h3 class="text-lg font-medium mb-2">Score de Stabilité Démographique (pour 2100)</h3>
-          <p class="text-sm">Score : {{ stabilityScore }}/100 (plus élevé = pyramide plus proche de l'idéal stationnaire)</p>
+          <h3 class="text-lg font-medium mb-2">
+            Score de Stabilité Démographique (pour 2100)
+          </h3>
+          <p class="text-sm">
+            Score : {{ stabilityScore }}/100 (plus élevé = pyramide plus proche de l'idéal stationnaire)
+          </p>
         </div>
       </v-col>
     </v-row>

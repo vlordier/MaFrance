@@ -1,6 +1,6 @@
 <template>
   <v-menu offset-y>
-    <template v-slot:activator="{ props }">
+    <template #activator="{ props }">
       <v-btn
         v-bind="props"
         variant="text"
@@ -14,8 +14,8 @@
       <v-list-item
         v-for="(option, index) in versionOptions"
         :key="index"
-        @click="selectVersion(index)"
         :class="{ 'v-list-item--active': labelState === index }"
+        @click="selectVersion(index)"
       >
         <v-list-item-title>{{ option.label }}</v-list-item-title>
       </v-list-item>
@@ -59,6 +59,10 @@ export default {
       ]
     }
   },
+  mounted() {
+    // Set initial page title
+    this.updatePageTitle()
+  },
   methods: {
     selectVersion(index) {
       this.dataStore.setLabelState(index)
@@ -81,10 +85,6 @@ export default {
         }
       }
     }
-  },
-  mounted() {
-    // Set initial page title
-    this.updatePageTitle()
   }
 }
 </script>

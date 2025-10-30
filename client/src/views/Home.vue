@@ -30,7 +30,7 @@
           <!-- Names Graph -->
           <v-col cols="12">
             <NamesGraph 
-              v-if='namesData && currentLocation'
+              v-if="namesData && currentLocation"
               :data="namesData"
               :location="currentLocation"
             />
@@ -51,7 +51,6 @@
               :data="qpvData"
             />
           </v-col>
-
         </v-row>
       </v-col>
 
@@ -86,9 +85,9 @@
           <v-col cols="12">
             <Subventions
               :location="currentLocation"
-              :countryData="dataStore.country"
-              :departementData="dataStore.departement"
-              :communeData="dataStore.commune"
+              :country-data="dataStore.country"
+              :departement-data="dataStore.departement"
+              :commune-data="dataStore.commune"
             />
           </v-col>
 
@@ -207,7 +206,7 @@ export default {
       for (const level of this.levels) {
         const data = this.dataStore[level]?.crimeSeries?.data || {}
 
-        for(let k in data) {
+        for(const k in data) {
           if(!result.hasOwnProperty(k)) result[k] = {}
           result[k][level] = data[k]
         }
@@ -304,12 +303,6 @@ export default {
     
 
   },
-  data() {
-    return {
-      levels: ['country', 'departement', 'commune'],
-      crimeData: null
-    }
-  },
   beforeRouteEnter(to, from, next) {
     next(vm => {
       // When navigating to Home from another route, ensure map refreshes
@@ -323,6 +316,12 @@ export default {
         });
       }
     });
+  },
+  data() {
+    return {
+      levels: ['country', 'departement', 'commune'],
+      crimeData: null
+    }
   },
   mounted() {
 
@@ -350,7 +349,7 @@ export default {
       const result = {}
       const data = this.dataStore.country.crimeAggreg
 
-      for(let k in data) {
+      for(const k in data) {
 
       }
     },

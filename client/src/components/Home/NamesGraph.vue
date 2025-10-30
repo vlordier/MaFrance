@@ -1,21 +1,23 @@
 
 <template>
   <v-card>
-    <v-card-title class="text-h6 pb-0 d-flex justify-space-between align-center" @click="toggleCollapse" style="cursor: pointer">
+    <v-card-title class="text-h6 pb-0 d-flex justify-space-between align-center" style="cursor: pointer" @click="toggleCollapse">
       <span>{{ isEnglish ? 'First Names Evolution' : 'Évolution des Prénoms' }}</span>
       <v-btn
-        @click.stop="toggleView"
         color="primary"
         variant="outlined"
         size="small"
+        @click.stop="toggleView"
       >
         {{ getViewToggleText() }}
       </v-btn>
     </v-card-title>
     <v-card-subtitle class="text-caption text-grey pt-0 pb-0">
-      <a href="https://www.insee.fr/fr/statistiques/8595130?sommaire=8595113" 
-         target="_blank" 
-         class="text-decoration-none">
+      <a
+        href="https://www.insee.fr/fr/statistiques/8595130?sommaire=8595113" 
+        target="_blank" 
+        class="text-decoration-none"
+      >
         {{ isEnglish ? 'INSEE source' : 'source INSEE' }}
       </a>
     </v-card-subtitle>
@@ -23,7 +25,7 @@
     <v-expand-transition v-show="!isCollapsed">
       <v-card-text>
         <div class="chart-container">
-          <canvas ref="chartCanvas" class="chart-canvas"></canvas>
+          <canvas ref="chartCanvas" class="chart-canvas" />
         </div>
       </v-card-text>
     </v-expand-transition>

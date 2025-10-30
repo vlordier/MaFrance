@@ -2,26 +2,28 @@
   <div class="bg-white p-4 rounded-lg shadow">
     <v-row class="mb-0">
       <v-col cols="auto">
-        <h2 class="text-xl font-semibold">Population en France</h2>
+        <h2 class="text-xl font-semibold">
+          Population en France
+        </h2>
       </v-col>
       <v-col cols="auto">
         <v-select
           v-model="internalSelectedScale"
           :items="scaleOptions"
-          @update:modelValue="$emit('update:selectedScale', $event)"
           label="Échelle temporelle"
           density="compact"
           variant="outlined"
           color="primary"
           class="max-w-xs"
-        ></v-select>
+          @update:model-value="$emit('update:selectedScale', $event)"
+        />
       </v-col>
       <v-col cols="auto">
         <v-btn
-          @click="showTFR = !showTFR"
           :color="showTFR ? 'primary' : 'grey'"
           size="small"
           variant="outlined"
+          @click="showTFR = !showTFR"
         >
           <v-icon>{{ showTFR ? 'mdi-eye' : 'mdi-eye-off' }}</v-icon>
           TFR - Taux de Fécondité Total
@@ -31,7 +33,7 @@
     <div v-if="!props.historical || !props.projected || !props.yearRange" class="text-center p-4">
       Loading data...
     </div>
-    <canvas ref="chartCanvas" class="h-96 min-h-96"></canvas>
+    <canvas ref="chartCanvas" class="h-96 min-h-96" />
   </div>
 </template>
 

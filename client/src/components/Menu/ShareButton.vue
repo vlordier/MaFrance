@@ -1,8 +1,15 @@
 <template>
   <v-menu offset-y>
-    <template v-slot:activator="{ props }">
-      <v-btn v-bind="props" variant="text" class="mx-2" :title="shareButtonTitle">
-        <v-icon start>mdi-share-variant</v-icon>
+    <template #activator="{ props }">
+      <v-btn
+        v-bind="props"
+        variant="text"
+        class="mx-2"
+        :title="shareButtonTitle"
+      >
+        <v-icon start>
+          mdi-share-variant
+        </v-icon>
         <span v-if="showText">{{ isEnglish ? 'Share' : 'Partager' }}</span>
       </v-btn>
     </template>
@@ -18,39 +25,45 @@
           variant="outlined"
           density="compact"
           append-inner-icon="mdi-content-copy"
-          @click:append-inner="copyToClipboard"
           hide-details
+          @click:append-inner="copyToClipboard"
         />
         <div class="mt-3 text-caption text-medium-emphasis">
-          {{ shareLocation }} - {{shareVersion }}
+          {{ shareLocation }} - {{ shareVersion }}
         </div>
       </v-card-text>
       <v-card-actions>
         <v-btn
-          @click="copyToClipboard"
           color="primary"
           variant="text"
           size="small"
+          @click="copyToClipboard"
         >
-          <v-icon start>mdi-content-copy</v-icon>
+          <v-icon start>
+            mdi-content-copy
+          </v-icon>
           {{ isEnglish ? 'Copy' : 'Copier' }}
         </v-btn>
         <v-btn
-          @click="shareOnTwitter"
           color="primary"
           variant="text"
           size="small"
+          @click="shareOnTwitter"
         >
-          <v-icon start>mdi-twitter</v-icon>
+          <v-icon start>
+            mdi-twitter
+          </v-icon>
           Twitter
         </v-btn>
         <v-btn
-          @click="shareOnFacebook"
           color="primary"
           variant="text"
           size="small"
+          @click="shareOnFacebook"
         >
-          <v-icon start>mdi-facebook</v-icon>
+          <v-icon start>
+            mdi-facebook
+          </v-icon>
           Facebook
         </v-btn>
       </v-card-actions>

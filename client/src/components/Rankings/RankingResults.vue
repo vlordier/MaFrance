@@ -10,11 +10,21 @@
         <table class="score-table">
           <thead>
             <tr class="score-header">
-              <th style="width: 12%;">{{ isEnglish ? 'Rank' : 'Rang' }}</th>
-              <th style="width: 35%;">{{ getTypeLabel(type) }}</th>
-              <th style="width: 20%;">Population</th>
-              <th v-if="showPoliticalColor && type === 'Commune'" style="width: 15%;">{{ isEnglish ? 'Mayor Political Family' : 'Famille Politique du Maire' }}</th>
-              <th style="width: 18%;">{{ isEnglish ? 'Value' : 'Valeur' }}</th>
+              <th style="width: 12%;">
+                {{ isEnglish ? 'Rank' : 'Rang' }}
+              </th>
+              <th style="width: 35%;">
+                {{ getTypeLabel(type) }}
+              </th>
+              <th style="width: 20%;">
+                Population
+              </th>
+              <th v-if="showPoliticalColor && type === 'Commune'" style="width: 15%;">
+                {{ isEnglish ? 'Mayor Political Family' : 'Famille Politique du Maire' }}
+              </th>
+              <th style="width: 18%;">
+                {{ isEnglish ? 'Value' : 'Valeur' }}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -27,7 +37,9 @@
               <td>{{ item.rank }}</td>
               <td>{{ formatLocationName(item) }}</td>
               <td>{{ formatPopulation(item.population) }}</td>
-              <td v-if="showPoliticalColor && type === 'Commune'">{{ item.famille_nuance || 'N/A' }}</td>
+              <td v-if="showPoliticalColor && type === 'Commune'">
+                {{ item.famille_nuance || 'N/A' }}
+              </td>
               <td>{{ formatMetricValue(item[metric]) }}</td>
             </tr>
           </tbody>
@@ -40,11 +52,21 @@
         <table class="score-table">
           <thead>
             <tr class="score-header">
-              <th style="width: 12%;">{{ isEnglish ? 'Rank' : 'Rang' }}</th>
-              <th style="width: 35%;">{{ getTypeLabel(type) }}</th>
-              <th style="width: 20%;">Population</th>
-              <th v-if="showPoliticalColor && type === 'Commune'" style="width: 15%;">{{ isEnglish ? 'Mayor Political Family' : 'Famille Politique du Maire' }}</th>
-              <th style="width: 18%;">{{ isEnglish ? 'Value' : 'Valeur' }}</th>
+              <th style="width: 12%;">
+                {{ isEnglish ? 'Rank' : 'Rang' }}
+              </th>
+              <th style="width: 35%;">
+                {{ getTypeLabel(type) }}
+              </th>
+              <th style="width: 20%;">
+                Population
+              </th>
+              <th v-if="showPoliticalColor && type === 'Commune'" style="width: 15%;">
+                {{ isEnglish ? 'Mayor Political Family' : 'Famille Politique du Maire' }}
+              </th>
+              <th style="width: 18%;">
+                {{ isEnglish ? 'Value' : 'Valeur' }}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -57,7 +79,9 @@
               <td>{{ item.rank }}</td>
               <td>{{ formatLocationName(item) }}</td>
               <td>{{ formatPopulation(item.population) }}</td>
-              <td v-if="showPoliticalColor && type === 'Commune'">{{ item.famille_nuance || 'N/A' }}</td>
+              <td v-if="showPoliticalColor && type === 'Commune'">
+                {{ item.famille_nuance || 'N/A' }}
+              </td>
               <td>{{ formatMetricValue(item[metric]) }}</td>
             </tr>
           </tbody>

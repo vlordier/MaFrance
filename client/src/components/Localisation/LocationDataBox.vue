@@ -6,14 +6,16 @@
         @click="overlayExpanded = !overlayExpanded"
       >
         <span class="text-subtitle-2">{{ isEnglish ? labels.displayPlaces.en : labels.displayPlaces.fr }}</span>
-        <v-icon size="16">{{ overlayExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+        <v-icon size="16">
+          {{ overlayExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down' }}
+        </v-icon>
       </v-card-title>
       <v-expand-transition>
         <v-card-text v-show="overlayExpanded" class="pa-2 pt-0">
           <v-row>
             <v-col cols="6">
-              <v-tooltip text='Les "quartiers"..' location="top">
-                <template v-slot:activator="{ props }">
+              <v-tooltip text="Les &quot;quartiers&quot;.." location="top">
+                <template #activator="{ props }">
                   <span v-bind="props">
                     <v-checkbox
                       v-model="showQpv"
@@ -22,8 +24,8 @@
                       hide-details
                       @change="onOverlayToggle"
                     >
-                      <template v-slot:prepend>
-                        <div class="overlay-indicator qpv-indicator" :style="{ backgroundColor: isInclusive ? '#0000ff' : '#ff0000', borderColor: isInclusive ? '#0000cc' : '#cc0000' }"></div>
+                      <template #prepend>
+                        <div class="overlay-indicator qpv-indicator" :style="{ backgroundColor: isInclusive ? '#0000ff' : '#ff0000', borderColor: isInclusive ? '#0000cc' : '#cc0000' }" />
                       </template>
                     </v-checkbox>
                   </span>
@@ -36,8 +38,10 @@
                 hide-details
                 @change="onOverlayToggle"
               >
-                <template v-slot:prepend>
-                  <div class="overlay-indicator migrant-indicator">{{ isInclusive ? '🧸' : '↑' }}</div>
+                <template #prepend>
+                  <div class="overlay-indicator migrant-indicator">
+                    {{ isInclusive ? '🧸' : '↑' }}
+                  </div>
                 </template>
               </v-checkbox>
               <v-checkbox
@@ -47,14 +51,16 @@
                 hide-details
                 @change="onOverlayToggle"
               >
-                <template v-slot:prepend>
-                  <div class="overlay-indicator mosque-indicator">{{ isInclusive ? '🦄' : '🕌' }}</div>
+                <template #prepend>
+                  <div class="overlay-indicator mosque-indicator">
+                    {{ isInclusive ? '🦄' : '🕌' }}
+                  </div>
                 </template>
               </v-checkbox>
             </v-col>
             <v-col cols="6">
               <v-tooltip text="Il faut zoomer pour voir les prix de l'immobilier" location="top">
-                <template v-slot:activator="{ props }">
+                <template #activator="{ props }">
                   <span v-bind="props">
                     <v-checkbox
                       v-model="showCadastral"
@@ -64,7 +70,7 @@
                       :disabled="locationStore.zoom < 12"
                       @change="onOverlayToggle"
                     >
-                      <template v-slot:prepend>
+                      <template #prepend>
                         <div class="overlay-indicator cadastral-indicator">📐</div>
                       </template>
                     </v-checkbox>
@@ -80,8 +86,8 @@
                 density="compact"
                 hide-details
                 :disabled="locationStore.zoom < 12"
-                @update:model-value="onPriceRangeChange"
                 class="mt-2"
+                @update:model-value="onPriceRangeChange"
               />
               <div v-if="showCadastral" class="text-caption text-center mt-1">
                 {{ priceRange[0] }} - {{ priceRange[1] }} €/m²
@@ -93,9 +99,9 @@
                 density="compact"
                 hide-details
                 clearable
-                @update:model-value="onOverlaySelectionChange"
                 class="mt-2"
-              ></v-select>
+                @update:model-value="onOverlaySelectionChange"
+              />
             </v-col>
           </v-row>
         </v-card-text>

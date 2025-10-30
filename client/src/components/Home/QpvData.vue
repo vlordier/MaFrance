@@ -1,46 +1,94 @@
 <template>
   <v-card class="mb-4">
-    <v-card-title class="text-h6 pb-0" @click="toggleCollapse" style="cursor: pointer">
+    <v-card-title class="text-h6 pb-0" style="cursor: pointer" @click="toggleCollapse">
       {{ isEnglish ? 'Priority Districts (QPV) in:' : 'Quartiers Prioritaires (QPV) à:' }} {{ locationName }}
     </v-card-title>
     <v-expand-transition>
       <v-card-text v-show="!isCollapsed">
         <div
-          class="table-container"
-          ref="tableContainer"
-          @scroll="handleScroll"
           v-if="visibleQpvs && visibleQpvs.length > 0"
+          ref="tableContainer"
+          class="table-container"
           :style="{ maxHeight: computedContainerHeight + 'px' }"
+          @scroll="handleScroll"
         >
           <!-- Fixed header outside of virtual scroll -->
           <table class="qpv-table qpv-table-header">
             <thead>
               <tr>
-                <th v-if="isEnglish">Priority District</th>
-                <th v-else>Quartier QPV</th>
+                <th v-if="isEnglish">
+                  Priority District
+                </th>
+                <th v-else>
+                  Quartier QPV
+                </th>
                 <th>Population</th>
-                <th v-if="isEnglish">Municipality</th>
-                <th v-else>Commune</th>
-                <th v-if="isEnglish">Immigrant Pop.</th>
-                <th v-else>Pop. Immigrée</th>
-                <th v-if="isEnglish">Foreign Pop.</th>
-                <th v-else>Pop. Étrangère</th>
-                <th v-if="isEnglish">Employment Rate</th>
-                <th v-else>Taux d'emploi</th>
-                <th v-if="isEnglish">Poverty Rate</th>
-                <th v-else>Taux de pauvreté</th>
-                <th v-if="isEnglish">Basic RSA</th>
-                <th v-else>RSA socle</th>
-                <th v-if="isEnglish">CAF Recipients</th>
-                <th v-else>Allocataires CAF</th>
-                <th v-if="isEnglish">CAF Coverage</th>
-                <th v-else>Couverture CAF</th>
-                <th v-if="isEnglish">Youth Index</th>
-                <th v-else>Indice Jeunesse</th>
-                <th v-if="isEnglish">Social Housing</th>
-                <th v-else>Logements sociaux</th>
-                <th v-if="isEnglish">Social Housing Rate</th>
-                <th v-else>Taux logements sociaux</th>
+                <th v-if="isEnglish">
+                  Municipality
+                </th>
+                <th v-else>
+                  Commune
+                </th>
+                <th v-if="isEnglish">
+                  Immigrant Pop.
+                </th>
+                <th v-else>
+                  Pop. Immigrée
+                </th>
+                <th v-if="isEnglish">
+                  Foreign Pop.
+                </th>
+                <th v-else>
+                  Pop. Étrangère
+                </th>
+                <th v-if="isEnglish">
+                  Employment Rate
+                </th>
+                <th v-else>
+                  Taux d'emploi
+                </th>
+                <th v-if="isEnglish">
+                  Poverty Rate
+                </th>
+                <th v-else>
+                  Taux de pauvreté
+                </th>
+                <th v-if="isEnglish">
+                  Basic RSA
+                </th>
+                <th v-else>
+                  RSA socle
+                </th>
+                <th v-if="isEnglish">
+                  CAF Recipients
+                </th>
+                <th v-else>
+                  Allocataires CAF
+                </th>
+                <th v-if="isEnglish">
+                  CAF Coverage
+                </th>
+                <th v-else>
+                  Couverture CAF
+                </th>
+                <th v-if="isEnglish">
+                  Youth Index
+                </th>
+                <th v-else>
+                  Indice Jeunesse
+                </th>
+                <th v-if="isEnglish">
+                  Social Housing
+                </th>
+                <th v-else>
+                  Logements sociaux
+                </th>
+                <th v-if="isEnglish">
+                  Social Housing Rate
+                </th>
+                <th v-else>
+                  Taux logements sociaux
+                </th>
               </tr>
             </thead>
           </table>
@@ -56,22 +104,46 @@
                     :style="{ height: itemHeight + 'px' }"
                   >
                     <td class="row-title">
-                        <a :href="'https://sig.ville.gouv.fr/territoire/'+qpv.codeQPV" target="_blank">
-                            {{qpv.lib_qp || qpv.codeQPV}}
-                        </a>
+                      <a :href="'https://sig.ville.gouv.fr/territoire/'+qpv.codeQPV" target="_blank">
+                        {{ qpv.lib_qp || qpv.codeQPV }}
+                      </a>
                     </td>
-                    <td class="score-main">{{formatNumber(qpv.popMuniQPV)}}</td>
-                    <td class="score-main">{{qpv.lib_com}}</td>
-                    <td class="score-main">{{formatPercentage(qpv.partPopImmi)}}</td>
-                    <td class="score-main">{{formatPercentage(qpv.partPopEt)}}</td>
-                    <td class="score-main">{{formatPercentage(qpv.taux_d_emploi)}}</td>
-                    <td class="score-main">{{formatPercentage(qpv.taux_pauvrete_60)}}</td>
-                    <td class="score-main">{{formatNumber(qpv.RSA_socle)}}</td>
-                    <td class="score-main">{{formatNumber(qpv.allocataires_CAF)}}</td>
-                    <td class="score-main">{{formatNumber(qpv.personnes_couvertes_CAF)}}</td>
-                    <td class="score-main">{{formatNumber(qpv.indiceJeunesse)}}</td>
-                    <td class="score-main">{{formatNumber(qpv.nombre_logements_sociaux)}}</td>
-                    <td class="score-main">{{formatPercentage(qpv.taux_logements_sociaux)}}</td>
+                    <td class="score-main">
+                      {{ formatNumber(qpv.popMuniQPV) }}
+                    </td>
+                    <td class="score-main">
+                      {{ qpv.lib_com }}
+                    </td>
+                    <td class="score-main">
+                      {{ formatPercentage(qpv.partPopImmi) }}
+                    </td>
+                    <td class="score-main">
+                      {{ formatPercentage(qpv.partPopEt) }}
+                    </td>
+                    <td class="score-main">
+                      {{ formatPercentage(qpv.taux_d_emploi) }}
+                    </td>
+                    <td class="score-main">
+                      {{ formatPercentage(qpv.taux_pauvrete_60) }}
+                    </td>
+                    <td class="score-main">
+                      {{ formatNumber(qpv.RSA_socle) }}
+                    </td>
+                    <td class="score-main">
+                      {{ formatNumber(qpv.allocataires_CAF) }}
+                    </td>
+                    <td class="score-main">
+                      {{ formatNumber(qpv.personnes_couvertes_CAF) }}
+                    </td>
+                    <td class="score-main">
+                      {{ formatNumber(qpv.indiceJeunesse) }}
+                    </td>
+                    <td class="score-main">
+                      {{ formatNumber(qpv.nombre_logements_sociaux) }}
+                    </td>
+                    <td class="score-main">
+                      {{ formatPercentage(qpv.taux_logements_sociaux) }}
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -79,7 +151,7 @@
           </div>
           
           <div v-if="isLoading" class="loading">
-            <v-progress-circular indeterminate size="24" color="primary"></v-progress-circular>
+            <v-progress-circular indeterminate size="24" color="primary" />
             {{ isEnglish ? 'Loading...' : 'Chargement...' }}
           </div>
         </div>

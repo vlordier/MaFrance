@@ -516,7 +516,7 @@ export const useDataStore = defineStore("data", {
 
     async fetchMigrants(level, code) {
       try {
-        let params = { limit: level === 'country' ? 20 : 100 };
+        const params = { limit: level === 'country' ? 20 : 100 };
         if (level === 'departement') {
           params.dept = code;
         } else if (level === 'commune') {
@@ -533,7 +533,7 @@ export const useDataStore = defineStore("data", {
 
     async loadMoreMigrants(level, code, params) {
       try {
-        let migrantParams = { ...params };
+        const migrantParams = { ...params };
         if (level === 'departement') {
           migrantParams.dept = code;
         } else if (level === 'commune') {
@@ -557,7 +557,7 @@ export const useDataStore = defineStore("data", {
 
     async fetchMosques(level, code) {
       try {
-        let params = { limit: level === 'country' ? 20 : 100 };
+        const params = { limit: level === 'country' ? 20 : 100 };
         if (level === 'departement') {
           params.dept = code;
         } else if (level === 'commune') {
@@ -574,7 +574,7 @@ export const useDataStore = defineStore("data", {
 
     async loadMoreMosques(level, code, params) {
       try {
-        let mosqueParams = { ...params };
+        const mosqueParams = { ...params };
         if (level === 'departement') {
           mosqueParams.dept = code;
         } else if (level === 'commune') {
@@ -598,7 +598,7 @@ export const useDataStore = defineStore("data", {
 
     async fetchQpv(level, code) {
       try {
-        let params = { limit: level === 'country' ? 20 : 100 };
+        const params = { limit: level === 'country' ? 20 : 100 };
         if (level === 'departement') {
           params.dept = code;
         } else if (level === 'commune') {
@@ -615,7 +615,7 @@ export const useDataStore = defineStore("data", {
 
     async loadMoreQpv(level, code, params) {
       try {
-        let qpvParams = { ...params };
+        const qpvParams = { ...params };
         if (level === 'departement') {
           qpvParams.dept = code;
         } else if (level === 'commune') {

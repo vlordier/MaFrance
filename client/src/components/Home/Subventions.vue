@@ -1,12 +1,14 @@
 <template>
   <v-card class="mb-4">
-    <v-card-title class="text-h6 pb-0" @click="toggleCollapse" style="cursor: pointer">
+    <v-card-title class="text-h6 pb-0" style="cursor: pointer" @click="toggleCollapse">
       {{ isEnglish ? 'Public subsidies to associations for:' : 'Subventions publiques aux associations pour:' }} {{ locationName }}
     </v-card-title>
     <v-card-subtitle class="text-caption text-grey pt-0 pb-0">
-      <a href="https://data.ofgl.fr/pages/acces-donnees-comptables-detaillees/"
-         target="_blank"
-         class="text-decoration-none">
+      <a
+        href="https://data.ofgl.fr/pages/acces-donnees-comptables-detaillees/"
+        target="_blank"
+        class="text-decoration-none"
+      >
         {{ isEnglish ? 'data.ofgl.fr source' : 'source data.ofgl.fr' }}
       </a>
     </v-card-subtitle>
@@ -17,21 +19,33 @@
             <table class="subventions-table">
               <thead>
                 <tr>
-                  <th></th>
+                  <th />
                   <th>{{ isEnglish ? 'Value /per capita/year' : 'Valeur /hab./an' }}</th>
                   <th>{{ isEnglish ? 'National average /per capita/year' : 'Moyenne nationale /hab./an' }}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="(row, index) in subventionRows" :key="index">
-                  <td class="row-title">{{ row.entity }}</td>
-                  <td class="score-main">{{ formatNumber(row.perCapita) }} €</td>
-                  <td class="score-main">{{ formatNumber(row.nationalAverage) }} €</td>
+                  <td class="row-title">
+                    {{ row.entity }}
+                  </td>
+                  <td class="score-main">
+                    {{ formatNumber(row.perCapita) }} €
+                  </td>
+                  <td class="score-main">
+                    {{ formatNumber(row.nationalAverage) }} €
+                  </td>
                 </tr>
                 <tr class="total-row">
-                  <td class="row-title total-title">{{ isEnglish ? 'Total per capita per year' : 'Total par hab. et par an' }}</td>
-                  <td class="score-main">{{ formatNumber(totalPerCapita) }} €</td>
-                  <td class="score-main">{{ formatNumber(totalNationalAverage) }} €</td>
+                  <td class="row-title total-title">
+                    {{ isEnglish ? 'Total per capita per year' : 'Total par hab. et par an' }}
+                  </td>
+                  <td class="score-main">
+                    {{ formatNumber(totalPerCapita) }} €
+                  </td>
+                  <td class="score-main">
+                    {{ formatNumber(totalNationalAverage) }} €
+                  </td>
                 </tr>
               </tbody>
             </table>

@@ -6,10 +6,10 @@
       </v-card-title>
 
       <v-card-text>
-        <p style="white-space: normal; word-break: break-word;" v-html='store.labelState === 3 ? "The political family is as officially defined in the list of mayors from the <a href=\"https://www.data.gouv.fr/datasets/repertoire-national-des-elus-1/\" target=\"_blank\">national directory of elected officials</a>" : "La famille politique est telle que définie officiellement dans la liste des maires du <a href=\"https://www.data.gouv.fr/datasets/repertoire-national-des-elus-1/\" target=\"_blank\">répertoire national des élus</a>"'></p>
+        <p style="white-space: normal; word-break: break-word;" v-html="store.labelState === 3 ? &quot;The political family is as officially defined in the list of mayors from the <a href=\&quot;https://www.data.gouv.fr/datasets/repertoire-national-des-elus-1/\&quot; target=\&quot;_blank\&quot;>national directory of elected officials</a>&quot; : &quot;La famille politique est telle que définie officiellement dans la liste des maires du <a href=\&quot;https://www.data.gouv.fr/datasets/repertoire-national-des-elus-1/\&quot; target=\&quot;_blank\&quot;>répertoire national des élus</a>&quot;" />
         <!-- Loading indicator -->
         <div v-if="loading" class="d-flex justify-center align-center py-8">
-          <v-progress-circular indeterminate color="primary" size="32"></v-progress-circular>
+          <v-progress-circular indeterminate color="primary" size="32" />
         </div>
 
         <!-- Error message -->
@@ -21,12 +21,24 @@
         <v-table v-else-if="tableRows.length > 0" class="politique-table">
           <thead>
             <tr class="politique-header">
-              <th class="metric-column">{{ store.labelState === 3 ? 'Metric' : 'Métrique' }}</th>
-              <th class="value-column gauche-header">{{ store.labelState === 3 ? 'Left' : 'Gauche' }}</th>
-              <th class="value-column centre-header">{{ store.labelState === 3 ? 'Center' : 'Centre' }}</th>
-              <th class="value-column autres-header">{{ store.labelState === 3 ? 'Others' : 'Autres' }}</th>
-              <th class="value-column droite-header">{{ store.labelState === 3 ? 'Right' : 'Droite' }}</th>
-              <th class="value-column extreme-droite-header">{{ store.labelState === 3 ? 'Far Right' : 'Extrême droite' }}</th>
+              <th class="metric-column">
+                {{ store.labelState === 3 ? 'Metric' : 'Métrique' }}
+              </th>
+              <th class="value-column gauche-header">
+                {{ store.labelState === 3 ? 'Left' : 'Gauche' }}
+              </th>
+              <th class="value-column centre-header">
+                {{ store.labelState === 3 ? 'Center' : 'Centre' }}
+              </th>
+              <th class="value-column autres-header">
+                {{ store.labelState === 3 ? 'Others' : 'Autres' }}
+              </th>
+              <th class="value-column droite-header">
+                {{ store.labelState === 3 ? 'Right' : 'Droite' }}
+              </th>
+              <th class="value-column extreme-droite-header">
+                {{ store.labelState === 3 ? 'Far Right' : 'Extrême droite' }}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -40,11 +52,21 @@
               <td :class="getTitleClasses(row)">
                 <span>{{ row.title }}</span>
               </td>
-              <td class="value-cell">{{ row.gauche }}</td>
-              <td class="value-cell">{{ row.centre }}</td>
-              <td class="value-cell">{{ row.autres }}</td>
-              <td class="value-cell">{{ row.droite }}</td>
-              <td class="value-cell">{{ row.extremeDroite }}</td>
+              <td class="value-cell">
+                {{ row.gauche }}
+              </td>
+              <td class="value-cell">
+                {{ row.centre }}
+              </td>
+              <td class="value-cell">
+                {{ row.autres }}
+              </td>
+              <td class="value-cell">
+                {{ row.droite }}
+              </td>
+              <td class="value-cell">
+                {{ row.extremeDroite }}
+              </td>
             </tr>
           </tbody>
         </v-table>

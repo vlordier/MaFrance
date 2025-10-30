@@ -1,85 +1,91 @@
 <template>
   <v-card class="pa-4">
-    <h4 class="mb-3">{{ isEnglish ? 'Your position is at:' : 'Votre position est à:' }}</h4>
+    <h4 class="mb-3">
+      {{ isEnglish ? 'Your position is at:' : 'Votre position est à:' }}
+    </h4>
 
-      <!-- QPV Distance -->
-      <div v-if="locationStore.distanceInfo.qpv" class="mt-2">
-        <div
-          class="distance-summary cursor-pointer d-flex align-center"
-          @click="locationStore.toggleExpandedQpv()"
+    <!-- QPV Distance -->
+    <div v-if="locationStore.distanceInfo.qpv" class="mt-2">
+      <div
+        class="distance-summary cursor-pointer d-flex align-center"
+        @click="locationStore.toggleExpandedQpv()"
+      >
+        <div class="distance-indicator qpv-indicator" />
+        <strong>{{ locationStore.distanceInfo.qpv.distance }}&nbsp;</strong>{{ isEnglish ? 'from the nearest QPV' : 'du QPV le plus proche' }}
+        <v-icon
+          size="16"
+          class="ml-2"
+          :class="locationStore.expandedQpv ? 'rotate-180' : ''"
         >
-          <div class="distance-indicator qpv-indicator"></div>
-          <strong>{{ locationStore.distanceInfo.qpv.distance }}&nbsp;</strong>{{ isEnglish ? 'from the nearest QPV' : 'du QPV le plus proche' }}
-          <v-icon
-            size="16"
-            class="ml-2"
-            :class="locationStore.expandedQpv ? 'rotate-180' : ''"
-          >
-            mdi-chevron-down
-          </v-icon>
-        </div>
-        <v-expand-transition>
-          <div v-show="locationStore.expandedQpv" class="text-caption text-grey ml-6 mt-1">
-            <strong>{{ isEnglish ? 'QPV:' : 'QPV:' }}</strong> <a :href="locationStore.distanceInfo.qpv.link" target="_blank">{{ locationStore.distanceInfo.qpv.name }}</a><br>
-            <strong>{{ isEnglish ? 'Municipality:' : 'Commune:' }}</strong> {{ locationStore.distanceInfo.qpv.commune }}
-          </div>
-        </v-expand-transition>
+          mdi-chevron-down
+        </v-icon>
       </div>
+      <v-expand-transition>
+        <div v-show="locationStore.expandedQpv" class="text-caption text-grey ml-6 mt-1">
+          <strong>{{ isEnglish ? 'QPV:' : 'QPV:' }}</strong> <a :href="locationStore.distanceInfo.qpv.link" target="_blank">{{ locationStore.distanceInfo.qpv.name }}</a><br>
+          <strong>{{ isEnglish ? 'Municipality:' : 'Commune:' }}</strong> {{ locationStore.distanceInfo.qpv.commune }}
+        </div>
+      </v-expand-transition>
+    </div>
 
-      <!-- Migrant Center Distance -->
-      <div v-if="locationStore.distanceInfo.migrantCenter" class="mt-2">
-        <div
-          class="distance-summary cursor-pointer d-flex align-center"
-          @click="locationStore.toggleExpandedMigrant()"
+    <!-- Migrant Center Distance -->
+    <div v-if="locationStore.distanceInfo.migrantCenter" class="mt-2">
+      <div
+        class="distance-summary cursor-pointer d-flex align-center"
+        @click="locationStore.toggleExpandedMigrant()"
+      >
+        <div class="distance-indicator migrant-indicator">
+          ↑
+        </div>
+        <strong>{{ locationStore.distanceInfo.migrantCenter.distance }}&nbsp;</strong>{{ isEnglish ? 'from the nearest migrant center' : 'du centre de migrants le plus proche' }}
+        <v-icon
+          size="16"
+          class="ml-2"
+          :class="locationStore.expandedMigrant ? 'rotate-180' : ''"
         >
-          <div class="distance-indicator migrant-indicator">↑</div>
-          <strong>{{ locationStore.distanceInfo.migrantCenter.distance }}&nbsp;</strong>{{ isEnglish ? 'from the nearest migrant center' : 'du centre de migrants le plus proche' }}
-          <v-icon
-            size="16"
-            class="ml-2"
-            :class="locationStore.expandedMigrant ? 'rotate-180' : ''"
-          >
-            mdi-chevron-down
-          </v-icon>
-        </div>
-        <v-expand-transition>
-          <div v-show="locationStore.expandedMigrant" class="text-caption text-grey ml-6 mt-1">
-            <strong>{{ isEnglish ? 'Type:' : 'Type:' }}</strong> {{ locationStore.distanceInfo.migrantCenter.type }} | <strong>{{ isEnglish ? 'Places:' : 'Places:' }}</strong> {{ locationStore.distanceInfo.migrantCenter.places }} | <strong>{{ isEnglish ? 'Manager:' : 'Gestionnaire:' }}</strong> {{ locationStore.distanceInfo.migrantCenter.gestionnaire }}<br>
-            <strong>{{ isEnglish ? 'Address:' : 'Adresse:' }}</strong> {{ locationStore.distanceInfo.migrantCenter.address }}<br>
-            <strong>{{ isEnglish ? 'Municipality:' : 'Commune:' }}</strong> {{ locationStore.distanceInfo.migrantCenter.commune }}
-          </div>
-        </v-expand-transition>
+          mdi-chevron-down
+        </v-icon>
       </div>
+      <v-expand-transition>
+        <div v-show="locationStore.expandedMigrant" class="text-caption text-grey ml-6 mt-1">
+          <strong>{{ isEnglish ? 'Type:' : 'Type:' }}</strong> {{ locationStore.distanceInfo.migrantCenter.type }} | <strong>{{ isEnglish ? 'Places:' : 'Places:' }}</strong> {{ locationStore.distanceInfo.migrantCenter.places }} | <strong>{{ isEnglish ? 'Manager:' : 'Gestionnaire:' }}</strong> {{ locationStore.distanceInfo.migrantCenter.gestionnaire }}<br>
+          <strong>{{ isEnglish ? 'Address:' : 'Adresse:' }}</strong> {{ locationStore.distanceInfo.migrantCenter.address }}<br>
+          <strong>{{ isEnglish ? 'Municipality:' : 'Commune:' }}</strong> {{ locationStore.distanceInfo.migrantCenter.commune }}
+        </div>
+      </v-expand-transition>
+    </div>
 
-      <!-- Mosque Distance -->
-      <div v-if="locationStore.distanceInfo.mosque" class="mt-2">
-        <div
-          class="distance-summary cursor-pointer d-flex align-center"
-          @click="locationStore.toggleExpandedMosque()"
+    <!-- Mosque Distance -->
+    <div v-if="locationStore.distanceInfo.mosque" class="mt-2">
+      <div
+        class="distance-summary cursor-pointer d-flex align-center"
+        @click="locationStore.toggleExpandedMosque()"
+      >
+        <div class="distance-indicator mosque-indicator">
+          🕌
+        </div>
+        <strong>{{ locationStore.distanceInfo.mosque.distance }}&nbsp;</strong>{{ isEnglish ? 'from the nearest mosque' : 'de la mosquée la plus proche' }}
+        <v-icon
+          size="16"
+          class="ml-2"
+          :class="locationStore.expandedMosque ? 'rotate-180' : ''"
         >
-          <div class="distance-indicator mosque-indicator">🕌</div>
-          <strong>{{ locationStore.distanceInfo.mosque.distance }}&nbsp;</strong>{{ isEnglish ? 'from the nearest mosque' : 'de la mosquée la plus proche' }}
-          <v-icon
-            size="16"
-            class="ml-2"
-            :class="locationStore.expandedMosque ? 'rotate-180' : ''"
-          >
-            mdi-chevron-down
-          </v-icon>
+          mdi-chevron-down
+        </v-icon>
+      </div>
+      <v-expand-transition>
+        <div v-show="locationStore.expandedMosque" class="text-caption text-grey ml-6 mt-1">
+          {{ locationStore.distanceInfo.mosque.name }}<br>
+          <strong>{{ isEnglish ? 'Address:' : 'Adresse:' }}</strong> {{ locationStore.distanceInfo.mosque.address }}<br>
+          <strong>{{ isEnglish ? 'Municipality:' : 'Commune:' }}</strong> {{ locationStore.distanceInfo.mosque.commune }}
         </div>
-        <v-expand-transition>
-          <div v-show="locationStore.expandedMosque" class="text-caption text-grey ml-6 mt-1">
-            {{ locationStore.distanceInfo.mosque.name }}<br>
-            <strong>{{ isEnglish ? 'Address:' : 'Adresse:' }}</strong> {{ locationStore.distanceInfo.mosque.address }}<br>
-            <strong>{{ isEnglish ? 'Municipality:' : 'Commune:' }}</strong> {{ locationStore.distanceInfo.mosque.commune }}
-          </div>
-        </v-expand-transition>
-      </div>
+      </v-expand-transition>
+    </div>
 
-      <div v-if="!locationStore.distanceInfo.migrantCenter && !locationStore.distanceInfo.qpv && !locationStore.distanceInfo.mosque" class="text-grey">
-        {{ isEnglish ? 'No data available for this position' : 'Aucune donnée disponible pour cette position' }}
-      </div>
-    </v-card>
+    <div v-if="!locationStore.distanceInfo.migrantCenter && !locationStore.distanceInfo.qpv && !locationStore.distanceInfo.mosque" class="text-grey">
+      {{ isEnglish ? 'No data available for this position' : 'Aucune donnée disponible pour cette position' }}
+    </div>
+  </v-card>
 </template>
 
 <script>

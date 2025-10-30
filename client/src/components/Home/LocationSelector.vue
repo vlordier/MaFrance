@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title class="text-h6 pb-1" @click="toggleCollapse" style="cursor: pointer">
+    <v-card-title class="text-h6 pb-1" style="cursor: pointer" @click="toggleCollapse">
       {{ cardTitle }}
     </v-card-title>
     <v-expand-transition v-show="!isCollapsed">
@@ -8,10 +8,10 @@
         <v-row>
           <v-col cols="12" sm="3">
             <v-btn
-              @click="selectFrance"
               :color="location.type === 'country' ? 'primary' : 'grey'"
               variant="elevated"
               block
+              @click="selectFrance"
             >
               France
             </v-btn>
@@ -20,7 +20,6 @@
           <v-col cols="12" sm="4">
             <v-select
               v-model="selectedDepartement"
-              @update:model-value="onDepartementChange"
               :items="sortedDepartements"
               item-title="name"
               item-value="code"
@@ -29,14 +28,14 @@
               clearable
               density="compact"
               hide-details
-            ></v-select>
+              @update:model-value="onDepartementChange"
+            />
           </v-col>
           
           <v-col cols="12" sm="5">
             <v-autocomplete
               v-model="selectedCommune"
-              @update:model-value="onCommuneSelect"
-              @input="onCommuneInput"
+              v-model:search="communeQuery"
               :items="communeSuggestions"
               item-title="displayName"
               item-value="COG"
@@ -44,11 +43,12 @@
               variant="outlined"
               clearable
               :loading="loading"
-              v-model:search="communeQuery"
               return-object
               density="compact"
               hide-details
-            ></v-autocomplete>
+              @update:model-value="onCommuneSelect"
+              @input="onCommuneInput"
+            />
           </v-col>
         </v-row>
       </v-card-text>

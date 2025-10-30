@@ -1,13 +1,13 @@
 <template>
   <v-card class="mb-4">
-    <v-card-title class="text-h6 pb-0" @click="toggleCollapse" style="cursor: pointer;">
+    <v-card-title class="text-h6 pb-0" style="cursor: pointer;" @click="toggleCollapse">
       {{ cardTitle }}
     </v-card-title>
 
     <v-expand-transition>
       <v-card-text v-show="!isCollapsed">
         <div v-if="loading" class="d-flex justify-center align-center py-8">
-          <v-progress-circular indeterminate color="primary" size="32"></v-progress-circular>
+          <v-progress-circular indeterminate color="primary" size="32" />
         </div>
 
         <div v-else-if="executiveData" class="executive-box">
@@ -177,6 +177,16 @@ export default {
     }
   },
 
+  watch: {
+    location: {
+      handler(newLocation) {
+        // The store will handle loading the executive data
+        // when the location changes through the main app logic
+      },
+      immediate: true
+    }
+  },
+
   methods: {
     formatDate(dateString) {
       if (!dateString) return '';
@@ -196,16 +206,6 @@ export default {
 
     toggleCollapse() {
       this.isCollapsed = !this.isCollapsed;
-    }
-  },
-
-  watch: {
-    location: {
-      handler(newLocation) {
-        // The store will handle loading the executive data
-        // when the location changes through the main app logic
-      },
-      immediate: true
     }
   }
 }

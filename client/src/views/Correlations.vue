@@ -10,7 +10,9 @@
       <v-expansion-panels v-model="expandedPanels" multiple>
         <v-expansion-panel>
           <v-expansion-panel-title>
-            <v-icon left>mdi-cog</v-icon>
+            <v-icon left>
+              mdi-cog
+            </v-icon>
             {{ isEnglish ? 'Settings' : 'Paramètres' }}
           </v-expansion-panel-title>
           <v-expansion-panel-text>
@@ -30,9 +32,18 @@
               </v-col>
             </v-row>
 
-            <v-alert type="info" icon="mdi-information-outline" class="mb-3" style="margin-top: 0;">
-              <p v-if="!isEnglish" class="text-body-2 mb-0">La corrélation statistique mesure le lien entre deux variables, c'est-à-dire si elles évoluent ensemble d'une certaine manière. Par exemple, si on observe que quand une variable augmente, l'autre augmente aussi (ou diminue), on parle de corrélation. Le coefficient de Pearson, noté r, est un nombre entre -1 et 1 qui quantifie cette relation. Si r est proche de 1, les variables augmentent ensemble (corrélation positive forte) ; si r est proche de -1, l'une augmente quand l'autre diminue (corrélation négative forte) ; si r est proche de 0, il n'y a pas de lien clair. C'est un outil simple pour repérer des tendances, mais il ne démontre pas nécessairement une causalité.</p>
-              <p v-else class="text-body-2 mb-0">Statistical correlation measures the relationship between two variables, that is, whether they evolve together in a certain way. For example, if we observe that when one variable increases, the other also increases (or decreases), we speak of correlation. The Pearson coefficient, denoted r, is a number between -1 and 1 that quantifies this relationship. If r is close to 1, the variables increase together (strong positive correlation); if r is close to -1, one increases when the other decreases (strong negative correlation); if r is close to 0, there is no clear link. It is a simple tool to spot trends, but it does not necessarily demonstrate causality.</p>
+            <v-alert
+              type="info"
+              icon="mdi-information-outline"
+              class="mb-3"
+              style="margin-top: 0;"
+            >
+              <p v-if="!isEnglish" class="text-body-2 mb-0">
+                La corrélation statistique mesure le lien entre deux variables, c'est-à-dire si elles évoluent ensemble d'une certaine manière. Par exemple, si on observe que quand une variable augmente, l'autre augmente aussi (ou diminue), on parle de corrélation. Le coefficient de Pearson, noté r, est un nombre entre -1 et 1 qui quantifie cette relation. Si r est proche de 1, les variables augmentent ensemble (corrélation positive forte) ; si r est proche de -1, l'une augmente quand l'autre diminue (corrélation négative forte) ; si r est proche de 0, il n'y a pas de lien clair. C'est un outil simple pour repérer des tendances, mais il ne démontre pas nécessairement une causalité.
+              </p>
+              <p v-else class="text-body-2 mb-0">
+                Statistical correlation measures the relationship between two variables, that is, whether they evolve together in a certain way. For example, if we observe that when one variable increases, the other also increases (or decreases), we speak of correlation. The Pearson coefficient, denoted r, is a number between -1 and 1 that quantifies this relationship. If r is close to 1, the variables increase together (strong positive correlation); if r is close to -1, one increases when the other decreases (strong negative correlation); if r is close to 0, there is no clear link. It is a simple tool to spot trends, but it does not necessarily demonstrate causality.
+              </p>
             </v-alert>
 
             <!-- Metric Axis Selection -->
@@ -73,7 +84,9 @@
     <div class="results-section">
       <div v-if="loading" class="loading">
         <v-progress-circular indeterminate color="primary" />
-        <p class="mt-2">{{ isEnglish ? 'Calculating correlations...' : 'Calcul des corrélations...' }}</p>
+        <p class="mt-2">
+          {{ isEnglish ? 'Calculating correlations...' : 'Calcul des corrélations...' }}
+        </p>
       </div>
 
       <div v-else-if="error" class="error">
@@ -94,9 +107,9 @@
 
         <!-- Scatter Plot Section -->
         <ScatterPlot
-          :selectedMetrics="selectedScatterMetrics"
-          :rawData="rawData"
-          :correlationValue="selectedCorrelationValue"
+          :selected-metrics="selectedScatterMetrics"
+          :raw-data="rawData"
+          :correlation-value="selectedCorrelationValue"
         />
 
         <!-- Summary Statistics -->
@@ -104,7 +117,9 @@
           <v-row>
             <v-col cols="12" md="4">
               <v-card class="pa-3">
-                <v-card-title class="text-h6">{{ isEnglish ? 'Statistics' : 'Statistiques' }}</v-card-title>
+                <v-card-title class="text-h6">
+                  {{ isEnglish ? 'Statistics' : 'Statistiques' }}
+                </v-card-title>
                 <v-card-text>
                   <p><strong>{{ isEnglish ? 'Number of observations:' : 'Nb. d\'observations:' }}</strong> {{ dataSize }}</p>
                   <p><strong>{{ isEnglish ? 'Max correlation:' : 'Corrélation max:' }}</strong> {{ maxCorrelation.toFixed(3) }}</p>
@@ -114,7 +129,9 @@
             </v-col>
             <v-col cols="12" md="8">
               <v-card class="pa-3">
-                <v-card-title class="text-h6">{{ isEnglish ? 'Strongest correlations' : 'Corrélations les plus fortes' }}</v-card-title>
+                <v-card-title class="text-h6">
+                  {{ isEnglish ? 'Strongest correlations' : 'Corrélations les plus fortes' }}
+                </v-card-title>
                 <v-card-text>
                   <p v-for="corr in topCorrelations.slice(0, 5)" :key="corr.key" class="mb-2">
                     <strong>{{ corr.metric1 }} ↔ {{ corr.metric2 }}:</strong> {{ corr.value.toFixed(3) }}

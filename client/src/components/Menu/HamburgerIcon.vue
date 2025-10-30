@@ -2,7 +2,7 @@
   <span 
     class="hamburger"
     :class="{ active: opened }"
-  ></span>
+  />
 </template>
 
 <script>

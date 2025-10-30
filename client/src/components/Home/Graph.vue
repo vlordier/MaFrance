@@ -1,6 +1,6 @@
 <template>
   <div class="chart-container">
-    <canvas ref="chartCanvas" class="chart-canvas"></canvas>
+    <canvas ref="chartCanvas" class="chart-canvas" />
   </div>
 </template>
 
@@ -67,6 +67,13 @@ export default {
     // Register the watermark plugin
     Chart.register(watermarkPlugin);
     this.createChart()
+  },
+
+  beforeUnmount() {
+    // Détruire tous le graphique
+    if (this.chart) {
+      this.chart.destroy()
+    }
   },
   methods: {
     getChartTitle() {
@@ -135,7 +142,7 @@ export default {
       // Add current location dataset (full line)
       if (this.data[currentLocationLevel]) {
         let label;
-        let color = metricColors[this.metricKey] || '#dc3545'; // Use metric-specific color or default
+        const color = metricColors[this.metricKey] || '#dc3545'; // Use metric-specific color or default
 
         if (currentLocationLevel === 'country') {
           label = this.countryLabel;
@@ -334,13 +341,6 @@ export default {
         this.chart.update()
 
       }
-    }
-  },
-
-  beforeUnmount() {
-    // Détruire tous le graphique
-    if (this.chart) {
-      this.chart.destroy()
     }
   }
 }

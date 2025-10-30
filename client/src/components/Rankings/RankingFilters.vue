@@ -5,16 +5,24 @@
       <div class="form-group">
         <label for="scopeSelect">{{ isEnglish ? 'Scope:' : 'Portée :' }}</label>
         <select id="scopeSelect" :value="selectedScope" @change="onScopeChange">
-          <option value="departements">{{ isEnglish ? 'Departments' : 'Départements' }}</option>
-          <option value="communes_dept">{{ isEnglish ? 'Municipalities (by department)' : 'Communes (par département)' }}</option>
-          <option value="communes_france">{{ isEnglish ? 'Municipalities (entire France)' : 'Communes (France entière)' }}</option>
+          <option value="departements">
+            {{ isEnglish ? 'Departments' : 'Départements' }}
+          </option>
+          <option value="communes_dept">
+            {{ isEnglish ? 'Municipalities (by department)' : 'Communes (par département)' }}
+          </option>
+          <option value="communes_france">
+            {{ isEnglish ? 'Municipalities (entire France)' : 'Communes (France entière)' }}
+          </option>
         </select>
       </div>
 
       <div v-show="selectedScope === 'communes_dept'" class="form-group">
         <label for="departementSelect">{{ isEnglish ? 'Department:' : 'Département :' }}</label>
         <select id="departementSelect" :value="selectedDepartement" @change="onDepartementChange">
-          <option value="">{{ isEnglish ? '-- All departments --' : '-- Tous les départements --' }}</option>
+          <option value="">
+            {{ isEnglish ? '-- All departments --' : '-- Tous les départements --' }}
+          </option>
           <option 
             v-for="dept in departments" 
             :key="dept.code" 
@@ -28,7 +36,9 @@
       <div class="form-group">
         <label for="metricSelect">{{ isEnglish ? 'Metric:' : 'Métrique :' }}</label>
         <select id="metricSelect" :value="selectedMetric" @change="onMetricChange">
-          <option value="">{{ isEnglish ? '-- Choose a metric --' : '-- Choisir une métrique --' }}</option>
+          <option value="">
+            {{ isEnglish ? '-- Choose a metric --' : '-- Choisir une métrique --' }}
+          </option>
           <option 
             v-for="option in availableMetricOptions" 
             :key="option.value" 
@@ -51,12 +61,12 @@
         <div class="form-group">
           <label for="topLimit">{{ isEnglish ? 'Number of results (Top/Bottom):' : 'Nombre de résultats (Top/Bottom) :' }}</label>
           <input 
-            type="number" 
             id="topLimit" 
+            type="number" 
             :value="filters.topLimit"
+            min="1"
+            max="100" 
             @input="onFilterChange('topLimit', $event)"
-            min="1" 
-            max="100"
           >
         </div>
 
@@ -64,28 +74,28 @@
           <div class="form-group">
             <label for="popLower">{{ isEnglish ? 'Population min:' : 'Population min:' }}</label>
             <input 
-              type="number" 
               id="popLower" 
+              type="number" 
               :value="localFilters.popLower || ''"
-              @input="onFilterChange('popLower', $event)"
-              min="0" 
-              max="1000000"
+              min="0"
+              max="1000000" 
               step="1000"
               :placeholder="isEnglish ? 'e.g.: 1000' : 'Ex: 1000'"
+              @input="onFilterChange('popLower', $event)"
             >
           </div>
 
           <div class="form-group">
             <label for="popUpper">{{ isEnglish ? 'Population max:' : 'Population max:' }}</label>
             <input 
-              type="number" 
               id="popUpper" 
+              type="number" 
               :value="localFilters.popUpper || ''"
-              @input="onFilterChange('popUpper', $event)"
-              min="0" 
-              max="1000000"
+              min="0"
+              max="1000000" 
               step="1000"
               :placeholder="isEnglish ? 'e.g.: 50000' : 'Ex: 50000'"
+              @input="onFilterChange('popUpper', $event)"
             >
           </div>
         </div>
@@ -93,8 +103,8 @@
         <div v-if="currentLevel === 'commune'" class="form-group">
           <label for="politicalFamily">{{ isEnglish ? 'Display Political Family of Mayors' : 'Afficher la Famille Politique des Maires' }}</label>
           <input
-            type="checkbox"
             id="politicalFamily"
+            type="checkbox"
             :checked="localFilters.politicalFamily"
             @change="onFilterChange('politicalFamily', $event)"
           >

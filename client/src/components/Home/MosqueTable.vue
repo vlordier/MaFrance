@@ -1,59 +1,67 @@
 <template>
   <v-card class="mb-4">
-    <v-card-title class="text-h6 pb-0" @click="toggleCollapse" style="cursor: pointer;">
+    <v-card-title class="text-h6 pb-0" style="cursor: pointer;" @click="toggleCollapse">
       {{ isEnglish ? 'Mosques for:' : 'Mosquées pour:' }} {{ locationName }}
     </v-card-title>
 
     <v-expand-transition>
       <v-card-text v-show="!isCollapsed">
-      <div
-        class="table-container"
-        ref="tableContainer"
-        @scroll="handleScroll"
-        v-if="visibleMosques && visibleMosques.length > 0"
-        :style="{ maxHeight: computedContainerHeight + 'px' }"
-      >
-        <!-- Fixed header outside of virtual scroll -->
-        <table class="mosques-table mosques-table-header">
-          <thead>
-            <tr>
-              <th>{{ isEnglish ? 'Mosque Name' : 'Nom de la mosquée' }}</th>
-              <th>{{ isEnglish ? 'Address' : 'Adresse' }}</th>
-              <th>{{ isEnglish ? 'Municipality' : 'Commune' }}</th>
-              <th>{{ isEnglish ? 'Dept.' : 'Dept.' }}</th>
-            </tr>
-          </thead>
-        </table>
+        <div
+          v-if="visibleMosques && visibleMosques.length > 0"
+          ref="tableContainer"
+          class="table-container"
+          :style="{ maxHeight: computedContainerHeight + 'px' }"
+          @scroll="handleScroll"
+        >
+          <!-- Fixed header outside of virtual scroll -->
+          <table class="mosques-table mosques-table-header">
+            <thead>
+              <tr>
+                <th>{{ isEnglish ? 'Mosque Name' : 'Nom de la mosquée' }}</th>
+                <th>{{ isEnglish ? 'Address' : 'Adresse' }}</th>
+                <th>{{ isEnglish ? 'Municipality' : 'Commune' }}</th>
+                <th>{{ isEnglish ? 'Dept.' : 'Dept.' }}</th>
+              </tr>
+            </thead>
+          </table>
 
-        <!-- Virtual scrolled content -->
-        <div class="virtual-scroll-wrapper" :style="{ height: virtualHeight + 'px' }">
-          <div class="virtual-scroll-content" :style="{ transform: `translateY(${offsetY}px)`, paddingTop: '40px' }">
-            <table class="mosques-table mosques-table-body">
-              <tbody>
-                <tr
-                  v-for="(mosque, i) in visibleMosques"
-                  :key="mosque.id + '-' + i"
-                  :style="{ height: itemHeight + 'px' }"
-                >
-                  <td class="row-title">{{ mosque.name || 'N/A' }}</td>
-                  <td class="score-main">{{ mosque.address || 'N/A' }}</td>
-                  <td class="score-main">{{ mosque.commune || 'N/A' }}</td>
-                  <td class="score-main">{{ mosque.departement || 'N/A' }}</td>
-                </tr>
-              </tbody>
-            </table>
+          <!-- Virtual scrolled content -->
+          <div class="virtual-scroll-wrapper" :style="{ height: virtualHeight + 'px' }">
+            <div class="virtual-scroll-content" :style="{ transform: `translateY(${offsetY}px)`, paddingTop: '40px' }">
+              <table class="mosques-table mosques-table-body">
+                <tbody>
+                  <tr
+                    v-for="(mosque, i) in visibleMosques"
+                    :key="mosque.id + '-' + i"
+                    :style="{ height: itemHeight + 'px' }"
+                  >
+                    <td class="row-title">
+                      {{ mosque.name || 'N/A' }}
+                    </td>
+                    <td class="score-main">
+                      {{ mosque.address || 'N/A' }}
+                    </td>
+                    <td class="score-main">
+                      {{ mosque.commune || 'N/A' }}
+                    </td>
+                    <td class="score-main">
+                      {{ mosque.departement || 'N/A' }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div v-if="isLoading" class="loading">
+            <v-progress-circular indeterminate size="24" color="primary" />
+            {{ isEnglish ? 'Loading...' : 'Chargement...' }}
           </div>
         </div>
 
-        <div v-if="isLoading" class="loading">
-          <v-progress-circular indeterminate size="24" color="primary"></v-progress-circular>
-          {{ isEnglish ? 'Loading...' : 'Chargement...' }}
+        <div v-else class="text-center">
+          <p>{{ isEnglish ? 'No mosques in this area.' : 'Aucune mosquée dans cette zone.' }}</p>
         </div>
-      </div>
-
-      <div v-else class="text-center">
-        <p>{{ isEnglish ? 'No mosques in this area.' : 'Aucune mosquée dans cette zone.' }}</p>
-      </div>
       </v-card-text>
     </v-expand-transition>
   </v-card>

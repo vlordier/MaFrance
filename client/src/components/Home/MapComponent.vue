@@ -1,11 +1,10 @@
 <template>
   <v-card>
     <v-card-text class="pa-0 position-relative">
-      <div id="map" class="map-container"></div>
+      <div id="map" class="map-container" />
       <v-select
-        style="max-width: 300px; z-index: 99999; position: absolute; top: 10px; right: 10px;"
         v-model="selectedMetric"
-        @update:model-value="onMetricChange"
+        style="max-width: 300px; z-index: 99999; position: absolute; top: 10px; right: 10px;"
         :items="availableMetrics"
         :item-title="labelKey"
         item-value="value"
@@ -13,7 +12,8 @@
         density="compact"
         return-object
         hide-details
-      ></v-select>
+        @update:model-value="onMetricChange"
+      />
     </v-card-text>
   </v-card>
 </template>
@@ -201,6 +201,13 @@ export default {
 
     // Listen for version changes
     window.addEventListener('versionChanged', this.handleVersionChange)
+  },
+  beforeUnmount() {
+    window.removeEventListener('updateMapMetric', this.handleMetricUpdate)
+    window.removeEventListener('versionChanged', this.handleVersionChange)
+    if (this.map) {
+      this.map.remove()
+    }
   },
   methods: {
     updateColorScale() {
@@ -534,7 +541,7 @@ export default {
         weight: 2,
         opacity: 0.8
       });
-      let value = this.getFeatureValue(feature)
+      const value = this.getFeatureValue(feature)
       const formattedValue = value !== null ? MetricsConfig.formatMetricValue(value, this.selectedMetric.value) : 'N/A'
       const indiceName = this.getIndiceName()
       const content = `<b>${properties.nom}</b><br>${indiceName}: ${formattedValue}`
@@ -760,13 +767,6 @@ export default {
       }
       return metricMap[metric] || metric
     },
-  },
-  beforeUnmount() {
-    window.removeEventListener('updateMapMetric', this.handleMetricUpdate)
-    window.removeEventListener('versionChanged', this.handleVersionChange)
-    if (this.map) {
-      this.map.remove()
-    }
   }
 }
 </script>

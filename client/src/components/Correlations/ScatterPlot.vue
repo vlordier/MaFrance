@@ -2,9 +2,15 @@
   <div class="scatter-plot-container">
     <div v-if="!selectedMetrics.metric1 || !selectedMetrics.metric2" class="no-selection">
       <v-card class="text-center pa-8">
-        <v-icon size="64" color="grey-lighten-1">mdi-chart-scatter-plot</v-icon>
-        <h3 class="text-grey-darken-1 mt-4">{{ isEnglish ? 'Click on a correlation matrix cell' : 'Cliquez sur une cellule du tableau de corrélation' }}</h3>
-        <p class="text-grey">{{ isEnglish ? 'to display the corresponding scatter plot' : 'pour afficher le nuage de points correspondant' }}</p>
+        <v-icon size="64" color="grey-lighten-1">
+          mdi-chart-scatter-plot
+        </v-icon>
+        <h3 class="text-grey-darken-1 mt-4">
+          {{ isEnglish ? 'Click on a correlation matrix cell' : 'Cliquez sur une cellule du tableau de corrélation' }}
+        </h3>
+        <p class="text-grey">
+          {{ isEnglish ? 'to display the corresponding scatter plot' : 'pour afficher le nuage de points correspondant' }}
+        </p>
       </v-card>
     </div>
 
@@ -21,7 +27,7 @@
           </v-chip>
         </div>
       </div>
-      <canvas ref="chartCanvas" :id="chartId" class="scatter-chart"></canvas>
+      <canvas :id="chartId" ref="chartCanvas" class="scatter-chart" />
     </div>
   </div>
 </template>
@@ -142,13 +148,9 @@ export default {
       const metric1Key = props.selectedMetrics.metric1
       const metric2Key = props.selectedMetrics.metric2
 
-      let validCount = 0
-      let invalidCount = 0
-
       for (const item of props.rawData) {
         // Ensure item exists and is an object
         if (!item || typeof item !== 'object') {
-          invalidCount++
           continue
         }
 
@@ -183,9 +185,6 @@ export default {
             y: y,
             label: label
           })
-          validCount++
-        } else {
-          invalidCount++
         }
       }
 

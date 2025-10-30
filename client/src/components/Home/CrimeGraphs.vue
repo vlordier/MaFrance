@@ -1,26 +1,31 @@
 <template>
   <v-card class="mb-4">
-    <v-card-title class="text-h6 pb-0" @click="toggleCollapse" style="cursor: pointer;">
+    <v-card-title class="text-h6 pb-0" style="cursor: pointer;" @click="toggleCollapse">
       {{ cardTitle }}
     </v-card-title>
     <v-card-subtitle class="text-caption text-grey pt-0 pb-0">
-      <a href="https://www.data.gouv.fr/fr/datasets/bases-statistiques-communale-et-departementale-de-la-delinquance-enregistree-par-la-police-et-la-gendarmerie-nationales/" 
-         target="_blank" 
-         class="text-decoration-none">
+      <a
+        href="https://www.data.gouv.fr/fr/datasets/bases-statistiques-communale-et-departementale-de-la-delinquance-enregistree-par-la-police-et-la-gendarmerie-nationales/" 
+        target="_blank" 
+        class="text-decoration-none"
+      >
         {{ sourceText }}
       </a>
     </v-card-subtitle>
     <v-expand-transition>
       <v-card-text v-show="!isCollapsed">
         <v-row no-gutters>
-          <v-col cols="12" lg="6"
-          class="chart-container pa-1"
-          v-for="chartKey in availableCharts"
-          :key="chartKey">
+          <v-col
+            v-for="chartKey in availableCharts"
+            :key="chartKey"
+            cols="12"
+            lg="6"
+            class="chart-container pa-1"
+          >
             <Graph
-              :metricKey="chartKey"
+              :metric-key="chartKey"
               :data="aggregatedData[chartKey]"
-              :dataLabels="labels"
+              :data-labels="labels"
               :location="location"
             />
           </v-col>

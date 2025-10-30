@@ -972,12 +972,12 @@ const MetricsConfig = {
 };
 
 const chartLabels = {};
-for (let metric of MetricsConfig.metrics) {
+for (const metric of MetricsConfig.metrics) {
     chartLabels[metric.value] = metric;
 }
 
 const articleCategoriesRef = {};
-for (let articleCategory of MetricsConfig.articleCategories) {
+for (const articleCategory of MetricsConfig.articleCategories) {
     articleCategoriesRef[articleCategory.key] = articleCategory.name;
 }
 

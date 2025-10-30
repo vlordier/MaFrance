@@ -13,9 +13,11 @@
             alt="QR Code for Ethereum tipping"
             max-width="300"
             contain
-          ></v-img>
+          />
         </div>
-        <p class="mt-4 text-center">Thank you for your support!</p>
+        <p class="mt-4 text-center">
+          Thank you for your support!
+        </p>
       </v-card-text>
     </v-card>
   </div>

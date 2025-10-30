@@ -1,7 +1,7 @@
 
 <template>
   <v-card>
-    <v-card-title class="text-h6 pb-0" @click="toggleCollapse" style="cursor: pointer">
+    <v-card-title class="text-h6 pb-0" style="cursor: pointer" @click="toggleCollapse">
       {{ isEnglish ? 'FdS articles related to:' : 'Articles FdS associés à:' }} {{ locationName }}
     </v-card-title>
 
@@ -15,9 +15,9 @@
             variant="outlined"
             density="compact"
             clearable
-            @update:modelValue="onLieuChange"
             class="lieu-select"
-          ></v-select>
+            @update:model-value="onLieuChange"
+          />
         </div>
 
         <div class="categories-container mb-4">
@@ -38,12 +38,12 @@
               {{ isEnglish ? 'All' : 'Tous' }} ({{ totalArticles }})
             </v-chip>
             <v-chip
+              v-for="category in categories"
+              :key="category"
               color="primary"
               variant="flat"
               label
               size="small"
-              v-for="category in categories"
-              :key="category"
               :value="category"
               @click="selectCategory(category)"
             >
@@ -52,25 +52,25 @@
           </v-chip-group>
         </div>
 
-        <div class="articles-container" ref="articlesContainer" @scroll="handleScroll">
+        <div ref="articlesContainer" class="articles-container" @scroll="handleScroll">
           <div
-            class="article-item"
             v-for="(item, i) in filteredArticles"
             :key="item.url + i"
+            class="article-item"
           >
             <div class="article-header">
               <span class="article-date">{{ formatDate(item.date) }}</span>
               <span class="article-location">{{ item.commune }} ({{ item.departement }})</span>
             </div>
             <div class="article-title">
-              <a :href='item.url' target="_blank" rel="noopener noreferrer">
+              <a :href="item.url" target="_blank" rel="noopener noreferrer">
                 {{ item.title }}
               </a>
             </div>
           </div>
 
           <div v-if="isLoading" class="loading">
-            <v-progress-circular indeterminate size="24" color="primary"></v-progress-circular>
+            <v-progress-circular indeterminate size="24" color="primary" />
             <span class="loading-text">{{ isEnglish ? 'Loading...' : 'Chargement...' }}</span>
           </div>
 
@@ -80,11 +80,11 @@
 
           <div v-if="articles.pagination?.hasMore && !isLoading" class="load-more">
             <v-btn
-              @click="loadMoreArticles"
               variant="outlined"
               color="primary"
               size="small"
               block
+              @click="loadMoreArticles"
             >
               {{ isEnglish ? 'Load more articles' : 'Charger plus d\'articles' }}
             </v-btn>
