@@ -15,6 +15,10 @@ const MAX_POPULATION = 10000000; // Maximum population for filtering
 const MAX_LIEU_LENGTH = 100;
 const MIN_SEARCH_QUERY_LENGTH = 2;
 const DEPARTMENT_RANKINGS_LIMIT = 101; // Default limit for department rankings
+const RATE_LIMIT_WINDOW_MINUTES = 60; // Rate limit window in minutes
+const GLOBAL_SEARCH_LIMIT = 15; // Default limit for global commune search
+const ESLINT_COMPLEXITY_LIMIT = 20; // ESLint complexity rule limit
+const ESLINT_MAX_PARAMS = 6; // ESLint max-params rule limit
 
 module.exports = {
   HTTP_OK,
@@ -30,5 +34,9 @@ module.exports = {
   MAX_POPULATION,
   MAX_LIEU_LENGTH,
   MIN_SEARCH_QUERY_LENGTH,
-  DEPARTMENT_RANKINGS_LIMIT
+  DEPARTMENT_RANKINGS_LIMIT,
+  RATE_LIMIT_WINDOW_MINUTES,
+  GLOBAL_SEARCH_LIMIT,
+  ESLINT_COMPLEXITY_LIMIT,
+  ESLINT_MAX_PARAMS
 };

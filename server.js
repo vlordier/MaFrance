@@ -7,7 +7,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const config = require('./config');
 const db = require('./config/db');
-const { HTTP_OK, HTTP_NOT_FOUND, HTTP_INTERNAL_SERVER_ERROR, HTTP_MOVED_PERMANENTLY } = require('./constants');
+const { HTTP_OK, HTTP_NOT_FOUND, HTTP_INTERNAL_SERVER_ERROR, HTTP_MOVED_PERMANENTLY, RATE_LIMIT_WINDOW_MINUTES } = require('./constants');
 const app = express();
 const compression = require('compression');
 
@@ -32,7 +32,7 @@ app.use(cors({
 
 // Stricter rate limit for search endpoints
 const searchLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minute
+  windowMs: 1 * RATE_LIMIT_WINDOW_MINUTES * 1000, // 1 minute
   max: 50, // 50 searches per minute
   message: 'Limite de recherche atteinte, veuillez attendre.'
 });

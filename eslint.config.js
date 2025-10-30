@@ -1,4 +1,5 @@
 import js from '@eslint/js';
+import { ESLINT_COMPLEXITY_LIMIT, ESLINT_MAX_PARAMS } from './constants.js';
 
 export default [
   js.configs.recommended,
@@ -21,9 +22,9 @@ export default [
       'no-shadow': 'error',
       'no-redeclare': 'error',
       'no-magic-numbers': ['error', { 'ignore': [0, 1, -1, 2, 3, 4, 5, 10, 50, 100, 500, 1000] }],
-      'complexity': ['error', 20],
+      'complexity': ['error', ESLINT_COMPLEXITY_LIMIT],
       'max-lines-per-function': ['error', 100],
-      'max-params': ['error', 6],
+      'max-params': ['error', ESLINT_MAX_PARAMS],
       'eqeqeq': 'error',
       'curly': 'error',
       'brace-style': ['error', '1tbs'],

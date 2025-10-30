@@ -2,6 +2,7 @@
  * Search service for optimized commune searching with fuzzy matching
  */
 const db = require('../config/db');
+const { GLOBAL_SEARCH_LIMIT } = require('../constants');
 
 class SearchService {
   /**
@@ -110,7 +111,7 @@ class SearchService {
   /**
      * Search communes globally (without department filter) with fuzzy matching and ranking
      */
-  static async searchCommunesGlobally(query, limit = 15) {
+  static async searchCommunesGlobally(query, limit = GLOBAL_SEARCH_LIMIT) {
     return new Promise((resolve, reject) => {
       if (!query || query.length < 3) {
         resolve([]);

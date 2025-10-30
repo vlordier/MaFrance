@@ -1,7 +1,9 @@
 
+const { SERVER_PORT } = require('../constants');
+
 module.exports = {
   server: {
-    port: process.env.PORT || 3000,
+    port: process.env.PORT || SERVER_PORT,
     host: '0.0.0.0',
     env: process.env.NODE_ENV || 'development'
   },

@@ -1,9 +1,10 @@
 
 const rateLimit = require('express-rate-limit');
+const { RATE_LIMIT_WINDOW_MINUTES } = require('../constants');
 
 // Additional security middleware for file uploads and large payloads
 const uploadLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
+  windowMs: RATE_LIMIT_WINDOW_MINUTES * 1000, // 1 minute
   max: 5, // 5 uploads per minute
   message: 'Limite d\'upload atteinte'
 });
