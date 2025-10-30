@@ -1,51 +1,53 @@
 <template>
   <div class="heatmap-container">
     <div class="chart-wrapper">
-      <canvas ref="chartCanvas" :id="chartId" class="correlation-chart"></canvas>
+      <canvas :id="chartId" ref="chartCanvas" class="correlation-chart" />
     </div>
 
     <!-- Legend -->
     <div class="correlation-legend">
-      <div class="legend-title">{{ isEnglish ? 'Correlation intensity' : 'Intensité des corrélations' }}</div>
+      <div class="legend-title">
+        {{ isEnglish ? 'Correlation intensity' : 'Intensité des corrélations' }}
+      </div>
       <div class="legend-scale">
         <div class="legend-item">
-          <div class="legend-color" style="background: #b10026"></div>
+          <div class="legend-color" style="background: #b10026" />
           <span>{{ isEnglish ? 'Very strong (+0.7)' : 'Très forte (+0.7)' }}</span>
         </div>
         <div class="legend-item">
-          <div class="legend-color" style="background: #e31a1c"></div>
+          <div class="legend-color" style="background: #e31a1c" />
           <span>{{ isEnglish ? 'Strong (+0.5)' : 'Forte (+0.5)' }}</span>
         </div>
         <div class="legend-item">
-          <div class="legend-color" style="background: #fd8d3c"></div>
+          <div class="legend-color" style="background: #fd8d3c" />
           <span>{{ isEnglish ? 'Moderate (+0.3)' : 'Modérée (+0.3)' }}</span>
         </div>
         <div class="legend-item">
-          <div class="legend-color" style="background: #fecc5c"></div>
+          <div class="legend-color" style="background: #fecc5c" />
           <span>{{ isEnglish ? 'Weak (+0.1)' : 'Faible (+0.1)' }}</span>
         </div>
         <div class="legend-item">
-          <div class="legend-color" style="background: #ffffb2"></div>
+          <div class="legend-color" style="background: #ffffb2" />
           <span>{{ isEnglish ? 'Null (0)' : 'Nulle (0)' }}</span>
         </div>
         <div class="legend-item">
-          <div class="legend-color" style="background: #c7e9b4"></div>
+          <div class="legend-color" style="background: #c7e9b4" />
           <span>{{ isEnglish ? 'Weak (-0.1)' : 'Faible (-0.1)' }}</span>
         </div>
         <div class="legend-item">
-          <div class="legend-color" style="background: #7fcdbb"></div>
+          <div class="legend-color" style="background: #7fcdbb" />
           <span>{{ isEnglish ? 'Moderate (-0.3)' : 'Modérée (-0.3)' }}</span>
         </div>
         <div class="legend-item">
-          <div class="legend-color" style="background: #41b6c4"></div>
+          <div class="legend-color" style="background: #41b6c4" />
           <span>{{ isEnglish ? 'Strong (-0.5)' : 'Forte (-0.5)' }}</span>
         </div>
         <div class="legend-item">
-          <div class="legend-color" style="background: #2c7fb8"></div>
+          <div class="legend-color" style="background: #2c7fb8" />
           <span>{{ isEnglish ? 'Very strong (-0.7)' : 'Très forte (-0.7)' }}</span>
         </div>
         <div class="legend-item">
-          <div class="legend-color" style="background: #f0f0f0; border: 2px solid #ccc"></div>
+          <div class="legend-color" style="background: #f0f0f0; border: 2px solid #ccc" />
           <span>{{ isEnglish ? 'Insufficient data' : 'Données insuffisantes' }}</span>
         </div>
       </div>
@@ -317,7 +319,7 @@ export default {
               min: 0,
               max: labelsX.length * 2,
               ticks: {
-                callback: (value, index) => {
+                callback: (value) => {
                   if (Number.isInteger(value) && value % 2 === 1) {
                     const labelIndex = Math.floor(value / 2);
                     if (labelIndex >= 0 && labelIndex < labelsX.length) {
@@ -376,7 +378,7 @@ export default {
               min: 0,
               max: labelsY.length * 2,
               ticks: {
-                callback: (value, index) => {
+                callback: (value) => {
                   if (Number.isInteger(value) && value % 2 === 1) {
                     const actualIndex = Math.floor((labelsY.length * 2 - value) / 2);
                     if (actualIndex >= 0 && actualIndex < labelsY.length) {
