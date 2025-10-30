@@ -318,11 +318,16 @@ router.get('/politique', cacheMiddleware(() => 'politique_rankings'), (req, res,
     if (err) return handleDbError(err, res, next);
     const result = {};
     rows.forEach(row => {
-      const { famille_nuance, total_population, ...metrics } = row;
+      const { famille_nuance, ...metrics } = row;
       result[famille_nuance] = metrics;
     });
     res.json(result);
   });
+});
+
+// GET /api/rankings/ranking
+router.get('/ranking', (req, res) => {
+  res.json({ message: 'Ranking endpoint' });
 });
 
 module.exports = router;

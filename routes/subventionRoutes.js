@@ -1,21 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { param, validationResult } = require('express-validator');
 const { createDbHandler } = require('../middleware/errorHandler');
-const {
-  validateDepartementParam,
-  validateCOGParam,
-  validatePagination
-} = require('../middleware/validate');
-
-// Middleware to handle validation errors
-const handleValidationErrors = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-  next();
-};
+const { validateDepartementParam, validateCOGParam } = require('../middleware/validate');
 
 // Get country subventions
 router.get('/country', (req, res, next) => {
@@ -107,6 +93,10 @@ router.get('/commune/:cog', validateCOGParam, (req, res, next) => {
       total_subventions_parHab: row.total_subventions_parHab
     });
   });
+});
+
+router.get('/subventions', validateDepartementParam, (req, res) => {
+  res.json({ message: 'Subventions endpoint' });
 });
 
 module.exports = router;

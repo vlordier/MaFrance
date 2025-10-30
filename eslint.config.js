@@ -6,7 +6,7 @@ export default [
     rules: {
       'no-console': 'error',
       'no-debugger': 'error',
-      'no-unused-vars': 'error',
+      'no-unused-vars': ['error', { 'vars': 'all', 'args': 'after-used', 'ignoreRestSiblings': false }],
       'no-undef': 'error',
       'prefer-const': 'error',
       'no-var': 'error',

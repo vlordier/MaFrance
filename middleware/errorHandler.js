@@ -18,41 +18,33 @@ class ValidationError extends Error {
 }
 
 // Error handling functions
-const handleDatabaseError = (err, res, next) => {
+const handleDatabaseError = (err, res) => {
   console.error('Database error:', err.message);
   const error = new DatabaseError('Erreur lors de la requête à la base de données', err.message);
-  if (next) {
-    next(error);
-  } else {
-    res.status(error.status).json({
-      error: error.message,
-      details: process.env.NODE_ENV === 'production' ? null : error.details
-    });
-  }
+  res.status(error.status).json({
+    error: error.message,
+    details: process.env.NODE_ENV === 'production' ? null : error.details
+  });
 };
 
-const handleValidationError = (err, res, next) => {
+const handleValidationError = (err, res) => {
   console.error('Validation error:', err.message);
   const error = new ValidationError(err.message || 'Erreur de validation', err.details);
-  if (next) {
-    next(error);
+  res.status(error.status).json({
+    error: error.message,
+    details: process.env.NODE_ENV === 'production' ? null : error.details
+  });
+};
+
+const createDbHandler = (res) => (err, result) => {
+  if (err) {
+    res.status(500).json({ error: 'Database error', details: err.message });
   } else {
-    res.status(error.status).json({
-      error: error.message,
-      details: process.env.NODE_ENV === 'production' ? null : error.details
-    });
+    res.json(result);
   }
 };
 
-const createDbHandler = (res, next) => {
-  return (err) => {
-    if (err) {
-      handleDatabaseError(err, res, next);
-    }
-  };
-};
-
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res) => {
   console.error('Error:', err.message);
 
   // Don't expose internal errors in production

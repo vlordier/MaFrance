@@ -9,7 +9,6 @@ const config = require('./config');
 const db = require('./config/db');
 const app = express();
 const compression = require('compression');
-const cacheService = require('./services/cacheService');
 
 // Enable compression
 app.use(compression());
@@ -30,16 +29,6 @@ app.use(cors({
   credentials: true
 }));
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 500, // limit each IP to 100 requests per windowMs
-  message: 'Trop de requêtes, veuillez réessayer plus tard.',
-  standardHeaders: true,
-  legacyHeaders: false
-});
-//app.use('/api/', limiter);
-
 // Stricter rate limit for search endpoints
 const searchLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
@@ -53,7 +42,6 @@ app.use((req, res, next) => {
 
   // Redirect from old Replit domain to new custom domain
   if (host === 'ouvamafrance.replit.app') {
-    const protocol = req.get('x-forwarded-proto') || req.protocol;
     const newUrl = `https://mafrance.app${req.originalUrl}`;
     return res.redirect(301, newUrl);
   }
@@ -149,7 +137,7 @@ app.get('/api/version', (req, res) => {
 });
 
 // Health check and root route
-app.get('/', (req, res, next) => {
+app.get('/', (req, res) => {
   if (req.headers['user-agent']?.includes('GoogleHC')) {
     return res.status(200).send('OK');
   }
@@ -196,3 +184,5 @@ process.on('SIGINT', () => {
     process.exit(0);
   });
 });
+
+module.exports = app;
