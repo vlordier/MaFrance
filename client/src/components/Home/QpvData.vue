@@ -202,10 +202,6 @@ export default {
       bufferSize: 5
     }
   },
-  mounted() {
-    this.updateContainerHeight()
-    window.addEventListener('resize', this.updateContainerHeight)
-  },
   computed: {
     ...mapStores(useDataStore),
 
@@ -270,6 +266,10 @@ export default {
       // Reduce to 50px if no QPVs and not loading
       return this.qpvList.length === 0 && !this.isLoading ? 50 : 400;
     }
+  },
+  mounted() {
+    this.updateContainerHeight()
+    window.addEventListener('resize', this.updateContainerHeight)
   },
   watch: {
     data: {

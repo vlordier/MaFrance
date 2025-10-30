@@ -154,11 +154,6 @@ export default {
       return result
     }
   },
-  methods: {
-    toggleCollapse() {
-      this.isCollapsed = !this.isCollapsed;
-    }
-  },
   watch: {
     // Watch for label state changes to update chart data
     'dataStore.labelState': {
