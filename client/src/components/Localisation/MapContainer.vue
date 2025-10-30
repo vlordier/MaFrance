@@ -110,7 +110,7 @@ export default {
     // Props no longer needed as data comes from store
   },
   emits: ['location-selected', 'cadastral-data-loaded'],
-  setup(props, { emit }) {
+  setup() {
     const dataStore = useDataStore()
     const locationStore = useLocationStore()
     const isEnglish = computed(() => dataStore.labelState === 3)
@@ -453,10 +453,7 @@ export default {
     }
 
     // Update all icon sizes on zoom
-    const updateAllIcons = () => {
-      updateMigrantCenterIcons()
-      updateMosqueIcons()
-    }
+
 
     // Update visible markers after viewport change
     const updateVisibleMarkers = () => {
@@ -496,14 +493,14 @@ export default {
             `<strong>${isEnglish.value ? labels.value.departement.en : labels.value.departement.fr}</strong> ${departement}`
           )
 
-          layer.on('mouseover', (e) => {
+          layer.on('mouseover', () => {
             layer.setStyle({
               fillOpacity: 0.7,
               weight: 2
             })
           })
 
-          layer.on('mouseout', (e) => {
+          layer.on('mouseout', () => {
             layer.setStyle({
               fillOpacity: 0.4,
               weight: 1
@@ -848,7 +845,6 @@ export default {
       // Calculate direction vector
       const deltaLat = location.latitude - fromLat
       const deltaLng = location.longitude - fromLng
-      const distance = Math.sqrt(deltaLat * deltaLat + deltaLng * deltaLng)
 
       // Stop arrow just before the destination marker (about 80% of the way)
       const stopRatio = 0.8
@@ -962,7 +958,7 @@ export default {
     window.removePositionMarker = removeSelectedLocation
 
     // Watch for store data changes to update layers and filter data
-    watch(() => locationStore.migrantCentersData, (newData) => {
+    watch(() => locationStore.migrantCentersData, () => {
       filterDataForViewport()
       if (showMigrantCenters.value) {
         showMigrantCentersOnMap()
@@ -976,7 +972,7 @@ export default {
       }
     }, { deep: true })
 
-    watch(() => locationStore.qpvData, (newData) => {
+    watch(() => locationStore.qpvData, () => {
       if (showQpv.value) {
         loadQpvLayer()
       }
@@ -1018,7 +1014,7 @@ export default {
     })
 
     // Watch for boundary changes to update choropleth colors in real time
-    watch(() => [locationStore.minPrice, locationStore.maxPrice], ([newMin, newMax]) => {
+    watch(() => [locationStore.minPrice, locationStore.maxPrice], () => {
       if (locationStore.cadastralData && locationStore.cadastralData.sections && locationStore.cadastralData.sections.length > 0) {
         loadCadastralLayer()
       }

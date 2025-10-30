@@ -89,7 +89,7 @@
 </template>
 
 <script>
-import { defineComponent, computed, ref, watch } from 'vue'
+import { defineComponent, computed, watch } from 'vue'
 import { useDataStore } from '../../services/store.js'
 import { useLocationStore } from './locationStore.js'
 
@@ -139,7 +139,7 @@ export default defineComponent({
   props: {
     // Props no longer needed as data comes from store
   },
-  setup(props) {
+  setup() {
     const dataStore = useDataStore()
     const locationStore = useLocationStore()
     const isEnglish = computed(() => dataStore.labelState === 3)

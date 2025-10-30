@@ -232,7 +232,7 @@ export default {
     })
 
     // Function to fetch cadastral data
-    const fetchCadastralData = async (newCenter, newZoom) => {
+    const fetchCadastralData = async (newCenter) => {
       isLoadingCadastral.value = true
       const shouldFetch = lastFetchLat.value === null || lastFetchLng.value === null || haversineDistance(newCenter.lat, newCenter.lng, lastFetchLat.value, lastFetchLng.value) > 1;
       if (!shouldFetch) {
@@ -299,7 +299,7 @@ export default {
                   } else {
                     sections = []
                   }
-                } catch (e) {
+                } catch {
                   sections = []
                 }
               }
@@ -322,7 +322,7 @@ export default {
                 } else {
                   return []
                 }
-              } catch (e) {
+              } catch {
                 return []
               }
             })
