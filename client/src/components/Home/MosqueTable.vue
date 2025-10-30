@@ -109,10 +109,6 @@ export default {
       this.attachScrollListener()
     }
   },
-  beforeUnmount() {
-    window.removeEventListener('resize', this.updateContainerHeight)
-    this.removeScrollListener()
-  },
   computed: {
     ...mapStores(useDataStore),
 
@@ -217,6 +213,10 @@ export default {
         this.removeScrollListener()
       }
     }
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.updateContainerHeight)
+    this.removeScrollListener()
   }
 }
 </script>
