@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from './router'
 import { createPinia } from 'pinia'
 import vuetify from './plugins/vuetify'
-import api from './services/api'
+
 import './style.css'
 import VueMatomo from 'vue-matomo'
 

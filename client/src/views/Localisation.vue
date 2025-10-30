@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue'
+import { onMounted, computed } from 'vue'
 import { useDataStore } from '@/services/store.js'
 import { useLocationStore } from '../components/Localisation/locationStore.js'
 import LocationSearch from '../components/Localisation/LocationSearch.vue'

@@ -161,10 +161,7 @@ export default {
     // Debounce timer for population filters
     let populationDebounceTimer = null
 
-    // Helper function to update the current level based on scope
-    const updateCurrentLevel = () => {
-      // This function is implicitly used in computed properties and watchers
-    }
+
 
     // Computed properties based on props and local state
     const currentLevel = computed(() => {

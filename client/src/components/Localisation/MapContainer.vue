@@ -429,28 +429,7 @@ export default {
     /**
      * Update migrant center icon sizes when zoom level changes
      */
-    const updateMigrantCenterIcons = () => {
-      if (!migrantCentersLayer || !map) return
 
-      const currentZoom = map.getZoom()
-      migrantCentersLayer.eachLayer(layer => {
-        if (layer.setIcon) {
-          layer.setIcon(createIcon('migrant', currentZoom, isInclusive.value))
-        }
-      })
-    }
-
-    // Update mosque icon sizes on zoom
-    const updateMosqueIcons = () => {
-      if (!mosqueLayer || !map) return
-
-      const currentZoom = map.getZoom()
-      mosqueLayer.eachLayer(layer => {
-        if (layer.setIcon) {
-          layer.setIcon(createIcon('mosque', currentZoom, isInclusive.value))
-        }
-      })
-    }
 
     // Update all icon sizes on zoom
 
@@ -986,7 +965,7 @@ export default {
       }
     })
 
-    watch(() => locationStore.closestLocations, (newClosestLocations) => {
+    watch(() => locationStore.closestLocations, () => {
       if (locationStore.selectedLocation && newClosestLocations && newClosestLocations.length > 0) {
             createArrowsFromClosestLocations(locationStore.selectedLocation.lat, locationStore.selectedLocation.lng, newClosestLocations)
       }
