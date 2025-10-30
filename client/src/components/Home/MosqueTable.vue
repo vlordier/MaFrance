@@ -102,6 +102,13 @@ export default {
       scrollListenerAttached: false
     }
   },
+  mounted() {
+    this.updateContainerHeight()
+    window.addEventListener('resize', this.updateContainerHeight)
+    if (this.data.pagination?.hasMore) {
+      this.attachScrollListener()
+    }
+  },
   computed: {
     ...mapStores(useDataStore),
 
@@ -150,13 +157,6 @@ export default {
     computedContainerHeight() {
       // Reduce to 50px if no mosques and not loading
       return this.mosquesList.length === 0 && !this.isLoading ? 50 : 400;
-    }
-  },
-  mounted() {
-    this.updateContainerHeight()
-    window.addEventListener('resize', this.updateContainerHeight)
-    if (this.data.pagination?.hasMore) {
-      this.attachScrollListener()
     }
   },
   watch: {
