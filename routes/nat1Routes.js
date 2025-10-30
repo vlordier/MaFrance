@@ -8,6 +8,7 @@ const {
   validateDepartement,
   validateCOG
 } = require('../middleware/validate');
+const { HTTP_NOT_FOUND, HTTP_BAD_REQUEST, HTTP_INTERNAL_SERVER_ERROR } = require('../constants');
 
 // Function to compute percentage fields from raw NAT1 data
 const computePercentageFields = (row) => {
@@ -73,7 +74,7 @@ router.get('/country', cacheMiddleware(() => 'nat1_country_all'), (_req, res, ne
         return handleDbError(err);
       }
       if (!rows || rows.length === 0) {
-        return res.status(404).json({ error: 'Données NAT1 non trouvées' });
+        return res.status(HTTP_NOT_FOUND).json({ error: 'Données NAT1 non trouvées' });
       }
 
       const result = rows.map(row => computePercentageFields(row)).filter(Boolean);
@@ -89,7 +90,7 @@ router.get('/departement', validateDepartement, cacheMiddleware((req) => `nat1_d
   const { dept } = req.query;
 
   if (!dept) {
-    return res.status(400).json({ error: 'Paramètre dept requis' });
+    return res.status(HTTP_BAD_REQUEST).json({ error: 'Paramètre dept requis' });
   }
 
   // Normalize department code for consistency
@@ -103,12 +104,12 @@ router.get('/departement', validateDepartement, cacheMiddleware((req) => `nat1_d
         return handleDbError(err);
       }
       if (!row) {
-        return res.status(404).json({ error: 'Données NAT1 non trouvées pour ce département' });
+        return res.status(HTTP_NOT_FOUND).json({ error: 'Données NAT1 non trouvées pour cette commune' });
       }
 
       const computedData = computePercentageFields(row);
       if (!computedData) {
-        return res.status(500).json({ error: 'Erreur lors du calcul des pourcentages' });
+        return res.status(HTTP_INTERNAL_SERVER_ERROR).json({ error: 'Erreur lors du calcul des pourcentages' });
       }
 
       res.json(computedData);
@@ -129,12 +130,12 @@ router.get('/commune', validateCOG, cacheMiddleware((req) => `nat1_commune_${req
         return handleDbError(err);
       }
       if (!row) {
-        return res.status(404).json({ error: 'Données NAT1 non trouvées pour cette commune' });
+        return res.status(HTTP_NOT_FOUND).json({ error: 'Données NAT1 non trouvées pour ce département' });
       }
 
       const computedData = computePercentageFields(row);
       if (!computedData) {
-        return res.status(500).json({ error: 'Erreur lors du calcul des pourcentages' });
+        return res.status(HTTP_INTERNAL_SERVER_ERROR).json({ error: 'Erreur lors du calcul des pourcentages' });
       }
 
       res.json(computedData);
