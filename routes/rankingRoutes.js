@@ -1,39 +1,39 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const db = require("../config/db");
-const { createDbHandler } = require("../middleware/errorHandler");
-const { cacheMiddleware } = require("../middleware/cache");
+const db = require('../config/db');
+const { createDbHandler } = require('../middleware/errorHandler');
+const { cacheMiddleware } = require('../middleware/cache');
 const {
   validateDepartement,
   validateSort,
   validateDirection,
   validatePagination,
-  validatePopulationRange,
-} = require("../middleware/validate");
+  validatePopulationRange
+} = require('../middleware/validate');
 
 // GET /api/rankings/communes
 router.get(
-  "/communes",
+  '/communes',
   [
     validateDepartement,
     validateSort,
     validateDirection,
     validatePagination,
-    validatePopulationRange,
+    validatePopulationRange
   ],
   (req, res, next) => {
     const handleDbError = createDbHandler(res, next);
     const {
-      dept = "",
+      dept = '',
       limit = 20,
       offset = 0,
-      sort = "insecurite_score",
-      direction = "DESC",
-      population_range = "",
+      sort = 'insecurite_score',
+      direction = 'DESC',
+      population_range = ''
     } = req.query;
 
-    let populationFilter = "";
-    let queryParams = [dept, dept, limit, offset];
+    let populationFilter = '';
+    const queryParams = [dept, dept, limit, offset];
 
     // Handle dynamic population ranges
     if (population_range) {
@@ -50,7 +50,7 @@ router.get(
           populationFilter = `AND l.population >= ${minPop} AND l.population <= ${maxPop}`;
         } else {
           return res.status(400).json({
-            error: "Plage de population invalide. Format attendu: 'min-max' où min < max et max <= 10000000",
+            error: 'Plage de population invalide. Format attendu: \'min-max\' où min < max et max <= 10000000'
           });
         }
       } else if (minOnlyMatch) {
@@ -60,7 +60,7 @@ router.get(
           populationFilter = `AND l.population >= ${minPop}`;
         } else {
           return res.status(400).json({
-            error: "Population minimum invalide. Doit être entre 0 et 10000000",
+            error: 'Population minimum invalide. Doit être entre 0 et 10000000'
           });
         }
       } else if (maxOnlyMatch) {
@@ -70,18 +70,18 @@ router.get(
           populationFilter = `AND l.population <= ${maxPop}`;
         } else {
           return res.status(400).json({
-            error: "Population maximum invalide. Doit être entre 1 et 10000000",
+            error: 'Population maximum invalide. Doit être entre 1 et 10000000'
           });
         }
       } else {
         return res.status(400).json({
-          error: "Format de plage de population invalide. Formats attendus: 'min-max', 'min+', '0-max'",
+          error: 'Format de plage de population invalide. Formats attendus: \'min-max\', \'min+\', \'0-max\''
         });
       }
     }
 
     // Set secondary sort direction based on primary sort direction
-    const secondarySort = direction === "DESC" ? "l.COG DESC" : "l.COG ASC";
+    const secondarySort = direction === 'DESC' ? 'l.COG DESC' : 'l.COG ASC';
 
     const sql = `
     WITH LatestCommuneNames AS (
@@ -171,23 +171,23 @@ router.get(
         if (countErr) return handleDbError(countErr, res, next);
         res.json({
           data: rows,
-          total_count: countRow.total_count,
+          total_count: countRow.total_count
         });
       });
     });
-  },
+  }
 );
 
 // GET /api/rankings/departements
 router.get(
-  "/departements",
+  '/departements',
   [validateSort, validateDirection, validatePagination],
   (req, res, next) => {
     const {
       limit = 101,
       offset = 0,
-      sort = "insecurite_score",
-      direction = "DESC",
+      sort = 'insecurite_score',
+      direction = 'DESC'
     } = req.query;
 
     const cacheService = require('../services/cacheService');
@@ -214,9 +214,9 @@ router.get(
 
     res.json({
       data: paginatedData,
-      total_count: cachedData.total_count,
+      total_count: cachedData.total_count
     });
-  },
+  }
 );
 // GET /api/rankings/politique
 router.get('/politique', cacheMiddleware(() => 'politique_rankings'), (req, res, next) => {
@@ -324,6 +324,5 @@ router.get('/politique', cacheMiddleware(() => 'politique_rankings'), (req, res,
     res.json(result);
   });
 });
-
 
 module.exports = router;

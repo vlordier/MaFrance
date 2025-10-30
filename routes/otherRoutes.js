@@ -1,15 +1,15 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const db = require("../config/db");
-const { createDbHandler } = require("../middleware/errorHandler");
+const db = require('../config/db');
+const { createDbHandler } = require('../middleware/errorHandler');
 const {
   validateDepartement,
-  validateSearchQuery,
-} = require("../middleware/validate");
+  validateSearchQuery
+} = require('../middleware/validate');
 
 // GET /api/search
 router.get(
-  "/search",
+  '/search',
   [validateDepartement, validateSearchQuery],
   (req, res) => {
     const { dept, q } = req.query;
@@ -17,8 +17,8 @@ router.get(
 
     const normalizedQuery = q
       .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "");
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
 
     const sql = `
     SELECT COG, departement, commune, population, insecurite_score, immigration_score, islamisation_score, defrancisation_score, wokisme_score, number_of_mosques, mosque_p100k, total_qpv, pop_in_qpv_pct
@@ -34,19 +34,19 @@ router.get(
         .filter((row) =>
           row.commune
             .toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .includes(normalizedQuery),
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .includes(normalizedQuery)
         )
         .sort((a, b) => {
           const normA = a.commune
             .toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "");
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
           const normB = b.commune
             .toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "");
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
 
           // 1. Prioritize exact matches
           const isExactA = normA === normalizedQuery;
@@ -67,7 +67,7 @@ router.get(
 
       res.json(filteredCommunes);
     });
-  },
+  }
 );
 
 module.exports = router;

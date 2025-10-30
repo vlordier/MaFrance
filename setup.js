@@ -1,6 +1,6 @@
-const sqlite3 = require("sqlite3").verbose();
-const fs = require("fs");
-const config = require("./config");
+const sqlite3 = require('sqlite3').verbose();
+const fs = require('fs');
+const config = require('./config');
 const { importScores } = require('./setup/importScores');
 const { importArticles } = require('./setup/importArticles');
 const { importElus } = require('./setup/importElus');
@@ -13,13 +13,12 @@ const { importMigrants } = require('./setup/importMigrants');
 const { importNat1 } = require('./setup/importNat1');
 const { importMosques } = require('./setup/importMosques');
 
-
 const dbFile = config.database.path;
 
 // Initialize SQLite database
 function initializeDatabase() {
   // Create .data directory if it doesn't exist
-  const path = require("path");
+  const path = require('path');
   const dbDir = path.dirname(dbFile);
   if (!fs.existsSync(dbDir)) {
     fs.mkdirSync(dbDir, { recursive: true });
@@ -29,9 +28,9 @@ function initializeDatabase() {
   if (fs.existsSync(dbFile)) {
     try {
       fs.unlinkSync(dbFile);
-      console.log("Existing .data/france.db deleted");
+      console.log('Existing .data/france.db deleted');
     } catch (err) {
-      console.error("Error deleting existing .data/france.db:", err.message);
+      console.error('Error deleting existing .data/france.db:', err.message);
       process.exit(1);
     }
   }
@@ -148,34 +147,34 @@ runImports();
 
 // Create indexes for better search performance
 async function createSearchIndexes() {
-    return new Promise((resolve, reject) => {
-        const sqlite3 = require("sqlite3").verbose();
-        const indexDb = new sqlite3.Database(config.database.path);
+  return new Promise((resolve, reject) => {
+    const sqlite3 = require('sqlite3').verbose();
+    const indexDb = new sqlite3.Database(config.database.path);
 
-        console.log("Creating search indexes...");
+    console.log('Creating search indexes...');
 
-        const indexes = [
-            "CREATE INDEX IF NOT EXISTS idx_locations_commune ON locations(commune)",
-            "CREATE INDEX IF NOT EXISTS idx_locations_dept_commune ON locations(departement, commune)",
-            "CREATE INDEX IF NOT EXISTS idx_locations_search ON locations(commune COLLATE NOCASE)",
-        ];
+    const indexes = [
+      'CREATE INDEX IF NOT EXISTS idx_locations_commune ON locations(commune)',
+      'CREATE INDEX IF NOT EXISTS idx_locations_dept_commune ON locations(departement, commune)',
+      'CREATE INDEX IF NOT EXISTS idx_locations_search ON locations(commune COLLATE NOCASE)'
+    ];
 
-        let completed = 0;
+    let completed = 0;
 
-        indexes.forEach(indexQuery => {
-            indexDb.run(indexQuery, (err) => {
-                if (err) {
-                    console.error("Error creating index:", err);
-                    reject(err);
-                    return;
-                }
-                completed++;
-                if (completed === indexes.length) {
-                    console.log("Search indexes created successfully");
-                    indexDb.close();
-                    resolve();
-                }
-            });
-        });
+    indexes.forEach(indexQuery => {
+      indexDb.run(indexQuery, (err) => {
+        if (err) {
+          console.error('Error creating index:', err);
+          reject(err);
+          return;
+        }
+        completed++;
+        if (completed === indexes.length) {
+          console.log('Search indexes created successfully');
+          indexDb.close();
+          resolve();
+        }
+      });
     });
+  });
 }

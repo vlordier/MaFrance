@@ -1,36 +1,36 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const db = require("../config/db");
-const { createDbHandler } = require("../middleware/errorHandler");
-const { cacheMiddleware } = require("../middleware/cache");
+const db = require('../config/db');
+const { createDbHandler } = require('../middleware/errorHandler');
+const { cacheMiddleware } = require('../middleware/cache');
 const {
   validateDepartement,
   validateSort,
   validateDirection,
-  validatePagination,
-} = require("../middleware/validate");
+  validatePagination
+} = require('../middleware/validate');
 
 // GET /api/departements
-router.get("/", (req, res, next) => {
+router.get('/', (req, res, next) => {
   const handleDbError = createDbHandler(res, next);
-  db.all("SELECT DISTINCT departement FROM departements", [], (err, rows) => {
+  db.all('SELECT DISTINCT departement FROM departements', [], (err, rows) => {
     if (err) return handleDbError(err);
     rows.sort((a, b) =>
       a.departement
-        .padStart(3, "0")
-        .localeCompare(b.departement.padStart(3, "0")),
+        .padStart(3, '0')
+        .localeCompare(b.departement.padStart(3, '0'))
     );
     res.json(rows);
   });
 });
 
 // GET /api/departements/details
-router.get("/details", validateDepartement, cacheMiddleware((req) => `dept_details_${req.query.dept}`), (req, res, next) => {
+router.get('/details', validateDepartement, cacheMiddleware((req) => `dept_details_${req.query.dept}`), (req, res, next) => {
   const handleDbError = createDbHandler(res, next);
   const { dept } = req.query;
 
   const normalizedDept =
-    /^\d+$/.test(dept) && dept.length < 2 ? dept.padStart(2, "0") : dept;
+    /^\d+$/.test(dept) && dept.length < 2 ? dept.padStart(2, '0') : dept;
 
   const sql = `
     SELECT
@@ -66,14 +66,14 @@ router.get("/details", validateDepartement, cacheMiddleware((req) => `dept_detai
 
   db.get(sql, [normalizedDept, dept], (err, row) => {
     if (err) return handleDbError(err);
-    if (!row) return res.status(404).json({ error: "Département non trouvé" });
+    if (!row) return res.status(404).json({ error: 'Département non trouvé' });
 
     res.json(row);
   });
 });
 
 // GET /api/departements/names
-router.get("/names", validateDepartement, cacheMiddleware((req) => `dept_names_${req.query.dept}`), (req, res, next) => {
+router.get('/names', validateDepartement, cacheMiddleware((req) => `dept_names_${req.query.dept}`), (req, res, next) => {
   const handleDbError = createDbHandler(res, next);
   const { dept } = req.query;
 
@@ -86,16 +86,16 @@ router.get("/names", validateDepartement, cacheMiddleware((req) => `dept_names_$
       if (err) return handleDbError(err);
       if (!row)
         return res.status(404).json({
-          error: "Données de prénoms non trouvées pour la dernière année",
+          error: 'Données de prénoms non trouvées pour la dernière année'
         });
 
       res.json(row);
-    },
+    }
   );
 });
 
 // GET /api/departements/names_history
-router.get("/names_history", validateDepartement, cacheMiddleware((req) => `dept_names_history_${req.query.dept}`), (req, res, next) => {
+router.get('/names_history', validateDepartement, cacheMiddleware((req) => `dept_names_history_${req.query.dept}`), (req, res, next) => {
   const handleDbError = createDbHandler(res, next);
   const { dept } = req.query;
 
@@ -109,12 +109,12 @@ router.get("/names_history", validateDepartement, cacheMiddleware((req) => `dept
       if (err) return handleDbError(err);
 
       res.json(rows);
-    },
+    }
   );
 });
 
 // GET /api/departements/crime
-router.get("/crime", validateDepartement, cacheMiddleware((req) => `dept_crime_${req.query.dept}`), (req, res, next) => {
+router.get('/crime', validateDepartement, cacheMiddleware((req) => `dept_crime_${req.query.dept}`), (req, res, next) => {
   const handleDbError = createDbHandler(res, next);
   const { dept } = req.query;
 
@@ -127,16 +127,16 @@ router.get("/crime", validateDepartement, cacheMiddleware((req) => `dept_crime_$
       if (err) return handleDbError(err);
       if (!row)
         return res.status(404).json({
-          error: "Données criminelles non trouvées pour la dernière année",
+          error: 'Données criminelles non trouvées pour la dernière année'
         });
 
       res.json(row);
-    },
+    }
   );
 });
 
 // GET /api/departements/crime_history
-router.get("/crime_history", validateDepartement, cacheMiddleware((req) => `dept_crime_history_${req.query.dept}`), (req, res, next) => {
+router.get('/crime_history', validateDepartement, cacheMiddleware((req) => `dept_crime_history_${req.query.dept}`), (req, res, next) => {
   const handleDbError = createDbHandler(res, next);
   const { dept } = req.query;
 
@@ -150,24 +150,24 @@ router.get("/crime_history", validateDepartement, cacheMiddleware((req) => `dept
       if (err) return handleDbError(err);
 
       res.json(rows);
-    },
+    }
   );
 });
 
 // GET /api/departements/prefet
-router.get("/prefet", validateDepartement, cacheMiddleware((req) => `prefet_${req.query.dept}`), (req, res, next) => {
+router.get('/prefet', validateDepartement, cacheMiddleware((req) => `prefet_${req.query.dept}`), (req, res, next) => {
   const handleDbError = createDbHandler(res, next);
   const { dept } = req.query;
 
   db.get(
-    "SELECT prenom, nom, date_poste FROM prefets WHERE code = ?",
+    'SELECT prenom, nom, date_poste FROM prefets WHERE code = ?',
     [dept],
     (err, row) => {
       if (err) return handleDbError(err);
-      if (!row) return res.status(404).json({ error: "Préfet non trouvé" });
+      if (!row) return res.status(404).json({ error: 'Préfet non trouvé' });
 
       res.json(row);
-    },
+    }
   );
 });
 

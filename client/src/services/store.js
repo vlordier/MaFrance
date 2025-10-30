@@ -117,533 +117,533 @@ export const useDataStore = defineStore('data', {
       } catch {
         // Ignore errors
       }
-        return null;
-      }
-    },
+      return null;
+    }
+  },
 
-    async fetchDepartementData(code) {
-      try {
-        const results = await Promise.all([
-          api.getDepartementDetails(code),
-          api.getDepartementNames(code),
-          api.getDepartementCrime(code),
-          api.getDepartementCrimeHistory(code),
-          api.getDepartementNamesHistory(code),
-          api.getQpv({ dept: code, limit: 100 }),
-          api.getDepartementExecutive(code),
-          api.getCommuneRankings({
-            dept: code,
-            limit: 1000,
-            sort: 'total_score',
-            direction: 'DESC'
-          }),
-          api.getArticles({
-            dept: code,
-            limit: 20
-          }),
-          api.getDepartementSubventions(code),
-          api.getMigrants({ dept: code, limit: 100 }),
-          api.getMosques({ dept: code, limit: 100 }),
-          api.getDepartementNat1(code)
-        ]);
+  async fetchDepartementData(code) {
+    try {
+      const results = await Promise.all([
+        api.getDepartementDetails(code),
+        api.getDepartementNames(code),
+        api.getDepartementCrime(code),
+        api.getDepartementCrimeHistory(code),
+        api.getDepartementNamesHistory(code),
+        api.getQpv({ dept: code, limit: 100 }),
+        api.getDepartementExecutive(code),
+        api.getCommuneRankings({
+          dept: code,
+          limit: 1000,
+          sort: 'total_score',
+          direction: 'DESC'
+        }),
+        api.getArticles({
+          dept: code,
+          limit: 20
+        }),
+        api.getDepartementSubventions(code),
+        api.getMigrants({ dept: code, limit: 100 }),
+        api.getMosques({ dept: code, limit: 100 }),
+        api.getDepartementNat1(code)
+      ]);
 
-        const departement = {};
-        departement.details = results[0];
-        departement.names = results[1];
-        departement.crime = results[2];
-        departement.crimeHistory = results[3];
-        departement.namesHistory = results[4];
-        departement.qpv = results[5];
-        departement.executive = results[6];
-        departement.communesRankings = results[7];
-        departement.articles = results[8];
-        departement.subventions = results[9];
-        departement.migrants = results[10] || [];
-        departement.mosques = results[11] || [];
-        departement.nat1 = results[12];
-        departement.namesSeries = serializeStats(departement.namesHistory);
-        departement.crimeSeries = serializeStats(results[3]);
-        departement.crimeAggreg = aggregateStats(
-          departement.crimeSeries.data,
-          MetricsConfig.calculatedMetrics
-        );
+      const departement = {};
+      departement.details = results[0];
+      departement.names = results[1];
+      departement.crime = results[2];
+      departement.crimeHistory = results[3];
+      departement.namesHistory = results[4];
+      departement.qpv = results[5];
+      departement.executive = results[6];
+      departement.communesRankings = results[7];
+      departement.articles = results[8];
+      departement.subventions = results[9];
+      departement.migrants = results[10] || [];
+      departement.mosques = results[11] || [];
+      departement.nat1 = results[12];
+      departement.namesSeries = serializeStats(departement.namesHistory);
+      departement.crimeSeries = serializeStats(results[3]);
+      departement.crimeAggreg = aggregateStats(
+        departement.crimeSeries.data,
+        MetricsConfig.calculatedMetrics
+      );
 
-        return departement;
-      } catch {
-        return null;
-      }
-    },
+      return departement;
+    } catch {
+      return null;
+    }
+  },
 
-    async fetchCommuneData(code, deptCode) {
-      try {
-        const results = await Promise.all([
-          api.getCommuneDetails(code),
-          // api.getCommuneNames(code),
-          api.getCommuneCrime(code),
-          api.getCommuneCrimeHistory(code),
-          // api.getCommuneNamesHistory(code),
-          api.getQpv({ cog: code, limit: 100 }),
-          api.getCommuneExecutive(code),
-          api.getArticles({
-            cog: code,
-            dept: deptCode,
-            limit: 20
-          }),
-          api.getCommuneSubventions(code),
-          api.getMigrants({ cog: code, limit: 100 }),
-          api.getMosques({ cog: code, limit: 100 }),
-          api.getCommuneNat1(code)
-        ]);
+  async fetchCommuneData(code, deptCode) {
+    try {
+      const results = await Promise.all([
+        api.getCommuneDetails(code),
+        // api.getCommuneNames(code),
+        api.getCommuneCrime(code),
+        api.getCommuneCrimeHistory(code),
+        // api.getCommuneNamesHistory(code),
+        api.getQpv({ cog: code, limit: 100 }),
+        api.getCommuneExecutive(code),
+        api.getArticles({
+          cog: code,
+          dept: deptCode,
+          limit: 20
+        }),
+        api.getCommuneSubventions(code),
+        api.getMigrants({ cog: code, limit: 100 }),
+        api.getMosques({ cog: code, limit: 100 }),
+        api.getCommuneNat1(code)
+      ]);
 
-        const commune = {};
-        commune.details = results[0];
-        commune.crime = results[1];
-        commune.crimeHistory = results[2];
-        commune.qpv = results[3];
-        commune.executive = results[4];
-        commune.articles = results[5];
-        commune.subventions = results[6];
-        commune.migrants = results[7] || [];
-        commune.mosques = results[8] || [];
-        commune.nat1 = results[9];
-        commune.crimeSeries = serializeStats(results[2]);
-        commune.crimeAggreg = aggregateStats(commune.crimeSeries.data, MetricsConfig.calculatedMetrics);
+      const commune = {};
+      commune.details = results[0];
+      commune.crime = results[1];
+      commune.crimeHistory = results[2];
+      commune.qpv = results[3];
+      commune.executive = results[4];
+      commune.articles = results[5];
+      commune.subventions = results[6];
+      commune.migrants = results[7] || [];
+      commune.mosques = results[8] || [];
+      commune.nat1 = results[9];
+      commune.crimeSeries = serializeStats(results[2]);
+      commune.crimeAggreg = aggregateStats(commune.crimeSeries.data, MetricsConfig.calculatedMetrics);
 
-        return commune;
-      } catch {
-        return null;
-      }
-    },
+      return commune;
+    } catch {
+      return null;
+    }
+  },
 
-    setLevel(level) {
-      this.currentLevel = level;
-    },
+  setLevel(level) {
+    this.currentLevel = level;
+  },
 
-    setCountry() {
-      this.fetchCountryData().then((country) => {
-        this.country = country;
+  setCountry() {
+    this.fetchCountryData().then((country) => {
+      this.country = country;
 
-        // Clear lower level data when moving to country level
-        this.clearDepartementData();
-        this.clearCommuneData();
-        this.levels.departement = null;
-        this.levels.commune = null;
-
-        this.setLevel('country');
-      });
-    },
-
-    async setDepartement(deptCode) {
-      const currentDeptCode = this.getDepartementCode();
-
-      if (deptCode !== currentDeptCode) {
-        const departement = await this.fetchDepartementData(deptCode);
-        this.departement = departement;
-        this.levels.departement = DepartementNames[deptCode];
-      }
-
-      // Clear commune data when moving to departement level
+      // Clear lower level data when moving to country level
+      this.clearDepartementData();
       this.clearCommuneData();
+      this.levels.departement = null;
       this.levels.commune = null;
 
-      this.setLevel('departement');
-    },
+      this.setLevel('country');
+    });
+  },
 
-    async setCommune(cog, communeName, deptCode) {
+  async setDepartement(deptCode) {
+    const currentDeptCode = this.getDepartementCode();
 
-      const currentCommCode = this.getCommuneCode();
-      const currentDeptCode = this.getDepartementCode();
+    if (deptCode !== currentDeptCode) {
+      const departement = await this.fetchDepartementData(deptCode);
+      this.departement = departement;
+      this.levels.departement = DepartementNames[deptCode];
+    }
 
-      const promises = [];
+    // Clear commune data when moving to departement level
+    this.clearCommuneData();
+    this.levels.commune = null;
 
-      // Vérifier si on doit charger les données de la commune
-      if (cog !== currentCommCode) {
-        promises.push(this.fetchCommuneData(cog, deptCode));
-      } else {
-        promises.push(Promise.resolve(null)); // Placeholder pour maintenir l'ordre
-      }
+    this.setLevel('departement');
+  },
 
-      // Vérifier si on doit charger les données du département
-      if (deptCode !== null && deptCode !== currentDeptCode) {
-        promises.push(this.fetchDepartementData(deptCode));
-      } else {
-        promises.push(Promise.resolve(null)); // Placeholder pour maintenir l'ordre
-      }
+  async setCommune(cog, communeName, deptCode) {
 
-      // Exécuter toutes les requêtes en parallèle
-      const [communeData, departementData] = await Promise.all(promises);
+    const currentCommCode = this.getCommuneCode();
+    const currentDeptCode = this.getDepartementCode();
 
-      // Mettre à jour le store une seule fois avec toutes les données
-      if (communeData) {
-        this.commune = communeData;
-        // const communeName = this.getCommuneName()
-        this.levels.commune = communeName;
-      }
-      if (departementData) {
-        this.departement = departementData;
-        this.levels.departement = DepartementNames[deptCode];
-      }
+    const promises = [];
 
-      // on vérifie que le département de la commune est bien celui chargé pour être sûr
-      if (this.getCommuneDepartementCode() !== this.getDepartementCode()) {
-        this.setDepartement(this.commune.departement);
-      }
+    // Vérifier si on doit charger les données de la commune
+    if (cog !== currentCommCode) {
+      promises.push(this.fetchCommuneData(cog, deptCode));
+    } else {
+      promises.push(Promise.resolve(null)); // Placeholder pour maintenir l'ordre
+    }
 
-      this.setLevel('commune');
-    },
+    // Vérifier si on doit charger les données du département
+    if (deptCode !== null && deptCode !== currentDeptCode) {
+      promises.push(this.fetchDepartementData(deptCode));
+    } else {
+      promises.push(Promise.resolve(null)); // Placeholder pour maintenir l'ordre
+    }
 
-    // Actions utilitaires
-    clearDepartementData() {
-      this.departement = {
-        details: null,
-        names: null,
-        crime: null,
-        crimeHistory: null,
-        namesHistory: null,
-        qpv: null,
-        executive: null,
-        communesRankings: null,
-        articles: null,
-        namesSeries: null,
-        crimeSeries: null,
-        crimeAggreg: null,
-        subventions: null,
-        migrants: null,
-        mosques: null,
-        nat1: null
-      };
-    },
+    // Exécuter toutes les requêtes en parallèle
+    const [communeData, departementData] = await Promise.all(promises);
 
-    clearCommuneData() {
-      this.commune = {
-        details: null,
-        crime: null,
-        crimeHistory: null,
-        qpv: null,
-        executive: null,
-        articles: null,
-        crimeSeries: null,
-        crimeAggreg: null,
-        subventions: null,
-        migrants: null,
-        mosques: null,
-        nat1: null
-      };
-    },
+    // Mettre à jour le store une seule fois avec toutes les données
+    if (communeData) {
+      this.commune = communeData;
+      // const communeName = this.getCommuneName()
+      this.levels.commune = communeName;
+    }
+    if (departementData) {
+      this.departement = departementData;
+      this.levels.departement = DepartementNames[deptCode];
+    }
 
-    // Initialize store and sync with MetricsConfig
-    initializeStore() {
-      // Sync labelState with MetricsConfig
-      MetricsConfig.labelState = this.labelState;
+    // on vérifie que le département de la commune est bien celui chargé pour être sûr
+    if (this.getCommuneDepartementCode() !== this.getDepartementCode()) {
+      this.setDepartement(this.commune.departement);
+    }
 
-      // Handle pending navigation from shared links
-      this.handlePendingNavigation();
-    },
+    this.setLevel('commune');
+  },
 
-    // Handle navigation from shared URLs
-    async handlePendingNavigation() {
-      const pendingNav = sessionStorage.getItem('pendingNavigation');
-      if (!pendingNav) {
-        // If no pending navigation, trigger LocationSelector after delay to auto-zoom map
-        setTimeout(() => {
-          this.triggerLocationSelectorAutoZoom();
-        }, 500);
-        return;
-      }
+  // Actions utilitaires
+  clearDepartementData() {
+    this.departement = {
+      details: null,
+      names: null,
+      crime: null,
+      crimeHistory: null,
+      namesHistory: null,
+      qpv: null,
+      executive: null,
+      communesRankings: null,
+      articles: null,
+      namesSeries: null,
+      crimeSeries: null,
+      crimeAggreg: null,
+      subventions: null,
+      migrants: null,
+      mosques: null,
+      nat1: null
+    };
+  },
 
-      try {
-        const params = JSON.parse(pendingNav);
-        sessionStorage.removeItem('pendingNavigation');
+  clearCommuneData() {
+    this.commune = {
+      details: null,
+      crime: null,
+      crimeHistory: null,
+      qpv: null,
+      executive: null,
+      articles: null,
+      crimeSeries: null,
+      crimeAggreg: null,
+      subventions: null,
+      migrants: null,
+      mosques: null,
+      nat1: null
+    };
+  },
 
-        // Set version if specified
-        if (params.v) {
-          let version;
-          if (params.v === 'en') {
-            version = 3;
-          } else {
-            version = parseInt(params.v);
-          }
-          if (version >= 0 && version <= 3) {
-            this.setLabelState(version);
-          }
-        }
+  // Initialize store and sync with MetricsConfig
+  initializeStore() {
+    // Sync labelState with MetricsConfig
+    MetricsConfig.labelState = this.labelState;
 
-        // Set selected metric if specified (decode compact format)
-        if (params.m) {
-          const decodedMetric = MetricsConfig.getMetricFromCompact(params.m);
-          this.selectedMetric = decodedMetric;
-        }
+    // Handle pending navigation from shared links
+    this.handlePendingNavigation();
+  },
 
-        // Navigate to location based on 'c' parameter
-        if (params.c) {
-          // Simple logic: 4 or 5 characters = commune code, 3 or less = departement code
-          if (params.c.length >= 4) {
-            const communeDetails = await api.getCommuneDetails(params.c);
-            if (communeDetails) {
-              await this.setCommune(params.c, communeDetails.commune, communeDetails.departement);
-            }
-          } else if (params.c.length <= 3) {
-            // It's a department code
-            await this.setDepartement(params.c);
-          }
+  // Handle navigation from shared URLs
+  async handlePendingNavigation() {
+    const pendingNav = sessionStorage.getItem('pendingNavigation');
+    if (!pendingNav) {
+      // If no pending navigation, trigger LocationSelector after delay to auto-zoom map
+      setTimeout(() => {
+        this.triggerLocationSelectorAutoZoom();
+      }, 500);
+      return;
+    }
+
+    try {
+      const params = JSON.parse(pendingNav);
+      sessionStorage.removeItem('pendingNavigation');
+
+      // Set version if specified
+      if (params.v) {
+        let version;
+        if (params.v === 'en') {
+          version = 3;
         } else {
-          // Stay at country level
-          await this.setCountry();
+          version = parseInt(params.v);
         }
-
-        // Trigger LocationSelector after navigation to auto-zoom map
-        setTimeout(() => {
-          this.triggerLocationSelectorAutoZoom();
-        }, 500);
-      } catch {
-        sessionStorage.removeItem('pendingNavigation');
-      }
-    },
-
-    // Trigger LocationSelector to activate map auto-zoom
-    triggerLocationSelectorAutoZoom() {
-      // Dispatch event that LocationSelector can listen to for auto-zoom
-      window.dispatchEvent(new CustomEvent('triggerMapAutoZoom'));
-    },
-
-    // Label state management
-    setLabelState(state) {
-      this.labelState = state;
-      // Keep MetricsConfig in sync
-      MetricsConfig.labelState = state;
-      localStorage.setItem('metricsLabelState', state.toString());
-      // Dispatch event for components that might need to react
-      window.dispatchEvent(
-        new CustomEvent('metricsLabelsToggled', {
-          detail: { labelState: this.labelState }
-        })
-      );
-    },
-
-    cycleLabelState() {
-      const newState = (this.labelState + 1) % 4;
-      this.setLabelState(newState);
-    },
-
-    async loadDepartementSubventions(deptCode) {
-      if (!deptCode) {
-        return;
-      }
-
-      try {
-        const data = await api.getDepartementSubventions(deptCode);
-        if (data) {
-          this.departement.subventions = data.subventions || [];
+        if (version >= 0 && version <= 3) {
+          this.setLabelState(version);
         }
-      } catch {
-      }
-    },
-
-    async loadCommuneSubventions(cog) {
-      if (!cog) {
-        return;
       }
 
-      try {
-        const data = await api.getCommuneSubventions(cog);
-        if (data) {
-          this.commune.subventions = data.subventions || [];
-        }
-      } catch {
+      // Set selected metric if specified (decode compact format)
+      if (params.m) {
+        const decodedMetric = MetricsConfig.getMetricFromCompact(params.m);
+        this.selectedMetric = decodedMetric;
       }
-    },
 
-    async fetchFilteredArticles(params, append = false) {
-      try {
-        const articlesResponse = await api.getArticles(params);
-
-        if (params.cog) {
-          // For commune
-          if (append && this.commune.articles) {
-            // Append new articles to existing list
-            this.commune.articles = {
-              ...articlesResponse,
-              list: [...this.commune.articles.list, ...articlesResponse.list],
-              counts: articlesResponse.counts // Use fresh counts
-            };
-          } else {
-            // Replace articles list
-            this.commune.articles = articlesResponse;
+      // Navigate to location based on 'c' parameter
+      if (params.c) {
+        // Simple logic: 4 or 5 characters = commune code, 3 or less = departement code
+        if (params.c.length >= 4) {
+          const communeDetails = await api.getCommuneDetails(params.c);
+          if (communeDetails) {
+            await this.setCommune(params.c, communeDetails.commune, communeDetails.departement);
           }
-        } else if (params.dept) {
-          // For departement
-          if (append && this.departement.articles) {
-            // Append new articles to existing list
-            this.departement.articles = {
-              ...articlesResponse,
-              list: [...this.departement.articles.list, ...articlesResponse.list],
-              counts: articlesResponse.counts // Use fresh counts
-            };
-          } else {
-            // Replace articles list
-            this.departement.articles = articlesResponse;
+        } else if (params.c.length <= 3) {
+          // It's a department code
+          await this.setDepartement(params.c);
+        }
+      } else {
+        // Stay at country level
+        await this.setCountry();
+      }
+
+      // Trigger LocationSelector after navigation to auto-zoom map
+      setTimeout(() => {
+        this.triggerLocationSelectorAutoZoom();
+      }, 500);
+    } catch {
+      sessionStorage.removeItem('pendingNavigation');
+    }
+  },
+
+  // Trigger LocationSelector to activate map auto-zoom
+  triggerLocationSelectorAutoZoom() {
+    // Dispatch event that LocationSelector can listen to for auto-zoom
+    window.dispatchEvent(new CustomEvent('triggerMapAutoZoom'));
+  },
+
+  // Label state management
+  setLabelState(state) {
+    this.labelState = state;
+    // Keep MetricsConfig in sync
+    MetricsConfig.labelState = state;
+    localStorage.setItem('metricsLabelState', state.toString());
+    // Dispatch event for components that might need to react
+    window.dispatchEvent(
+      new CustomEvent('metricsLabelsToggled', {
+        detail: { labelState: this.labelState }
+      })
+    );
+  },
+
+  cycleLabelState() {
+    const newState = (this.labelState + 1) % 4;
+    this.setLabelState(newState);
+  },
+
+  async loadDepartementSubventions(deptCode) {
+    if (!deptCode) {
+      return;
+    }
+
+    try {
+      const data = await api.getDepartementSubventions(deptCode);
+      if (data) {
+        this.departement.subventions = data.subventions || [];
+      }
+    } catch {
+    }
+  },
+
+  async loadCommuneSubventions(cog) {
+    if (!cog) {
+      return;
+    }
+
+    try {
+      const data = await api.getCommuneSubventions(cog);
+      if (data) {
+        this.commune.subventions = data.subventions || [];
+      }
+    } catch {
+    }
+  },
+
+  async fetchFilteredArticles(params, append = false) {
+    try {
+      const articlesResponse = await api.getArticles(params);
+
+      if (params.cog) {
+        // For commune
+        if (append && this.commune.articles) {
+          // Append new articles to existing list
+          this.commune.articles = {
+            ...articlesResponse,
+            list: [...this.commune.articles.list, ...articlesResponse.list],
+            counts: articlesResponse.counts // Use fresh counts
+          };
+        } else {
+          // Replace articles list
+          this.commune.articles = articlesResponse;
+        }
+      } else if (params.dept) {
+        // For departement
+        if (append && this.departement.articles) {
+          // Append new articles to existing list
+          this.departement.articles = {
+            ...articlesResponse,
+            list: [...this.departement.articles.list, ...articlesResponse.list],
+            counts: articlesResponse.counts // Use fresh counts
+          };
+        } else {
+          // Replace articles list
+          this.departement.articles = articlesResponse;
+        }
+      } else if (params.country) { // Added condition for country
+        // For country (no dept or cog)
+        if (append && this.country.articles) {
+          // Append new articles to existing list
+          this.country.articles = {
+            ...articlesResponse,
+            list: [...this.country.articles.list, ...articlesResponse.list],
+            counts: articlesResponse.counts // Use fresh counts
+          };
+        } else {
+          // Replace articles list
+          this.country.articles = articlesResponse;
+        }
+      }
+
+      return articlesResponse;
+    } catch {
+      return null;
+    }
+  },
+
+  async loadMoreArticles(params) {
+    return this.fetchFilteredArticles(params, true);
+  },
+
+  async fetchMigrants(level, code) {
+    try {
+      const params = { limit: level === 'country' ? 20 : 100 };
+      if (level === 'departement') {
+        params.dept = code;
+      } else if (level === 'commune') {
+        params.cog = code;
+      } // No params for country
+
+      const migrants = await api.getMigrants(params);
+      this[level].migrants = migrants || { list: [], pagination: { hasMore: false, nextCursor: null, limit: params.limit } };
+    } catch {
+      this[level].migrants = { list: [], pagination: { hasMore: false, nextCursor: null, limit: 20 } };
+    }
+  },
+
+  async loadMoreMigrants(level, code, params) {
+    try {
+      const migrantParams = { ...params };
+      if (level === 'departement') {
+        migrantParams.dept = code;
+      } else if (level === 'commune') {
+        migrantParams.cog = code;
+      }
+
+      // Remove undefined cursor parameter
+      if (migrantParams.cursor === undefined || migrantParams.cursor === null) {
+        delete migrantParams.cursor;
+      }
+
+      const moreMigrants = await api.getMigrants(migrantParams);
+      if (moreMigrants && moreMigrants.list) {
+        this[level].migrants.list.push(...moreMigrants.list);
+        this[level].migrants.pagination = moreMigrants.pagination;
+      }
+    } catch {
+    }
+  },
+
+  async fetchMosques(level, code) {
+    try {
+      const params = { limit: level === 'country' ? 20 : 100 };
+      if (level === 'departement') {
+        params.dept = code;
+      } else if (level === 'commune') {
+        params.cog = code;
+      } // No params for country
+
+      const mosques = await api.getMosques(params);
+      this[level].mosques = mosques || { list: [], pagination: { hasMore: false, nextCursor: null, limit: params.limit } };
+    } catch {
+      this[level].mosques = { list: [], pagination: { hasMore: false, nextCursor: null, limit: 20 } };
+    }
+  },
+
+  async loadMoreMosques(level, code, params) {
+    try {
+      const mosqueParams = { ...params };
+      if (level === 'departement') {
+        mosqueParams.dept = code;
+      } else if (level === 'commune') {
+        mosqueParams.cog = code;
+      }
+
+      // Remove undefined cursor parameter
+      if (mosqueParams.cursor === undefined || mosqueParams.cursor === null) {
+        delete mosqueParams.cursor;
+      }
+
+      const moreMosques = await api.getMosques(mosqueParams);
+      if (moreMosques && moreMosques.list) {
+        this[level].mosques.list.push(...moreMosques.list);
+        this[level].mosques.pagination = moreMosques.pagination;
+      }
+    } catch {
+    }
+  },
+
+  async fetchQpv(level, code) {
+    try {
+      const params = { limit: level === 'country' ? 20 : 100 };
+      if (level === 'departement') {
+        params.dept = code;
+      } else if (level === 'commune') {
+        params.cog = code;
+      } // No params for country
+
+      const qpv = await api.getQpv(params);
+      this[level].qpv = qpv || { list: [], pagination: { hasMore: false, nextCursor: null, limit: params.limit } };
+    } catch {
+      this[level].qpv = { list: [], pagination: { hasMore: false, nextCursor: null, limit: 20 } };
+    }
+  },
+
+  async loadMoreQpv(level, code, params) {
+    try {
+      const qpvParams = { ...params };
+      if (level === 'departement') {
+        qpvParams.dept = code;
+      } else if (level === 'commune') {
+        qpvParams.cog = code;
+      }
+
+      // Remove undefined cursor parameter
+      if (qpvParams.cursor === undefined || qpvParams.cursor === null) {
+        delete qpvParams.cursor;
+      }
+
+      const moreQpv = await api.getQpv(qpvParams);
+      if (moreQpv && moreQpv.list) {
+        this[level].qpv.list.push(...moreQpv.list);
+        this[level].qpv.pagination = moreQpv.pagination;
+      }
+    } catch {
+    }
+  },
+
+  // Subventions actions
+  async fetchCountrySubventions(country = 'france') {
+    this.subventionsCountry = await api.getCountrySubventions(country) || {
+      list: [],
+      pagination: { hasMore: false, nextCursor: null, limit: 20 }
+    };
+  },
+
+  async fetchLocationData(cogs) {
+    const uncachedCogs = cogs.filter(cog => !this.locationCache[cog]);
+    if (uncachedCogs.length) {
+      try {
+        const results = await Promise.allSettled(uncachedCogs.map(cog => api.getCommuneDetails(cog)));
+        results.forEach((result, i) => {
+          if (result.status === 'fulfilled' && result.value?.commune) {
+            this.locationCache[uncachedCogs[i]] = `${result.value.commune} (${result.value.departement})`;
           }
-        } else if (params.country) { // Added condition for country
-          // For country (no dept or cog)
-          if (append && this.country.articles) {
-            // Append new articles to existing list
-            this.country.articles = {
-              ...articlesResponse,
-              list: [...this.country.articles.list, ...articlesResponse.list],
-              counts: articlesResponse.counts // Use fresh counts
-            };
-          } else {
-            // Replace articles list
-            this.country.articles = articlesResponse;
-          }
-        }
-
-        return articlesResponse;
-      } catch {
-        return null;
-      }
-    },
-
-    async loadMoreArticles(params) {
-      return this.fetchFilteredArticles(params, true);
-    },
-
-    async fetchMigrants(level, code) {
-      try {
-        const params = { limit: level === 'country' ? 20 : 100 };
-        if (level === 'departement') {
-          params.dept = code;
-        } else if (level === 'commune') {
-          params.cog = code;
-        } // No params for country
-
-        const migrants = await api.getMigrants(params);
-        this[level].migrants = migrants || { list: [], pagination: { hasMore: false, nextCursor: null, limit: params.limit } };
-      } catch {
-        this[level].migrants = { list: [], pagination: { hasMore: false, nextCursor: null, limit: 20 } };
-      }
-    },
-
-    async loadMoreMigrants(level, code, params) {
-      try {
-        const migrantParams = { ...params };
-        if (level === 'departement') {
-          migrantParams.dept = code;
-        } else if (level === 'commune') {
-          migrantParams.cog = code;
-        }
-
-        // Remove undefined cursor parameter
-        if (migrantParams.cursor === undefined || migrantParams.cursor === null) {
-          delete migrantParams.cursor;
-        }
-
-        const moreMigrants = await api.getMigrants(migrantParams);
-        if (moreMigrants && moreMigrants.list) {
-          this[level].migrants.list.push(...moreMigrants.list);
-          this[level].migrants.pagination = moreMigrants.pagination;
-        }
-      } catch {
-      }
-    },
-
-    async fetchMosques(level, code) {
-      try {
-        const params = { limit: level === 'country' ? 20 : 100 };
-        if (level === 'departement') {
-          params.dept = code;
-        } else if (level === 'commune') {
-          params.cog = code;
-        } // No params for country
-
-        const mosques = await api.getMosques(params);
-        this[level].mosques = mosques || { list: [], pagination: { hasMore: false, nextCursor: null, limit: params.limit } };
-      } catch {
-        this[level].mosques = { list: [], pagination: { hasMore: false, nextCursor: null, limit: 20 } };
-      }
-    },
-
-    async loadMoreMosques(level, code, params) {
-      try {
-        const mosqueParams = { ...params };
-        if (level === 'departement') {
-          mosqueParams.dept = code;
-        } else if (level === 'commune') {
-          mosqueParams.cog = code;
-        }
-
-        // Remove undefined cursor parameter
-        if (mosqueParams.cursor === undefined || mosqueParams.cursor === null) {
-          delete mosqueParams.cursor;
-        }
-
-        const moreMosques = await api.getMosques(mosqueParams);
-        if (moreMosques && moreMosques.list) {
-          this[level].mosques.list.push(...moreMosques.list);
-          this[level].mosques.pagination = moreMosques.pagination;
-        }
-      } catch {
-      }
-    },
-
-    async fetchQpv(level, code) {
-      try {
-        const params = { limit: level === 'country' ? 20 : 100 };
-        if (level === 'departement') {
-          params.dept = code;
-        } else if (level === 'commune') {
-          params.cog = code;
-        } // No params for country
-
-        const qpv = await api.getQpv(params);
-        this[level].qpv = qpv || { list: [], pagination: { hasMore: false, nextCursor: null, limit: params.limit } };
-      } catch {
-        this[level].qpv = { list: [], pagination: { hasMore: false, nextCursor: null, limit: 20 } };
-      }
-    },
-
-    async loadMoreQpv(level, code, params) {
-      try {
-        const qpvParams = { ...params };
-        if (level === 'departement') {
-          qpvParams.dept = code;
-        } else if (level === 'commune') {
-          qpvParams.cog = code;
-        }
-
-        // Remove undefined cursor parameter
-        if (qpvParams.cursor === undefined || qpvParams.cursor === null) {
-          delete qpvParams.cursor;
-        }
-
-        const moreQpv = await api.getQpv(qpvParams);
-        if (moreQpv && moreQpv.list) {
-          this[level].qpv.list.push(...moreQpv.list);
-          this[level].qpv.pagination = moreQpv.pagination;
-        }
-      } catch {
-      }
-    },
-
-    // Subventions actions
-    async fetchCountrySubventions(country = 'france') {
-      this.subventionsCountry = await api.getCountrySubventions(country) || {
-        list: [],
-        pagination: { hasMore: false, nextCursor: null, limit: 20 }
-      };
-    },
-
-    async fetchLocationData(cogs) {
-      const uncachedCogs = cogs.filter(cog => !this.locationCache[cog]);
-      if (uncachedCogs.length) {
-        try {
-          const results = await Promise.allSettled(uncachedCogs.map(cog => api.getCommuneDetails(cog)));
-          results.forEach((result, i) => {
-            if (result.status === 'fulfilled' && result.value?.commune) {
-              this.locationCache[uncachedCogs[i]] = `${result.value.commune} (${result.value.departement})`;
-            }
-          });
-          localStorage.setItem('locationCache', JSON.stringify(this.locationCache));
+        });
+        localStorage.setItem('locationCache', JSON.stringify(this.locationCache));
       } catch {
       }
     }
@@ -730,4 +730,4 @@ export const useDataStore = defineStore('data', {
       return this[level]?.mosques || { list: [], pagination: { hasMore: false, nextCursor: null, limit: 20 } };
     }
   }
-  });
+});

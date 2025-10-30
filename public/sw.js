@@ -21,7 +21,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           // Delete old cache versions - keep only current build hash caches
-          if (cacheName !== API_CACHE_NAME && 
+          if (cacheName !== API_CACHE_NAME &&
               cacheName !== IMAGE_CACHE_NAME &&
               cacheName !== TILE_CACHE_NAME &&
               (cacheName.startsWith('ma-france-') || cacheName.startsWith('workbox-'))) {
@@ -91,11 +91,11 @@ async function handleImageRequest(request) {
   try {
     const cache = await caches.open(IMAGE_CACHE_NAME);
     const cachedResponse = await cache.match(request);
-    
+
     if (cachedResponse) {
       return cachedResponse;
     }
-    
+
     const response = await fetch(request);
     if (response.ok) {
       cache.put(request, response.clone());
@@ -160,7 +160,7 @@ async function manageTileCache(cache) {
   try {
     const keys = await cache.keys();
     const maxTiles = 1000; // Approximate limit - each tile is ~10-50KB
-    
+
     if (keys.length > maxTiles) {
       // Remove oldest tiles (FIFO)
       const tilesToDelete = keys.slice(0, keys.length - maxTiles);

@@ -23,7 +23,7 @@ export default [
         CustomEvent: 'readonly',
         alert: 'readonly',
         btoa: 'readonly',
-        Chart: 'readonly',
+        Chart: 'readonly'
       }
     },
     rules: {
@@ -55,6 +55,7 @@ export default [
       'prefer-const': 'error',
       'no-var': 'error',
       'no-prototype-builtins': 'error',
+      'no-empty': ['error', { 'allowEmptyCatch': true }],
       'no-case-declarations': 'error',
       'no-unreachable': 'error',
       'no-useless-escape': 'error',
@@ -76,7 +77,7 @@ export default [
       'space-before-function-paren': ['error', 'never'],
       'keyword-spacing': 'error',
       'space-infix-ops': 'error',
-      'no-multi-spaces': 'error',
+      'no-multi-spaces': 'error'
     }
   }
 ];

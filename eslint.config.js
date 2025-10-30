@@ -17,7 +17,7 @@ export default [
       'semi': ['error', 'always'],
       'comma-dangle': ['error', 'never'],
       'object-curly-spacing': ['error', 'always'],
-      'array-bracket-spacing': ['error', 'never'],
+      'array-bracket-spacing': ['error', 'never']
     }
   }
 ];
