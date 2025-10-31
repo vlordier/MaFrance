@@ -66,8 +66,7 @@ router.get(
 
     db.all(sql, params, (err, rows) => {
       if (err) {
-        createDbHandler(res, next)(err);
-        return;
+        return res.status(500).json({ error: 'Database error', details: err.message });
       }
 
       const hasMore = rows.length > pageLimit;
@@ -116,8 +115,7 @@ router.get('/geojson', cacheMiddleware(() => 'qpv:geojson'), (_req, res) => {
 
     db.all(query, [], (err, rows) => {
       if (err) {
-        createDbHandler(res)(err);
-        return;
+        return res.status(500).json({ error: 'Database error', details: err.message });
       }
 
       // Convert database rows back to GeoJSON format
@@ -166,8 +164,7 @@ router.get('/closest', cacheMiddleware((req) => `qpv:closest:${req.query.lat}:${
 
   db.all(query, [lat, lat, lng, lng, parseInt(limit)], (err, rows) => {
     if (err) {
-      createDbHandler(res)(err);
-      return;
+      return res.status(500).json({ error: 'Database error', details: err.message });
     }
 
     // Calculate actual distance and format results
@@ -224,8 +221,7 @@ router.get('/nearby', cacheMiddleware((req) => `qpv:nearby:${req.query.lat}:${re
 
   db.all(sql, [latitude, latitude, longitude, maxResults], (err, rows) => {
     if (err) {
-      createDbHandler(res, next)(err);
-      return;
+      return res.status(500).json({ error: 'Database error', details: err.message });
     }
 
     const qpvs = rows.map(row => ({

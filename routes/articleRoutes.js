@@ -123,7 +123,7 @@ router.get(
   '/',
   [validateOptionalDepartement, validateOptionalCOG, validateLieu],
   (req, res, next) => {
-    const handleDbError = createDbHandler(res, next);
+    const handleDbError = createDbHandler(res);
     const { dept, cog, lieu, category, cursor, limit = '20' } = req.query;
     const pageLimit = Math.min(parseInt(limit), 100);
 
@@ -162,7 +162,7 @@ router.get(
   '/counts',
   [validateDepartement, validateOptionalCOG, validateLieu],
   (req, res, next) => {
-    const handleDbError = createDbHandler(res, next);
+    const handleDbError = createDbHandler(res);
     const { dept, cog, lieu } = req.query;
 
     const baseCondition = getBaseCondition(!!dept);
@@ -208,7 +208,7 @@ router.get(
   '/lieux',
   [validateCOG, validateLieu],
   (req, res, next) => {
-    const handleDbError = createDbHandler(res, next);
+    const handleDbError = createDbHandler(res);
     const { cog } = req.query;
 
     const sql = 'SELECT DISTINCT lieu FROM lieux WHERE cog = ? ORDER BY lieu';

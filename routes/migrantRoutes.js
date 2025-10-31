@@ -16,7 +16,7 @@ const {
 // Single endpoint for all migrant centers
 router.get(
   '/',
-  [validateOptionalDepartement, validateOptionalCOG, validatePagination, cacheMiddleware((req) => `migrants:${req.query.dept || 'all'}:${req.query.cog || 'all'}:${req.query.cursor || 0}:${req.query.limit || DEFAULT_LIMIT}`)],
+  validateOptionalDepartement, validateOptionalCOG, validatePagination, cacheMiddleware((req) => `migrants:${req.query.dept || 'all'}:${req.query.cog || 'all'}:${req.query.cursor || 0}:${req.query.limit || DEFAULT_LIMIT}`),
   (req, res) => {
     const db = req.app.locals.db;
     const dbHandler = createDbHandler(res);
@@ -52,9 +52,8 @@ router.get(
     params.push(offset);
 
     db.all(query, params, (err, rows) => {
-      dbHandler(err);
       if (err) {
-        return;
+        return res.status(500).json({ error: 'Database error', details: err.message });
       }
 
       const hasMore = rows.length > pageLimit;

@@ -20,18 +20,52 @@ function initializeDatabase() {
   // Create .data directory if it doesn't exist
   const path = require('path');
   const dbDir = path.dirname(dbFile);
+  // eslint-disable-next-line security/detect-non-literal-fs-filename
   if (!fs.existsSync(dbDir)) {
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
     fs.mkdirSync(dbDir, { recursive: true });
   }
 
+  // eslint-disable-next-line security/detect-non-literal-fs-filename
   if (fs.existsSync(dbFile)) {
     try {
+      // eslint-disable-next-line security/detect-non-literal-fs-filename
       fs.unlinkSync(dbFile);
     } catch {
       process.exit(1);
     }
   }
   return new sqlite3.Database(dbFile);
+}
+
+// Create indexes for better search performance
+async function createSearchIndexes() {
+  return new Promise((resolve, reject) => {
+    const sqlite = require('sqlite3').verbose();
+    const indexDb = new sqlite.Database(config.database.path);
+
+    const indexes = [
+      'CREATE INDEX IF NOT EXISTS idx_locations_commune ON locations(commune)',
+      'CREATE INDEX IF NOT EXISTS idx_locations_dept_commune ON locations(departement, commune)',
+      'CREATE INDEX IF NOT EXISTS idx_locations_search ON locations(commune COLLATE NOCASE)'
+    ];
+
+    let completed = 0;
+
+    indexes.forEach(indexQuery => {
+      indexDb.run(indexQuery, (err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        completed++;
+        if (completed === indexes.length) {
+          indexDb.close();
+          resolve();
+        }
+      });
+    });
+  });
 }
 
 function runImports() {
@@ -78,34 +112,14 @@ function runImports() {
   runNextImport(0);
 }
 
-runImports();
+// Export functions for testing
+module.exports = {
+  initializeDatabase,
+  createSearchIndexes,
+  runImports
+};
 
-// Create indexes for better search performance
-async function createSearchIndexes() {
-  return new Promise((resolve, reject) => {
-    const sqlite = require('sqlite3').verbose();
-    const indexDb = new sqlite.Database(config.database.path);
-
-    const indexes = [
-      'CREATE INDEX IF NOT EXISTS idx_locations_commune ON locations(commune)',
-      'CREATE INDEX IF NOT EXISTS idx_locations_dept_commune ON locations(departement, commune)',
-      'CREATE INDEX IF NOT EXISTS idx_locations_search ON locations(commune COLLATE NOCASE)'
-    ];
-
-    let completed = 0;
-
-    indexes.forEach(indexQuery => {
-      indexDb.run(indexQuery, (err) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        completed++;
-        if (completed === indexes.length) {
-          indexDb.close();
-          resolve();
-        }
-      });
-    });
-  });
+// Run setup if called directly
+if (require.main === module) {
+  runImports();
 }

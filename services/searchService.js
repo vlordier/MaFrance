@@ -158,6 +158,44 @@ class SearchService {
       });
     });
   }
+
+  /**
+     * Get commune suggestions for autocomplete
+     */
+  static getCommuneSuggestions(departement, query, limit = 5) {
+    return new Promise((resolve, reject) => {
+      if (!query || query.length < 2) {
+        resolve([]);
+        return;
+      }
+
+      const normalizedQuery = this.normalizeText(query);
+
+      // Use SQL LIKE for initial filtering to leverage indexes
+      const likePattern = `${normalizedQuery}%`; // Start with query for autocomplete
+
+      db.all(
+        `SELECT DISTINCT commune
+                 FROM locations 
+                 WHERE departement = ? 
+                 AND (
+                     LOWER(commune) LIKE ? 
+                     OR commune LIKE ?
+                 )
+                 ORDER BY population DESC
+                 LIMIT ?`,
+        [departement, likePattern, `%${query}%`, limit],
+        (err, rows) => {
+          if (err) {
+            return reject(err);
+          }
+
+          const suggestions = rows.map(row => row.commune);
+          resolve(suggestions);
+        }
+      );
+    });
+  }
 }
 
 module.exports = SearchService;

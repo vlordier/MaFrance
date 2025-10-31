@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
-const { createDbHandler } = require('../middleware/errorHandler');
+const { createDbHandler, DatabaseError, NotFoundError, ValidationError } = require('../middleware/errorHandler');
 const { cacheMiddleware } = require('../middleware/cache');
 const {
   validateDepartement,
@@ -63,9 +63,8 @@ const computePercentageFields = (row) => {
 };
 
 // GET /api/nat1/country
-router.get('/country', cacheMiddleware(() => 'nat1_country_all'), (_req, res, next) => {
+router.get('/country', cacheMiddleware(() => 'nat1_country_all'), (req, res, next) => {
   const handleDbError = createDbHandler(res, next);
-
   db.all(
     'SELECT * FROM country_nat1 ORDER BY Code',
     [],
@@ -74,7 +73,7 @@ router.get('/country', cacheMiddleware(() => 'nat1_country_all'), (_req, res, ne
         return handleDbError(err);
       }
       if (!rows || rows.length === 0) {
-        return res.status(HTTP_NOT_FOUND).json({ error: 'Données NAT1 non trouvées' });
+        return next(new NotFoundError('Données NAT1 non trouvées'));
       }
 
       const result = rows.map(row => computePercentageFields(row)).filter(Boolean);
@@ -86,11 +85,10 @@ router.get('/country', cacheMiddleware(() => 'nat1_country_all'), (_req, res, ne
 
 // GET /api/nat1/departement
 router.get('/departement', validateDepartement, cacheMiddleware((req) => `nat1_dept_${req.query.dept}`), (req, res, next) => {
-  const handleDbError = createDbHandler(res, next);
   const { dept } = req.query;
 
   if (!dept) {
-    return res.status(HTTP_BAD_REQUEST).json({ error: 'Paramètre dept requis' });
+    return next(new ValidationError('Paramètre dept requis'));
   }
 
   // Normalize department code for consistency
@@ -99,18 +97,18 @@ router.get('/departement', validateDepartement, cacheMiddleware((req) => `nat1_d
   db.get(
     'SELECT * FROM department_nat1 WHERE Code = ?',
     [normalizedDept],
-    (err, row) => {
-      if (err) {
-        return handleDbError(err);
-      }
-      if (!row) {
-        return res.status(HTTP_NOT_FOUND).json({ error: 'Données NAT1 non trouvées pour cette commune' });
-      }
+     (err, row) => {
+       if (err) {
+         return next(new DatabaseError('Erreur lors de la récupération des données NAT1', err.message, { dept: normalizedDept }));
+       }
+       if (!row) {
+         return next(new NotFoundError('Données NAT1 non trouvées pour ce département', { dept: normalizedDept }));
+       }
 
-      const computedData = computePercentageFields(row);
-      if (!computedData) {
-        return res.status(HTTP_INTERNAL_SERVER_ERROR).json({ error: 'Erreur lors du calcul des pourcentages' });
-      }
+       const computedData = computePercentageFields(row);
+       if (!computedData) {
+         return next(new DatabaseError('Erreur lors du calcul des pourcentages'));
+       }
 
       res.json(computedData);
     }
@@ -119,24 +117,23 @@ router.get('/departement', validateDepartement, cacheMiddleware((req) => `nat1_d
 
 // GET /api/nat1/commune
 router.get('/commune', validateCOG, cacheMiddleware((req) => `nat1_commune_${req.query.cog}`), (req, res, next) => {
-  const handleDbError = createDbHandler(res, next);
   const { cog } = req.query;
 
   db.get(
     'SELECT * FROM commune_nat1 WHERE Code = ?',
     [cog],
-    (err, row) => {
-      if (err) {
-        return handleDbError(err);
-      }
-      if (!row) {
-        return res.status(HTTP_NOT_FOUND).json({ error: 'Données NAT1 non trouvées pour ce département' });
-      }
+     (err, row) => {
+       if (err) {
+         return next(new DatabaseError('Erreur lors de la récupération des données NAT1', err.message, { cog }));
+       }
+       if (!row) {
+         return next(new NotFoundError('Données NAT1 non trouvées pour cette commune', { cog }));
+       }
 
-      const computedData = computePercentageFields(row);
-      if (!computedData) {
-        return res.status(HTTP_INTERNAL_SERVER_ERROR).json({ error: 'Erreur lors du calcul des pourcentages' });
-      }
+       const computedData = computePercentageFields(row);
+       if (!computedData) {
+         return next(new DatabaseError('Erreur lors du calcul des pourcentages'));
+       }
 
       res.json(computedData);
     }

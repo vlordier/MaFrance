@@ -38,6 +38,17 @@ jobs:
     - name: Build client
       run: npm run build
 
+    - name: Run tests with coverage
+      run: npm test -- --coverage --watchAll=false
+
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
     - name: Start server and test basic functionality
       run: |
         npm start &

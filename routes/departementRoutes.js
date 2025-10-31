@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
-const { createDbHandler } = require('../middleware/errorHandler');
+const { createDbHandler, NotFoundError, DatabaseError } = require('../middleware/errorHandler');
 const { cacheMiddleware } = require('../middleware/cache');
 const {
   validateDepartement
 } = require('../middleware/validate');
 const { HTTP_NOT_FOUND } = require('../constants');
+const { logError } = require('../utils/logger');
 
 // GET /api/departements
 router.get('/', (_req, res, next) => {
@@ -26,7 +27,6 @@ router.get('/', (_req, res, next) => {
 
 // GET /api/departements/details
 router.get('/details', validateDepartement, cacheMiddleware((req) => `dept_details_${req.query.dept}`), (req, res, next) => {
-  const handleDbError = createDbHandler(res, next);
   const { dept } = req.query;
 
   const normalizedDept =
@@ -66,10 +66,11 @@ router.get('/details', validateDepartement, cacheMiddleware((req) => `dept_detai
 
   db.get(sql, [normalizedDept, dept], (err, row) => {
     if (err) {
-      return handleDbError(err);
+      logError(err, { route: '/api/departements/details', dept });
+      return next(new DatabaseError('Erreur lors de la récupération des détails du département', err.message, { dept }));
     }
     if (!row) {
-      return res.status(HTTP_NOT_FOUND).json({ error: 'Département non trouvé' });
+      return next(new NotFoundError('Département non trouvé', { dept }));
     }
 
     res.json(row);
@@ -78,7 +79,6 @@ router.get('/details', validateDepartement, cacheMiddleware((req) => `dept_detai
 
 // GET /api/departements/names
 router.get('/names', validateDepartement, cacheMiddleware((req) => `dept_names_${req.query.dept}`), (req, res, next) => {
-  const handleDbError = createDbHandler(res, next);
   const { dept } = req.query;
 
   db.get(
@@ -88,12 +88,11 @@ router.get('/names', validateDepartement, cacheMiddleware((req) => `dept_names_$
     [dept, dept],
     (err, row) => {
       if (err) {
-        return handleDbError(err);
+        logError(err, { route: '/api/departements/names', dept });
+        return next(new DatabaseError('Erreur lors de la récupération des données de prénoms', err.message, { dept }));
       }
       if (!row) {
-        return res.status(HTTP_NOT_FOUND).json({
-          error: 'Données de prénoms non trouvées pour la dernière année'
-        });
+        return next(new NotFoundError('Données de prénoms non trouvées pour la dernière année', { dept }));
       }
 
       res.json(row);

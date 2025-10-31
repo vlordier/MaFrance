@@ -1,0 +1,20 @@
+{
+  "commune": {
+    "COG": "01001",
+    "commune": "L'Abergement-Clémenciat",
+    "population": 800
+  },
+  "qpvList": [
+    { "rowid": 1, "COG": "75001", "lib_com": "Paris", "codeQPV": "QP001", "lib_qp": "Quartier 1", "popMuniQPV": 15000 },
+    { "rowid": 2, "COG": "75002", "lib_com": "Paris", "codeQPV": "QP002", "lib_qp": "Quartier 2", "popMuniQPV": 12000 },
+    { "rowid": 3, "COG": "01001", "lib_com": "Abergement", "codeQPV": "QP003", "lib_qp": "Quartier 3", "popMuniQPV": 500 }
+  ],
+  "mosqueList": [
+    { "id": 1, "name": "Mosquée de Paris", "address": "123 Rue", "latitude": 48.8566, "longitude": 2.3522, "commune": "Paris", "departement": "75", "cog": "75001" },
+    { "id": 2, "name": "Mosquée Test", "address": "456 Rue", "latitude": 45.7640, "longitude": 4.8357, "commune": "Lyon", "departement": "69", "cog": "69001" }
+  ],
+  "rankingPolitique": {
+    "Gauche": { "population": 100000, "insecurite_score": 3.5 },
+    "Droite": { "population": 150000, "insecurite_score": 4.2 }
+  }
+}

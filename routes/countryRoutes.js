@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
-const { createDbHandler } = require('../middleware/errorHandler');
+const { createDbHandler, NotFoundError } = require('../middleware/errorHandler');
 const { cacheMiddleware } = require('../middleware/cache');
 const { validateCountry } = require('../middleware/validate');
 const { HTTP_NOT_FOUND } = require('../constants');
@@ -23,16 +23,16 @@ router.get('/details', validateCountry, cacheMiddleware((req) => {
     params = [country.toUpperCase()];
   }
 
-  db.all(sql, params, (err, rows) => {
-    if (err) {
-      return handleDbError(err);
-    }
-    if (!rows || rows.length === 0) {
-      return res.status(HTTP_NOT_FOUND).json({ error: 'Données pays non trouvées' });
-    }
+   db.all(sql, params, (err, rows) => {
+     if (err) {
+       return handleDbError(err);
+     }
+     if (!rows || rows.length === 0) {
+       return next(new NotFoundError('Données pays non trouvées', { country }));
+     }
 
-    res.json(rows);
-  });
+     res.json(rows);
+   });
 });
 
 // GET /api/country/names

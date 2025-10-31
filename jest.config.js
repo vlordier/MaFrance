@@ -12,7 +12,7 @@ module.exports = {
     '!coverage/**',
     '!jest.config.js',
     '!eslint.config.js',
-    '!utils/logger.js', // Exclude logger from coverage as it's tested indirectly
+    '!utils/logger.js' // Exclude logger from coverage as it's tested indirectly
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html', 'json'],
