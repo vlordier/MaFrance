@@ -11,7 +11,9 @@ const {
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(HTTP_BAD_REQUEST).json({ errors: errors.array() });
+    const { ValidationError } = require('./errorHandler');
+    const error = new ValidationError('Erreur de validation', errors.array());
+    return next(error);
   }
   next();
 };
@@ -19,11 +21,9 @@ const handleValidationErrors = (req, res, next) => {
 // Validation for French department codes (e.g., 01-95, 2A, 2B, 971-976)
 const validateDepartement = [
   query('dept')
-    .optional() // Allow dept to be empty or undefined
+    .notEmpty()
+    .withMessage('Département requis')
     .custom((value) => {
-      if (value === '' || value === undefined) {
-        return true; // Allow empty string for national commune rankings
-      }
       if (!/^(0[1-9]|[1-8][0-9]|9[0-5]|2[AB]|97[1-6])$/.test(value)) {
         throw new Error('Code département invalide');
       }
@@ -75,17 +75,15 @@ function validateOptionalCOG(req, res, next) {
     cog &&
     !/^(?:[0-9]{5}|2[AB][0-9]{3}|97[1-6][0-9]{2}|[0-9]{4})$/.test(cog)
   ) {
-    return res.status(HTTP_BAD_REQUEST).json({
-      errors: [
-        {
-          type: 'field',
-          value: cog,
-          msg: 'Code COG invalide',
-          path: 'cog',
-          location: 'query'
-        }
-      ]
-    });
+    const { ValidationError } = require('./errorHandler');
+    const error = new ValidationError('Erreur de validation', [{
+      type: 'field',
+      value: cog,
+      msg: 'Code COG invalide',
+      path: 'cog',
+      location: 'query'
+    }]);
+    return next(error);
   }
   next();
 }
@@ -224,7 +222,15 @@ const validateLieu = [
 const validateOptionalDepartement = (req, res, next) => {
   const { dept } = req.query;
   if (dept && !/^\d{1,3}$/.test(dept)) {
-    return res.status(HTTP_BAD_REQUEST).json({ error: 'Le paramètre dept doit être un nombre' });
+    const { ValidationError } = require('./errorHandler');
+    const error = new ValidationError('Erreur de validation', [{
+      type: 'field',
+      value: dept,
+      msg: 'Le paramètre dept doit être un nombre',
+      path: 'dept',
+      location: 'query'
+    }]);
+    return next(error);
   }
   next();
 };
@@ -238,17 +244,15 @@ function validateSearchQuery(req, res, next) {
     q.length < MIN_SEARCH_QUERY_LENGTH ||
     q.length > MAX_LIEU_LENGTH
   ) {
-    return res.status(HTTP_BAD_REQUEST).json({
-      errors: [
-        {
-          type: 'field',
-          value: q,
-          msg: `La requête doit contenir entre ${MIN_SEARCH_QUERY_LENGTH} et ${MAX_LIEU_LENGTH} caractères`,
-          path: 'q',
-          location: 'query'
-        }
-      ]
-    });
+    const { ValidationError } = require('./errorHandler');
+    const error = new ValidationError('Erreur de validation', [{
+      type: 'field',
+      value: q,
+      msg: `La requête doit contenir entre ${MIN_SEARCH_QUERY_LENGTH} et ${MAX_LIEU_LENGTH} caractères`,
+      path: 'q',
+      location: 'query'
+    }]);
+    return next(error);
   }
   next();
 }

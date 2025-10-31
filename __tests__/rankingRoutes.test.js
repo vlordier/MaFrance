@@ -45,7 +45,7 @@ describe('Ranking Routes', () => {
       const response = await request(app)
         .get('/api/rankings/communes?dept=01');
 
-      testAssertions.expectErrorResponse(response, 500, 'Database error');
+      testAssertions.expectErrorResponse(response, 500, 'Database operation failed');
       testAssertions.expectDatabaseCalled(mocks.db, 'all');
     });
 
@@ -229,8 +229,8 @@ describe('Ranking Routes', () => {
         .get('/api/rankings/communes?dept=01&population_range=invalid');
 
       expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty('errors');
-      expect(response.body.errors[0].msg).toContain('Format de population invalide');
+      expect(response.body).toHaveProperty('details');
+      expect(response.body.details[0].msg).toContain('Format de population invalide');
     });
 
     it('should handle population range with min >= max', async () => {
@@ -238,8 +238,8 @@ describe('Ranking Routes', () => {
         .get('/api/rankings/communes?dept=01&population_range=5000-1000');
 
       expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty('errors');
-      expect(response.body.errors[0].msg).toContain('min < max');
+      expect(response.body).toHaveProperty('details');
+      expect(response.body.details[0].msg).toContain('min < max');
     });
 
     it('should handle population range exceeding limits', async () => {
@@ -247,8 +247,8 @@ describe('Ranking Routes', () => {
         .get('/api/rankings/communes?dept=01&population_range=1000-20000000');
 
       expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty('errors');
-      expect(response.body.errors[0].msg).toContain('max <= 1000000');
+      expect(response.body).toHaveProperty('details');
+      expect(response.body.details[0].msg).toContain('max <= 1000000');
     });
   });
 
