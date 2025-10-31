@@ -56,9 +56,8 @@ router.get(
     params.push(offset);
 
     db.all(dataSql, params, (err, rows) => {
-      dbHandler(err);
       if (err) {
-        return;
+        return res.status(500).json({ error: 'Database error', details: err.message });
       }
 
       const hasMore = rows.length > pageLimit;
@@ -116,9 +115,8 @@ router.get('/closest', cacheMiddleware((req) => `mosques:closest:${req.query.lat
     `;
 
   db.all(sql, [latitude, latitude, longitude, maxResults], (err, rows) => {
-    dbHandler(err);
     if (err) {
-      return;
+      return res.status(500).json({ error: 'Database error', details: err.message });
     }
 
     const results = rows.map(row => ({

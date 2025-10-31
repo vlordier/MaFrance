@@ -1,0 +1,685 @@
+const request = require('supertest');
+const express = require('express');
+const communeRoutes = require('../routes/communeRoutes');
+
+// Mock the database
+jest.mock('../config/db', () => ({
+  all: jest.fn(),
+  get: jest.fn()
+}));
+
+// Mock SearchService
+jest.mock('../services/searchService', () => ({
+  searchCommunes: jest.fn(),
+  getCommuneSuggestions: jest.fn(),
+  searchCommunesGlobally: jest.fn()
+}));
+
+// Mock cache middleware
+jest.mock('../middleware/cache', () => ({
+  cacheMiddleware: jest.fn(() => (req, res, next) => next())
+}));
+
+const db = require('../config/db');
+const SearchService = require('../services/searchService');
+const { cacheMiddleware } = require('../middleware/cache');
+
+let app;
+
+const createApp = () => {
+  const newApp = express();
+  newApp.use(express.json());
+  newApp.use('/api/communes', communeRoutes);
+  return newApp;
+};
+
+describe('Commune Routes', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    app = createApp();
+  });
+
+  describe('GET /api/communes', () => {
+    it('should return communes for valid search', async () => {
+      const mockResults = [
+        {
+          COG: '01001',
+          commune: 'L\'Abergement-Clémenciat',
+          population: 800
+        }
+      ];
+
+      SearchService.searchCommunes.mockResolvedValue(mockResults);
+
+      const response = await request(app)
+        .get('/api/communes?dept=01&q=abergement');
+
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body.length).toBeGreaterThan(0);
+      expect(response.body[0]).toHaveProperty('COG');
+      expect(response.body[0]).toHaveProperty('commune');
+    });
+
+    it('should handle service errors', async () => {
+      SearchService.searchCommunes.mockRejectedValue(new Error('Service error'));
+
+      const response = await request(app)
+        .get('/api/communes?dept=01&q=test');
+
+      expect(response.status).toBe(500);
+    });
+
+    it('should require dept and q parameters', async () => {
+      const response = await request(app)
+        .get('/api/communes');
+
+      expect(response.status).toBe(400);
+    });
+
+    it('should return 400 when dept parameter is missing', async () => {
+      const response = await request(app)
+        .get('/api/communes')
+        .query({ q: 'paris' });
+
+      expect(response.status).toBe(400);
+      expect(response.body.errors).toBeDefined();
+      expect(response.body.errors[0].msg).toContain('Département requis');
+    });
+
+    it('should require q parameter', async () => {
+      const response = await request(app)
+        .get('/api/communes?dept=01');
+
+      expect(response.status).toBe(400);
+    });
+
+    it('should handle empty search results', async () => {
+      SearchService.searchCommunes.mockResolvedValue([]);
+
+      const response = await request(app)
+        .get('/api/communes?dept=01&q=nonexistent');
+
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body.length).toBe(0);
+    });
+
+    it('should handle database errors', async () => {
+      SearchService.searchCommunes.mockRejectedValue(new Error('Database connection failed'));
+
+      const response = await request(app)
+        .get('/api/communes?dept=01&q=test');
+
+      expect(response.status).toBe(500);
+    });
+
+    it('should handle invalid department codes', async () => {
+      const response = await request(app)
+        .get('/api/communes?dept=999&q=test');
+
+      expect(response.status).toBe(400); // Validation should reject invalid dept codes
+    });
+
+    it('should handle special characters in search query', async () => {
+      const mockResults = [
+        {
+          COG: '01001',
+          commune: 'L\'Abergement-Clémenciat',
+          population: 800
+        }
+      ];
+
+      SearchService.searchCommunes.mockResolvedValue(mockResults);
+
+      const response = await request(app)
+        .get('/api/communes?dept=01&q=l\'abergement');
+
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body.length).toBeGreaterThan(0);
+    });
+
+    it('should handle very long search queries', async () => {
+      const longQuery = 'a'.repeat(1000);
+
+      const response = await request(app)
+        .get(`/api/communes?dept=01&q=${encodeURIComponent(longQuery)}`);
+
+      expect(response.status).toBe(400); // Should reject queries longer than MAX_LIEU_LENGTH
+    });
+
+    it('should handle numeric department codes', async () => {
+      const mockResults = [
+        {
+          COG: '01001',
+          commune: 'Test Commune',
+          population: 1000
+        }
+      ];
+
+      SearchService.searchCommunes.mockResolvedValue(mockResults);
+
+      const response = await request(app)
+        .get('/api/communes?dept=01&q=test');
+
+      expect(response.status).toBe(200);
+      expect(response.body.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('GET /api/communes/suggestions', () => {
+    it('should return suggestions for valid search', async () => {
+      const mockSuggestions = [
+        'Paris',
+        'Paris 1er',
+        'Paris 2e'
+      ];
+
+      SearchService.getCommuneSuggestions.mockResolvedValue(mockSuggestions);
+
+      const response = await request(app)
+        .get('/api/communes/suggestions?dept=75&q=paris');
+
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body.length).toBeGreaterThan(0);
+    });
+
+    it('should handle service errors', async () => {
+      SearchService.getCommuneSuggestions.mockRejectedValue(new Error('Service error'));
+
+      const response = await request(app)
+        .get('/api/communes/suggestions?dept=75&q=test');
+
+      expect(response.status).toBe(500);
+    });
+
+    it('should require dept and q parameters for suggestions', async () => {
+      const response = await request(app)
+        .get('/api/communes/suggestions');
+
+      expect(response.status).toBe(400);
+    });
+
+    it('should require dept parameter for suggestions', async () => {
+      const response = await request(app)
+        .get('/api/communes/suggestions?q=test');
+
+      expect(response.status).toBe(400); // dept is required
+    });
+
+    it('should require q parameter for suggestions', async () => {
+      const response = await request(app)
+        .get('/api/communes/suggestions?dept=75');
+
+      expect(response.status).toBe(400);
+    });
+
+    it('should handle empty suggestions', async () => {
+      SearchService.getCommuneSuggestions.mockResolvedValue([]);
+
+      const response = await request(app)
+        .get('/api/communes/suggestions?dept=75&q=nonexistent');
+
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body.length).toBe(0);
+    });
+
+    it('should handle suggestions service errors', async () => {
+      SearchService.getCommuneSuggestions.mockRejectedValue(new Error('Database error'));
+
+      const response = await request(app)
+        .get('/api/communes/suggestions?dept=75&q=test');
+
+      expect(response.status).toBe(500);
+    });
+  });
+
+  describe('GET /api/communes/search', () => {
+    it('should return global search results for valid query', async () => {
+      const mockResults = [
+        {
+          COG: '75001',
+          commune: 'Paris 1er',
+          departement: '75'
+        }
+      ];
+
+      SearchService.searchCommunesGlobally.mockResolvedValue(mockResults);
+
+      const response = await request(app)
+        .get('/api/communes/search?q=paris');
+
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body.length).toBeGreaterThan(0);
+    });
+
+    it('should return empty array for short query', async () => {
+      const response = await request(app)
+        .get('/api/communes/search?q=pa');
+
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body.length).toBe(0);
+    });
+
+    it('should require q parameter', async () => {
+      const response = await request(app)
+        .get('/api/communes/search');
+
+      expect(response.status).toBe(400);
+    });
+
+    it('should handle global search with multiple results', async () => {
+      const mockResults = [
+        {
+          COG: '75001',
+          commune: 'Paris 1er',
+          departement: '75',
+          population: 16000
+        },
+        {
+          COG: '69001',
+          commune: 'Lyon 1er',
+          departement: '69',
+          population: 30000
+        }
+      ];
+
+      SearchService.searchCommunesGlobally.mockResolvedValue(mockResults);
+
+      const response = await request(app)
+        .get('/api/communes/search?q=paris');
+
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body.length).toBe(2);
+      expect(response.body[0]).toHaveProperty('COG');
+      expect(response.body[0]).toHaveProperty('commune');
+      expect(response.body[0]).toHaveProperty('departement');
+    });
+
+    it('should handle global search service errors', async () => {
+      SearchService.searchCommunesGlobally.mockRejectedValue(new Error('Global search failed'));
+
+      const response = await request(app)
+        .get('/api/communes/search?q=test');
+
+      expect(response.status).toBe(500);
+    });
+
+    it('should handle global search with special characters', async () => {
+      const mockResults = [
+        {
+          COG: '01001',
+          commune: 'L\'Abergement-Clémenciat',
+          departement: '01'
+        }
+      ];
+
+      SearchService.searchCommunesGlobally.mockResolvedValue(mockResults);
+
+      const response = await request(app)
+        .get('/api/communes/search?q=l\'abergement');
+
+      expect(response.status).toBe(200);
+      expect(response.body.length).toBeGreaterThan(0);
+    });
+
+    it('should handle global search with very short queries that return results', async () => {
+      const mockResults = [
+        {
+          COG: '75001',
+          commune: 'Paris',
+          departement: '75'
+        }
+      ];
+
+      SearchService.searchCommunesGlobally.mockResolvedValue(mockResults);
+
+      const response = await request(app)
+        .get('/api/communes/search?q=par');
+
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body)).toBe(true);
+    });
+
+    it('should handle global search with empty results', async () => {
+      SearchService.searchCommunesGlobally.mockResolvedValue([]);
+
+      const response = await request(app)
+        .get('/api/communes/search?q=definitelynotacommunename');
+
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body.length).toBe(0);
+    });
+  });
+
+  describe('GET /api/communes/all', () => {
+    it('should return all communes data', async () => {
+      const mockRows = [
+        {
+          COG: '01001',
+          commune: 'Test Commune',
+          population: 1000
+        }
+      ];
+
+      db.all.mockImplementation((query, params, callback) => {
+        callback(null, mockRows);
+      });
+
+      const response = await request(app)
+        .get('/api/communes/all');
+
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body.length).toBeGreaterThan(0);
+      expect(response.body[0]).toHaveProperty('COG');
+    });
+
+    it('should handle database errors', async () => {
+      db.all.mockImplementation((query, params, callback) => {
+        callback(new Error('Database error'), null);
+      });
+
+      const response = await request(app)
+        .get('/api/communes/all');
+
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe('Erreur de base de données');
+    });
+  });
+
+  describe('GET /api/communes/names', () => {
+    it('should return names data for valid COG', async () => {
+      const mockRow = {
+        musulman_pct: 5.2,
+        africain_pct: 3.1,
+        asiatique_pct: 1.8,
+        traditionnel_pct: 45.6,
+        moderne_pct: 44.3,
+        annais: 2022
+      };
+
+      db.get.mockImplementation((query, params, callback) => {
+        callback(null, mockRow);
+      });
+
+      const response = await request(app)
+        .get('/api/communes/names?cog=01001');
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('musulman_pct');
+      expect(response.body).toHaveProperty('annais');
+    });
+
+    it('should return 404 when no names data found', async () => {
+      db.get.mockImplementation((query, params, callback) => {
+        callback(null, null);
+      });
+
+      const response = await request(app)
+        .get('/api/communes/names?cog=01001');
+
+      expect(response.status).toBe(404);
+      expect(response.body.error).toContain('prénoms');
+    });
+
+    it('should handle database errors', async () => {
+      db.get.mockImplementation((query, params, callback) => {
+        callback(new Error('Database error'), null);
+      });
+
+      const response = await request(app)
+        .get('/api/communes/names?cog=01001');
+
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe('Erreur de base de données');
+    });
+  });
+
+  describe('GET /api/communes/names_history', () => {
+    it('should return names history for valid COG', async () => {
+      const mockRows = [
+        {
+          musulman_pct: 4.8,
+          africain_pct: 2.9,
+          annais: 2020
+        },
+        {
+          musulman_pct: 5.2,
+          africain_pct: 3.1,
+          annais: 2022
+        }
+      ];
+
+      db.all.mockImplementation((query, params, callback) => {
+        callback(null, mockRows);
+      });
+
+      const response = await request(app)
+        .get('/api/communes/names_history?cog=01001');
+
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body.length).toBe(2);
+      expect(response.body[0]).toHaveProperty('annais');
+    });
+
+    it('should handle database errors', async () => {
+      db.all.mockImplementation((query, params, callback) => {
+        callback(new Error('Database error'), null);
+      });
+
+      const response = await request(app)
+        .get('/api/communes/names_history?cog=01001');
+
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe('Erreur de base de données');
+    });
+  });
+
+  describe('GET /api/communes/crime', () => {
+    it('should return crime data for valid COG', async () => {
+      const mockRow = {
+        COG: '01001',
+        annee: 2022,
+        crimes_violents: 15,
+        cambriolages: 8
+      };
+
+      db.get.mockImplementation((query, params, callback) => {
+        callback(null, mockRow);
+      });
+
+      const response = await request(app)
+        .get('/api/communes/crime?cog=01001');
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('COG');
+      expect(response.body).toHaveProperty('annee');
+    });
+
+    it('should return 404 when no crime data found', async () => {
+      db.get.mockImplementation((query, params, callback) => {
+        callback(null, null);
+      });
+
+      const response = await request(app)
+        .get('/api/communes/crime?cog=01001');
+
+      expect(response.status).toBe(404);
+      expect(response.body.error).toContain('criminelles');
+    });
+
+    it('should handle database errors', async () => {
+      db.get.mockImplementation((query, params, callback) => {
+        callback(new Error('Database error'), null);
+      });
+
+      const response = await request(app)
+        .get('/api/communes/crime?cog=01001');
+
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe('Erreur de base de données');
+    });
+  });
+
+  describe('GET /api/communes/crime_history', () => {
+    it('should return crime history for valid COG', async () => {
+      const mockRows = [
+        {
+          annee: 2020,
+          crimes_violents: 12
+        },
+        {
+          annee: 2022,
+          crimes_violents: 15
+        }
+      ];
+
+      db.all.mockImplementation((query, params, callback) => {
+        callback(null, mockRows);
+      });
+
+      const response = await request(app)
+        .get('/api/communes/crime_history?cog=01001');
+
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body.length).toBe(2);
+      expect(response.body[0]).toHaveProperty('annee');
+    });
+
+    it('should handle database errors', async () => {
+      db.all.mockImplementation((query, params, callback) => {
+        callback(new Error('Database error'), null);
+      });
+
+      const response = await request(app)
+        .get('/api/communes/crime_history?cog=01001');
+
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe('Erreur de base de données');
+    });
+  });
+
+  describe('GET /api/communes/details', () => {
+    it('should return commune details for valid COG', async () => {
+      const mockRow = {
+        COG: '01001',
+        commune: 'Test Commune',
+        population: 1000,
+        insecurite_score: 25.5
+      };
+
+      db.get.mockImplementation((query, params, callback) => {
+        callback(null, mockRow);
+      });
+
+      const response = await request(app)
+        .get('/api/communes/details?cog=01001');
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('COG');
+      expect(response.body).toHaveProperty('commune');
+      expect(response.body).toHaveProperty('population');
+    });
+
+    it('should return 404 when commune not found', async () => {
+      db.get.mockImplementation((query, params, callback) => {
+        callback(null, null);
+      });
+
+      const response = await request(app)
+        .get('/api/communes/details?cog=01001');
+
+      expect(response.status).toBe(404);
+      expect(response.body.error).toBe('Commune non trouvée');
+    });
+
+    it('should handle database errors', async () => {
+      db.get.mockImplementation((query, params, callback) => {
+        callback(new Error('Database error'), null);
+      });
+
+      const response = await request(app)
+        .get('/api/communes/details?cog=01001');
+
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe('Erreur de base de données');
+    });
+  });
+
+  describe('GET /api/communes/maire', () => {
+    it('should return maire data for valid COG', async () => {
+      const mockRow = {
+        cog: '01001',
+        prenom: 'Jean',
+        nom: 'Dupont',
+        nuance_politique: 'LREM'
+      };
+
+      db.get.mockImplementation((query, params, callback) => {
+        callback(null, mockRow);
+      });
+
+      const response = await request(app)
+        .get('/api/communes/maire?cog=01001');
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty('prenom');
+      expect(response.body).toHaveProperty('nom');
+      expect(response.body).toHaveProperty('nuance_politique');
+      expect(response.body.nuance_politique).toBe('La République en marche');
+    });
+
+    it('should return 404 when maire not found', async () => {
+      db.get.mockImplementation((query, params, callback) => {
+        callback(null, null);
+      });
+
+      const response = await request(app)
+        .get('/api/communes/maire?cog=01001');
+
+      expect(response.status).toBe(404);
+      expect(response.body.error).toBe('Maire non trouvé');
+    });
+
+    it('should handle database errors', async () => {
+      db.get.mockImplementation((query, params, callback) => {
+        callback(new Error('Database error'), null);
+      });
+
+      const response = await request(app)
+        .get('/api/communes/maire?cog=01001');
+
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe('Erreur de base de données');
+    });
+
+    it('should handle unknown political nuance', async () => {
+      const mockRow = {
+        cog: '01001',
+        prenom: 'Jean',
+        nom: 'Dupont',
+        nuance_politique: 'UNKNOWN'
+      };
+
+      db.get.mockImplementation((query, params, callback) => {
+        callback(null, mockRow);
+      });
+
+      const response = await request(app)
+        .get('/api/communes/maire?cog=01001');
+
+      expect(response.status).toBe(200);
+      expect(response.body.nuance_politique).toBe('UNKNOWN');
+    });
+  });
+});

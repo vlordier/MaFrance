@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
-const { createDbHandler } = require('../middleware/errorHandler');
+const { createDbHandler, ValidationError, DatabaseError } = require('../middleware/errorHandler');
 const { cacheMiddleware } = require('../middleware/cache');
+const { logger } = require('../utils/logger');
 const {
   validateDepartement,
   validateSort,
@@ -162,6 +163,7 @@ router.get(
     // Parse population range
     const { filter: populationFilter, error: populationError } = parsePopulationRange(population_range);
     if (populationError) {
+      // This should not happen since validation middleware should catch it, but just in case
       return res.status(HTTP_BAD_REQUEST).json({ error: populationError });
     }
 
@@ -178,11 +180,18 @@ router.get(
 
     db.all(sql, queryParams, (err, rows) => {
       if (err) {
-        return handleDbError(err, res, next);
+        return handleDbError(err);
       }
+
+      logger.info('Commune rankings fetched successfully', {
+        correlationId: req.correlationId,
+        count: rows ? rows.length : 0,
+        department: dept
+      });
+
       db.get(countSql, countParams, (countErr, countRow) => {
         if (countErr) {
-          return handleDbError(countErr, res, next);
+          return handleDbError(countErr);
         }
         res.json({
           data: rows,
@@ -197,69 +206,116 @@ router.get(
 router.get(
   '/departements',
   [validateSort, validateDirection, validatePagination],
-  (_req, res, _next) => {
-    const {
-      limit = DEPARTMENT_RANKINGS_LIMIT,
-      offset = 0,
-      sort = 'insecurite_score',
-      direction = 'DESC'
-    } = _req.query;
+  (req, res, _next) => {
+    try {
+      const {
+        limit = DEPARTMENT_RANKINGS_LIMIT,
+        offset = 0,
+        sort = 'insecurite_score',
+        direction = 'DESC'
+      } = req.query;
 
-    const cacheService = require('../services/cacheService');
-    const cachedData = cacheService.get('department_rankings');
+      logger.info('Fetching departement rankings', {
+        correlationId: req.correlationId,
+        sort,
+        direction,
+        limit,
+        offset
+      });
 
-    // Safe property accessor to prevent object injection
-    const getSortValue = (obj, sortKey) => {
-      // Whitelist of allowed sort keys (matches validation middleware)
-      const allowedKeys = [
-        'total_score', 'population', 'insecurite_score', 'immigration_score',
-        'islamisation_score', 'defrancisation_score', 'wokisme_score',
-        'number_of_mosques', 'mosque_p100k', 'musulman_pct', 'africain_pct',
-        'asiatique_pct', 'traditionnel_pct', 'moderne_pct', 'homicides_p100k',
-        'violences_physiques_p1k', 'violences_sexuelles_p1k', 'vols_p1k',
-        'destructions_p1k', 'stupefiants_p1k', 'escroqueries_p1k',
-        'extra_europeen_pct', 'prenom_francais_pct', 'total_qpv',
-        'pop_in_qpv_pct', 'logements_sociaux_pct', 'total_subventions_parHab',
-        'Total_places_migrants', 'places_migrants_p1k', 'etrangers_pct',
-        'francais_de_naissance_pct', 'naturalises_pct', 'europeens_pct',
-        'maghrebins_pct', 'africains_pct', 'autres_nationalites_pct',
-        'non_europeens_pct'
-      ];
+      const cacheService = require('../services/cacheService');
+      const cachedData = cacheService.get('department_rankings');
 
-      if (!allowedKeys.includes(sortKey)) {
-        return 0; // Default fallback
+      // Provide fallback empty data if cache is unavailable
+      const dataToSort = cachedData && cachedData.data ? cachedData.data : [];
+      const totalCount = cachedData && cachedData.total_count ? cachedData.total_count : 0;
+
+      if (dataToSort.length === 0) {
+        logger.warn('No department rankings data available', {
+          correlationId: req.correlationId,
+          hasCachedData: !!cachedData
+        });
+        return res.json({ data: [], total_count: 0 });
       }
 
-      return obj[sortKey] || 0;
-    };
+      // Safe property accessor to prevent object injection
+      const getSortValue = (obj, sortKey) => {
+        // Whitelist of allowed sort keys (matches validation middleware)
+        const allowedKeys = [
+          'total_score', 'population', 'insecurite_score', 'immigration_score',
+          'islamisation_score', 'defrancisation_score', 'wokisme_score',
+          'number_of_mosques', 'mosque_p100k', 'musulman_pct', 'africain_pct',
+          'asiatique_pct', 'traditionnel_pct', 'moderne_pct', 'homicides_p100k',
+          'violences_physiques_p1k', 'violences_sexuelles_p1k', 'vols_p1k',
+          'destructions_p1k', 'stupefiants_p1k', 'escroqueries_p1k',
+          'extra_europeen_pct', 'prenom_francais_pct', 'total_qpv',
+          'pop_in_qpv_pct', 'logements_sociaux_pct', 'total_subventions_parHab',
+          'Total_places_migrants', 'places_migrants_p1k', 'etrangers_pct',
+          'francais_de_naissance_pct', 'naturalises_pct', 'europeens_pct',
+          'maghrebins_pct', 'africains_pct', 'autres_nationalites_pct',
+          'non_europeens_pct'
+        ];
 
-    // Sort the cached data
-    const sortedData = [...cachedData.data].sort((a, b) => {
-      const aValue = getSortValue(a, sort);
-      const bValue = getSortValue(b, sort);
-
-      if (direction === 'DESC') {
-        if (bValue !== aValue) {
-          return bValue - aValue;
+        if (!allowedKeys.includes(sortKey)) {
+          logger.debug('Using default sort key, requested key not allowed', {
+            correlationId: req.correlationId,
+            sortKey
+          });
+          return 0; // Default fallback
         }
-        // Secondary sort by departement code
-        return b.departement.localeCompare(a.departement);
-      } else {
-        if (aValue !== bValue) {
-          return aValue - bValue;
+
+        return obj[sortKey] || 0;
+      };
+
+      // Sort the data
+      const sortedData = [...dataToSort].sort((a, b) => {
+        const aValue = getSortValue(a, sort);
+        const bValue = getSortValue(b, sort);
+
+        if (direction === 'DESC') {
+          if (bValue !== aValue) {
+            return bValue - aValue;
+          }
+          // Secondary sort by departement code
+          return b.departement.localeCompare(a.departement);
+        } else {
+          if (aValue !== bValue) {
+            return aValue - bValue;
+          }
+          // Secondary sort by departement code
+          return a.departement.localeCompare(b.departement);
         }
-        // Secondary sort by departement code
-        return a.departement.localeCompare(b.departement);
-      }
-    });
+      });
 
-    // Apply pagination
-    const paginatedData = sortedData.slice(offset, offset + parseInt(limit));
+      // Apply pagination
+      const paginatedData = sortedData.slice(parseInt(offset), parseInt(offset) + parseInt(limit));
 
-    res.json({
-      data: paginatedData,
-      total_count: cachedData.total_count
-    });
+      logger.info('Department rankings returned successfully', {
+        correlationId: req.correlationId,
+        count: paginatedData.length,
+        total: totalCount
+      });
+
+      res.json({
+        data: paginatedData,
+        total_count: totalCount
+      });
+    } catch (error) {
+      const dbError = new DatabaseError('Failed to fetch departement rankings', error.message, {
+        correlationId: req.correlationId,
+        sort,
+        direction,
+        limit,
+        offset
+      });
+      logger.error('Error fetching departement rankings', {
+        error: dbError.message,
+        details: dbError.details,
+        stack: error.stack,
+        context: dbError.context
+      });
+      res.status(dbError.status).json(dbError.toJSON());
+    }
   }
 );
 // Helper function to build the computed data SQL for politique rankings
@@ -368,33 +424,69 @@ function processPolitiqueResults(rows) {
 }
 
 // GET /api/rankings/politique
-router.get('/politique', cacheMiddleware(() => 'politique_rankings'), (_req, res, next) => {
+router.get('/politique', cacheMiddleware(() => 'politique_rankings'), (req, res, next) => {
   const handleDbError = createDbHandler(res, next);
-  // Check if we have cached data
-  const cacheService = require('../services/cacheService');
-  const cachedData = cacheService.get('politique_rankings');
+  
+  try {
+    logger.info('Fetching politique rankings', {
+      correlationId: req.correlationId
+    });
 
-  if (cachedData) {
-    res.json(cachedData);
-    return;
-  }
+    // Check if we have cached data
+    const cacheService = require('../services/cacheService');
+    const cachedData = cacheService.get('politique_rankings');
 
-  // Fallback to database query if cache is empty
-  const computedDataSQL = buildPolitiqueComputedDataSQL();
-  const aggregationSQL = buildPolitiqueAggregationSQL();
-
-  const sql = `
-    WITH ComputedData AS (${computedDataSQL})
-    ${aggregationSQL}
-  `;
-
-  db.all(sql, [], (err, rows) => {
-    if (err) {
-      return handleDbError(err, res, next);
+    if (cachedData) {
+      logger.info('Politique rankings served from cache', {
+        correlationId: req.correlationId
+      });
+      res.json(cachedData);
+      return;
     }
-    const result = processPolitiqueResults(rows);
-    res.json(result);
-  });
+
+    logger.debug('Politique rankings not in cache, querying database', {
+      correlationId: req.correlationId
+    });
+
+    // Fallback to database query if cache is empty
+    const computedDataSQL = buildPolitiqueComputedDataSQL();
+    const aggregationSQL = buildPolitiqueAggregationSQL();
+
+    const sql = `
+      WITH ComputedData AS (${computedDataSQL})
+      ${aggregationSQL}
+    `;
+
+    db.all(sql, [], (err, rows) => {
+      if (err) {
+        logger.error('Database error fetching politique rankings', {
+          correlationId: req.correlationId,
+          error: err.message,
+          stack: err.stack
+        });
+        return handleDbError(err, res, next);
+      }
+
+      const result = processPolitiqueResults(rows);
+      logger.info('Politique rankings fetched successfully', {
+        correlationId: req.correlationId,
+        categories: Object.keys(result)
+      });
+
+      res.json(result);
+    });
+  } catch (error) {
+    const dbError = new DatabaseError('Failed to fetch politique rankings', error.message, {
+      correlationId: req.correlationId
+    });
+    logger.error('Error fetching politique rankings', {
+      error: dbError.message,
+      details: dbError.details,
+      stack: error.stack,
+      context: dbError.context
+    });
+    res.status(dbError.status).json(dbError.toJSON());
+  }
 });
 
 // GET /api/rankings/ranking

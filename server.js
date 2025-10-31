@@ -5,14 +5,29 @@ const fs = require('fs');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const cors = require('cors');
+const { v4: uuidv4 } = require('uuid');
 const config = require('./config');
 const db = require('./config/db');
 const { HTTP_OK, HTTP_NOT_FOUND, HTTP_INTERNAL_SERVER_ERROR, HTTP_MOVED_PERMANENTLY, RATE_LIMIT_WINDOW_MINUTES } = require('./constants');
+const { logger } = require('./utils/logger');
+const { requestLogger } = require('./middleware/requestLogger');
 const app = express();
 const compression = require('compression');
 
 // Enable compression
 app.use(compression());
+
+// Request correlation ID middleware
+app.use((req, res, next) => {
+  req.correlationId = req.headers['x-correlation-id'] || uuidv4();
+  if (req.correlationId) {
+    res.setHeader('x-correlation-id', req.correlationId);
+  }
+  next();
+});
+
+// Request logging middleware - logs all requests and responses with correlation IDs
+app.use(requestLogger);
 
 // Security middleware
 app.use(helmet({
@@ -174,14 +189,39 @@ app.use(errorHandler);
 
 // Start server
 const server = app.listen(config.server.port, config.server.host, () => {
-  // Server started successfully
+  logger.info('Server started successfully', {
+    port: config.server.port,
+    host: config.server.host,
+    environment: process.env.NODE_ENV || 'development',
+    version: require('./package.json').version,
+  });
 });
 
 // Graceful shutdown
 process.on('SIGINT', () => {
+  logger.info('Received SIGINT, initiating graceful shutdown');
   server.close(() => {
+    logger.info('Server closed successfully');
     process.exit(0);
   });
+});
+
+process.on('SIGTERM', () => {
+  logger.info('Received SIGTERM, initiating graceful shutdown');
+  server.close(() => {
+    logger.info('Server closed successfully');
+    process.exit(0);
+  });
+});
+
+process.on('uncaughtException', (err) => {
+  logger.error('Uncaught exception', { error: err.message, stack: err.stack });
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  logger.error('Unhandled rejection', { reason, promise });
+  process.exit(1);
 });
 
 module.exports = app;

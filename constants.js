@@ -19,6 +19,7 @@ const RATE_LIMIT_WINDOW_MINUTES = 60; // Rate limit window in minutes
 const GLOBAL_SEARCH_LIMIT = 15; // Default limit for global commune search
 const ESLINT_COMPLEXITY_LIMIT = 20; // ESLint complexity rule limit
 const ESLINT_MAX_PARAMS = 6; // ESLint max-params rule limit
+const DISTANCE_CONVERSION_FACTOR = 111.32; // Rough conversion factor for degrees to km
 
 module.exports = {
   HTTP_OK,
@@ -38,5 +39,6 @@ module.exports = {
   RATE_LIMIT_WINDOW_MINUTES,
   GLOBAL_SEARCH_LIMIT,
   ESLINT_COMPLEXITY_LIMIT,
-  ESLINT_MAX_PARAMS
+  ESLINT_MAX_PARAMS,
+  DISTANCE_CONVERSION_FACTOR
 };

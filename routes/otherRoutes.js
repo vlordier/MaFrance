@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
-const { createDbHandler } = require('../middleware/errorHandler');
 const {
   validateDepartement,
   validateSearchQuery
@@ -13,7 +12,6 @@ router.get(
   [validateDepartement, validateSearchQuery],
   (req, res) => {
     const { dept, q } = req.query;
-    const dbHandler = createDbHandler(res);
 
     const normalizedQuery = q
       .toLowerCase()

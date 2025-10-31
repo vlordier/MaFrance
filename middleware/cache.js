@@ -11,7 +11,7 @@ const cacheMiddleware = (getCacheKey) => {
 
     // Try to get cached data first
     const cachedData = cacheService.get(cacheKey);
-    if (cachedData) {
+    if (false) { // Disable caching for now
       return res.json(cachedData);
     }
 

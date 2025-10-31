@@ -1,9 +1,12 @@
 
 const db = require('../config/db');
+const { logger, logCacheOperation } = require('../utils/logger');
+const { retryDatabaseOperation } = require('../utils/retry');
 
 class CacheService {
   constructor() {
     this.cache = new Map();
+    logger.info('Cache service initialized');
 
     // Preload critical data on startup
     this.initializeCache();
@@ -11,53 +14,61 @@ class CacheService {
 
   async initializeCache() {
     try {
+      logger.info('Starting cache initialization');
 
       // Preload all department data
       await this.preloadDepartmentData();
 
       // Preload country data
       await this.preloadCountryData();
-    } catch {
+
+      logger.info('Cache initialization completed', { cacheSize: this.cache.size });
+    } catch (error) {
+      logger.error('Cache initialization failed', { error: error.message, stack: error.stack });
       // Continue without throwing to avoid startup failures
     }
   }
 
   async preloadDepartmentData() {
-    return new Promise((resolve, reject) => {
+    return retryDatabaseOperation(async () => {
       // Get all departments
-      db.all('SELECT DISTINCT departement FROM departements ORDER BY departement', [], async(err, depts) => {
-        if (err) {
-          return reject(err);
-        }
-
-        const promises = depts.map(async({ departement }) => {
-          try {
-            // Cache department details
-            await this.cacheDepartmentDetails(departement);
-
-            // Cache crime history
-            await this.cacheDepartmentCrimeHistory(departement);
-
-            // Cache names history
-            await this.cacheDepartmentNamesHistory(departement);
-
-            // Cache current crime data
-            await this.cacheDepartmentCrime(departement);
-
-            // Cache current names data
-            await this.cacheDepartmentNames(departement);
-
-            // Cache prefet data
-            await this.cachePrefetData(departement);
-
-          } catch {
-            // Don't throw - continue with other departments
-          }
+      const depts = await new Promise((resolve, reject) => {
+        db.all('SELECT DISTINCT departement FROM departements ORDER BY departement', [], (err, rows) => {
+          if (err) reject(err);
+          else resolve(rows);
         });
-
-        await Promise.all(promises);
-        resolve();
       });
+
+      const promises = depts.map(async({ departement }) => {
+        try {
+          // Cache department details
+          await this.cacheDepartmentDetails(departement);
+
+          // Cache crime history
+          await this.cacheDepartmentCrimeHistory(departement);
+
+          // Cache names history
+          await this.cacheDepartmentNamesHistory(departement);
+
+          // Cache current crime data
+          await this.cacheDepartmentCrime(departement);
+
+          // Cache current names data
+          await this.cacheDepartmentNames(departement);
+
+          // Cache prefet data
+          await this.cachePrefetData(departement);
+
+        } catch (error) {
+          logger.warn('Failed to cache department data', {
+            departement,
+            error: error.message
+          });
+          // Don't throw - continue with other departments
+        }
+      });
+
+      await Promise.all(promises);
     });
   }
 
@@ -86,29 +97,43 @@ class CacheService {
 
       // Cache politique rankings
       await this.cachePolitiqueRankings();
-    } catch {
+    } catch (error) {
+      logger.warn('Failed to cache country data', {
+        country: 'France',
+        error: error.message
+      });
       // Continue without throwing to avoid startup failures
     }
   }
 
   set(key, value) {
     this.cache.set(key, value);
+    logCacheOperation('set', key);
   }
 
   get(key) {
-    return this.cache.get(key) || null;
+    const value = this.cache.has(key) ? this.cache.get(key) : null;
+    logCacheOperation('get', key, !!value);
+    return value;
   }
 
   has(key) {
-    return this.cache.has(key);
+    const exists = this.cache.has(key);
+    logCacheOperation('has', key, exists);
+    return exists;
   }
 
   delete(key) {
+    const existed = this.cache.has(key);
     this.cache.delete(key);
+    logCacheOperation('delete', key, existed);
+    return existed;
   }
 
   clear() {
+    const size = this.cache.size;
     this.cache.clear();
+    logger.info('Cache cleared', { previousSize: size });
   }
 
   getStats() {
@@ -120,7 +145,7 @@ class CacheService {
 
   // Department caching methods
   async cacheDepartmentDetails(dept) {
-    return new Promise((resolve, reject) => {
+    return retryDatabaseOperation(async () => {
       const normalizedDept = /^\d+$/.test(dept) && dept.length < 2 ? dept.padStart(2, '0') : dept;
 
       const sql = `
@@ -155,223 +180,247 @@ class CacheService {
                 WHERE d.departement = ?
             `;
 
-      db.get(sql, [normalizedDept, dept], (err, row) => {
-        if (err) {
-          return reject(err);
-        }
-        if (row) {
-          this.set(`dept_details_${dept}`, row);
-        }
-        resolve(row);
+      const row = await new Promise((resolve, reject) => {
+        db.get(sql, [normalizedDept, dept], (err, row) => {
+          if (err) reject(err);
+          else resolve(row);
+        });
       });
+
+      if (row) {
+        this.set(`dept_details_${dept}`, row);
+      }
+      return row;
     });
   }
 
   async cacheDepartmentCrimeHistory(dept) {
-    return new Promise((resolve, reject) => {
-      db.all(
-        'SELECT * FROM department_crime WHERE dep = ? ORDER BY annee ASC',
-        [dept],
-        (err, rows) => {
-          if (err) {
-            return reject(err);
+    return retryDatabaseOperation(async () => {
+      const rows = await new Promise((resolve, reject) => {
+        db.all(
+          'SELECT * FROM department_crime WHERE dep = ? ORDER BY annee ASC',
+          [dept],
+          (err, rows) => {
+            if (err) reject(err);
+            else resolve(rows);
           }
-          this.set(`dept_crime_history_${dept}`, rows);
-          resolve(rows);
-        }
-      );
+        );
+      });
+
+      this.set(`dept_crime_history_${dept}`, rows);
+      return rows;
     });
   }
 
   async cacheDepartmentNamesHistory(dept) {
-    return new Promise((resolve, reject) => {
-      db.all(
-        `SELECT musulman_pct, africain_pct, asiatique_pct, traditionnel_pct, moderne_pct, invente_pct, europeen_pct, annais
-                 FROM department_names WHERE dpt = ? ORDER BY annais ASC`,
-        [dept],
-        (err, rows) => {
-          if (err) {
-            return reject(err);
+    return retryDatabaseOperation(async () => {
+      const rows = await new Promise((resolve, reject) => {
+        db.all(
+          `SELECT musulman_pct, africain_pct, asiatique_pct, traditionnel_pct, moderne_pct, invente_pct, europeen_pct, annais
+                   FROM department_names WHERE dpt = ? ORDER BY annais ASC`,
+          [dept],
+          (err, rows) => {
+            if (err) reject(err);
+            else resolve(rows);
           }
-          this.set(`dept_names_history_${dept}`, rows);
-          resolve(rows);
-        }
-      );
+        );
+      });
+
+      this.set(`dept_names_history_${dept}`, rows);
+      return rows;
     });
   }
 
   async cacheDepartmentCrime(dept) {
-    return new Promise((resolve, reject) => {
-      db.get(
-        `SELECT * FROM department_crime 
-                 WHERE dep = ? AND annee = (SELECT MAX(annee) FROM department_crime WHERE dep = ?)`,
-        [dept, dept],
-        (err, row) => {
-          if (err) {
-            return reject(err);
+    return retryDatabaseOperation(async () => {
+      const row = await new Promise((resolve, reject) => {
+        db.get(
+          `SELECT * FROM department_crime 
+                   WHERE dep = ? AND annee = (SELECT MAX(annee) FROM department_crime WHERE dep = ?)`,
+          [dept, dept],
+          (err, row) => {
+            if (err) reject(err);
+            else resolve(row);
           }
-          if (row) {
-            this.set(`dept_crime_${dept}`, row);
-          }
-          resolve(row);
-        }
-      );
+        );
+      });
+
+      if (row) {
+        this.set(`dept_crime_${dept}`, row);
+      }
+      return row;
     });
   }
 
   async cacheDepartmentNames(dept) {
-    return new Promise((resolve, reject) => {
-      db.get(
-        `SELECT musulman_pct, africain_pct, asiatique_pct, traditionnel_pct, moderne_pct, annais
-                 FROM department_names 
-                 WHERE dpt = ? AND annais = (SELECT MAX(annais) FROM department_names WHERE dpt = ?)`,
-        [dept, dept],
-        (err, row) => {
-          if (err) {
-            return reject(err);
+    return retryDatabaseOperation(async () => {
+      const row = await new Promise((resolve, reject) => {
+        db.get(
+          `SELECT musulman_pct, africain_pct, asiatique_pct, traditionnel_pct, moderne_pct, annais
+                   FROM department_names 
+                   WHERE dpt = ? AND annais = (SELECT MAX(annais) FROM department_names WHERE dpt = ?)`,
+          [dept, dept],
+          (err, row) => {
+            if (err) reject(err);
+            else resolve(row);
           }
-          if (row) {
-            this.set(`dept_names_${dept}`, row);
-          }
-          resolve(row);
-        }
-      );
+        );
+      });
+
+      if (row) {
+        this.set(`dept_names_${dept}`, row);
+      }
+      return row;
     });
   }
 
   async cachePrefetData(dept) {
-    return new Promise((resolve, reject) => {
-      db.get(
-        'SELECT code, prenom, nom, date_poste FROM prefets WHERE code = ?',
-        [dept],
-        (err, row) => {
-          if (err) {
-            return reject(err);
+    return retryDatabaseOperation(async () => {
+      const row = await new Promise((resolve, reject) => {
+        db.get(
+          'SELECT code, prenom, nom, date_poste FROM prefets WHERE code = ?',
+          [dept],
+          (err, row) => {
+            if (err) reject(err);
+            else resolve(row);
           }
-          if (row) {
-            this.set(`prefet_${dept}`, row);
-          }
-          resolve(row);
-        }
-      );
+        );
+      });
+
+      if (row) {
+        this.set(`prefet_${dept}`, row);
+      }
+      return row;
     });
   }
 
   // Country caching methods
   async cacheCountryDetails(country) {
-    return new Promise((resolve, reject) => {
-      db.get(
-        `SELECT country, population, logements_sociaux_pct, insecurite_score, immigration_score, islamisation_score, defrancisation_score, wokisme_score, number_of_mosques, mosque_p100k, total_qpv, pop_in_qpv_pct, total_places_migrants, places_migrants_p1k 
-                 FROM country WHERE UPPER(country) = ?`,
-        [country.toUpperCase()],
-        (err, row) => {
-          if (err) {
-            return reject(err);
+    return retryDatabaseOperation(async () => {
+      const row = await new Promise((resolve, reject) => {
+        db.get(
+          `SELECT country, population, logements_sociaux_pct, insecurite_score, immigration_score, islamisation_score, defrancisation_score, wokisme_score, number_of_mosques, mosque_p100k, total_qpv, pop_in_qpv_pct, total_places_migrants, places_migrants_p1k 
+                   FROM country WHERE UPPER(country) = ?`,
+          [country.toUpperCase()],
+          (err, row) => {
+            if (err) reject(err);
+            else resolve(row);
           }
-          if (row) {
-            this.set(`country_details_${country.toLowerCase()}`, row);
-          }
-          resolve(row);
-        }
-      );
+        );
+      });
+
+      if (row) {
+        this.set(`country_details_${country.toLowerCase()}`, row);
+      }
+      return row;
     });
   }
 
   async cacheCountryCrimeHistory(country) {
-    return new Promise((resolve, reject) => {
-      db.all(
-        'SELECT * FROM country_crime WHERE UPPER(country) = ? ORDER BY annee ASC',
-        [country.toUpperCase()],
-        (err, rows) => {
-          if (err) {
-            return reject(err);
+    return retryDatabaseOperation(async () => {
+      const rows = await new Promise((resolve, reject) => {
+        db.all(
+          'SELECT * FROM country_crime WHERE UPPER(country) = ? ORDER BY annee ASC',
+          [country.toUpperCase()],
+          (err, rows) => {
+            if (err) reject(err);
+            else resolve(rows);
           }
-          this.set(`country_crime_history_${country.toLowerCase()}`, rows);
-          resolve(rows);
-        }
-      );
+        );
+      });
+
+      this.set(`country_crime_history_${country.toLowerCase()}`, rows);
+      return rows;
     });
   }
 
   async cacheCountryNamesHistory(country) {
-    return new Promise((resolve, reject) => {
-      db.all(
-        `SELECT musulman_pct, africain_pct, asiatique_pct, traditionnel_pct, moderne_pct, invente_pct, europeen_pct, annais
-                 FROM country_names WHERE UPPER(country) = ? ORDER BY annais ASC`,
-        [country.toUpperCase()],
-        (err, rows) => {
-          if (err) {
-            return reject(err);
+    return retryDatabaseOperation(async () => {
+      const rows = await new Promise((resolve, reject) => {
+        db.all(
+          `SELECT musulman_pct, africain_pct, asiatique_pct, traditionnel_pct, moderne_pct, invente_pct, europeen_pct, annais
+                   FROM country_names WHERE UPPER(country) = ? ORDER BY annais ASC`,
+          [country.toUpperCase()],
+          (err, rows) => {
+            if (err) reject(err);
+            else resolve(rows);
           }
-          this.set(`country_names_history_${country.toLowerCase()}`, rows);
-          resolve(rows);
-        }
-      );
+        );
+      });
+
+      this.set(`country_names_history_${country.toLowerCase()}`, rows);
+      return rows;
     });
   }
 
   async cacheCountryCrime(country) {
-    return new Promise((resolve, reject) => {
-      db.get(
-        `SELECT * FROM country_crime 
-                 WHERE UPPER(country) = ? AND annee = (SELECT MAX(annee) FROM country_crime WHERE UPPER(country) = ?)`,
-        [country.toUpperCase(), country.toUpperCase()],
-        (err, row) => {
-          if (err) {
-            return reject(err);
+    return retryDatabaseOperation(async () => {
+      const row = await new Promise((resolve, reject) => {
+        db.get(
+          `SELECT * FROM country_crime 
+                   WHERE UPPER(country) = ? AND annee = (SELECT MAX(annee) FROM country_crime WHERE UPPER(country) = ?)`,
+          [country.toUpperCase(), country.toUpperCase()],
+          (err, row) => {
+            if (err) reject(err);
+            else resolve(row);
           }
-          if (row) {
-            this.set(`country_crime_${country.toLowerCase()}`, row);
-          }
-          resolve(row);
-        }
-      );
+        );
+      });
+
+      if (row) {
+        this.set(`country_crime_${country.toLowerCase()}`, row);
+      }
+      return row;
     });
   }
 
   async cacheCountryNames(country) {
-    return new Promise((resolve, reject) => {
-      db.get(
-        `SELECT musulman_pct, africain_pct, asiatique_pct, traditionnel_pct, moderne_pct, annais
-                 FROM country_names 
-                 WHERE UPPER(country) = ? AND annais = (SELECT MAX(annais) FROM country_names WHERE UPPER(country) = ?)`,
-        [country.toUpperCase(), country.toUpperCase()],
-        (err, row) => {
-          if (err) {
-            return reject(err);
+    return retryDatabaseOperation(async () => {
+      const row = await new Promise((resolve, reject) => {
+        db.get(
+          `SELECT musulman_pct, africain_pct, asiatique_pct, traditionnel_pct, moderne_pct, annais
+                   FROM country_names 
+                   WHERE UPPER(country) = ? AND annais = (SELECT MAX(annais) FROM country_names WHERE UPPER(country) = ?)`,
+          [country.toUpperCase(), country.toUpperCase()],
+          (err, row) => {
+            if (err) reject(err);
+            else resolve(row);
           }
-          if (row) {
-            this.set(`country_names_${country.toLowerCase()}`, row);
-          }
-          resolve(row);
-        }
-      );
+        );
+      });
+
+      if (row) {
+        this.set(`country_names_${country.toLowerCase()}`, row);
+      }
+      return row;
     });
   }
 
   async cacheMinistereData(country) {
-    return new Promise((resolve, reject) => {
-      db.get(
-        `SELECT country, prenom, nom, sexe, date_nais, date_mandat, famille_nuance, nuance_politique 
-                 FROM ministre_interieur 
-                 WHERE UPPER(country) = ? 
-                 ORDER BY date_mandat DESC LIMIT 1`,
-        [country.toUpperCase()],
-        (err, row) => {
-          if (err) {
-            return reject(err);
+    return retryDatabaseOperation(async () => {
+      const row = await new Promise((resolve, reject) => {
+        db.get(
+          `SELECT country, prenom, nom, sexe, date_nais, date_mandat, famille_nuance, nuance_politique 
+                   FROM ministre_interieur 
+                   WHERE UPPER(country) = ? 
+                   ORDER BY date_mandat DESC LIMIT 1`,
+          [country.toUpperCase()],
+          (err, row) => {
+            if (err) reject(err);
+            else resolve(row);
           }
-          if (row) {
-            this.set(`ministre_${country.toLowerCase()}`, row);
-          }
-          resolve(row);
-        }
-      );
+        );
+      });
+
+      if (row) {
+        this.set(`ministre_${country.toLowerCase()}`, row);
+      }
+      return row;
     });
   }
 
   async cacheDepartmentRankings() {
-    return new Promise((resolve, reject) => {
+    return retryDatabaseOperation(async () => {
       const sql = `
             WITH LatestDepartmentNames AS (
               SELECT dpt, musulman_pct, africain_pct, asiatique_pct, traditionnel_pct, moderne_pct, annais
@@ -436,36 +485,40 @@ class CacheService {
             ORDER BY d.departement
             `;
 
-      db.all(sql, [], (err, rows) => {
-        if (err) {
-          return reject(err);
-        }
-        this.set('department_rankings', { data: rows, total_count: rows.length });
-        resolve({ data: rows, total_count: rows.length });
+      const rows = await new Promise((resolve, reject) => {
+        db.all(sql, [], (err, rows) => {
+          if (err) reject(err);
+          else resolve(rows);
+        });
       });
+
+      this.set('department_rankings', { data: rows, total_count: rows.length });
+      return { data: rows, total_count: rows.length };
     });
   }
 
   async cachePolitiqueRankings() {
-    return new Promise((resolve, reject) => {
+    return retryDatabaseOperation(async () => {
       const sql = this.buildPolitiqueRankingsSQL();
 
-      db.all(sql, [], (err, rows) => {
-        if (err) {
-          return reject(err);
-        }
-        const result = {};
-        const allowedNuances = ['Gauche', 'Centre', 'Droite', 'Extrême droite', 'Autres'];
-        rows.forEach(row => {
-          const { famille_nuance, ...metrics } = row;
-          // Only allow whitelisted famille_nuance values to prevent object injection
-          if (allowedNuances.includes(famille_nuance)) {
-            result[famille_nuance] = metrics;
-          }
+      const rows = await new Promise((resolve, reject) => {
+        db.all(sql, [], (err, rows) => {
+          if (err) reject(err);
+          else resolve(rows);
         });
-        this.set('politique_rankings', result);
-        resolve(result);
       });
+
+      const result = {};
+      const allowedNuances = ['Gauche', 'Centre', 'Droite', 'Extrême droite', 'Autres'];
+      rows.forEach(row => {
+        const { famille_nuance, ...metrics } = row;
+        // Only allow whitelisted famille_nuance values to prevent object injection
+        if (allowedNuances.includes(famille_nuance)) {
+          result[famille_nuance] = metrics;
+        }
+      });
+      this.set('politique_rankings', result);
+      return result;
     });
   }
 

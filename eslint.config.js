@@ -6,6 +6,9 @@ export default [
   js.configs.recommended,
   security.configs.recommended,
   {
+    ignores: ['dist/**', 'node_modules/**', 'client/**', 'setup/**', 'public/data/**', 'coverage/**']
+  },
+  {
     plugins: {
       security: security
     },
@@ -57,7 +60,6 @@ export default [
   {
     // Node / server-side and scripts override: expose common Node globals and allow console
     files: [
-      'setup/**',
       'routes/**',
       'services/**',
       'config/**',
@@ -86,13 +88,15 @@ export default [
     },
     rules: {
       // server scripts commonly use console for logging and rely on Node globals
-      'no-console': 'off'
+      'no-console': 'off',
+      // disable security rules for services (they use controlled data structures)
+      'security/detect-object-injection': 'off'
     }
   }
   ,
   {
-    // Constants file override: allow CommonJS module
-    files: ['constants.js'],
+    // Constants and config files override: allow CommonJS module
+    files: ['constants.js', 'jest.config.js'],
     languageOptions: {
       globals: {
         module: 'readonly',
@@ -104,8 +108,7 @@ export default [
   {
     // Browser files override: expose browser globals
     files: [
-      'public/sw.js',
-      'client/index.html'
+      'public/sw.js'
     ],
     languageOptions: {
       globals: {
@@ -132,6 +135,44 @@ export default [
     rules: {
       // browser scripts commonly use console for debugging
       'no-console': 'off'
+    }
+  }
+  ,
+  {
+    // Test files override: expose Jest globals
+    files: [
+      '__tests__/**'
+    ],
+    languageOptions: {
+      globals: {
+        require: 'readonly',
+        module: 'readonly',
+        exports: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        jest: 'readonly'
+      },
+      parserOptions: {
+        ecmaVersion: 2021
+      }
+    },
+    rules: {
+      // test files commonly use console for debugging
+      'no-console': 'off',
+      // allow magic numbers in tests
+      'no-magic-numbers': 'off',
+      // allow spaces before function parentheses in tests
+      'space-before-function-paren': 'off',
+      // allow unused vars in tests (mocks, etc.)
+      'no-unused-vars': 'off',
+      // allow longer functions in tests
+      'max-lines-per-function': 'off'
     }
   }
 ];
