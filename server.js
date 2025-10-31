@@ -57,6 +57,20 @@ app.use(express.json({ limit: '10mb' }));
 // Input sanitization
 const { sanitizeInput } = require('./middleware/security');
 app.use(sanitizeInput);
+
+// Health check and root route
+app.get('/', (req, res) => {
+  if (req.headers['user-agent']?.includes('GoogleHC')) {
+    return res.status(HTTP_OK).send('OK');
+  }
+  const filePath = path.resolve(__dirname, 'dist', 'index.html');
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      res.status(HTTP_INTERNAL_SERVER_ERROR).json({ error: err.message, details: null });
+    }
+  });
+});
+
 app.use(
   express.static(path.join(__dirname, 'dist'), {
     setHeaders: (res, filePath) => {
@@ -94,20 +108,6 @@ const nat1Routes = require('./routes/nat1Routes');
 // Make database available to all routes
 app.locals.db = db;
 
-// Attach routes with search rate limiting where applicable
-app.use('/api/communes', searchLimiter, communeRoutes);
-app.use('/api/departements', departementRoutes);
-app.use('/api/country', countryRoutes);
-app.use('/api/articles', articleRoutes);
-app.use('/api/qpv', qpvRoutes);
-app.use('/api/rankings', rankingRoutes);
-app.use('/api/subventions', subventionRoutes);
-app.use('/api/migrants', migrantRoutes);
-app.use('/api/mosques', mosqueRoutes);
-app.use('/api/nat1', nat1Routes);
-app.use('/api', otherRoutes); // Keep this commented to test
-app.use('/api/cache', cacheRoutes);
-
 // Version endpoint for cache validation
 app.get('/api/version', (_req, res) => {
   // Try to read build hash from built index.html
@@ -140,18 +140,19 @@ app.get('/api/version', (_req, res) => {
   });
 });
 
-// Health check and root route
-app.get('/', (req, res) => {
-  if (req.headers['user-agent']?.includes('GoogleHC')) {
-    return res.status(HTTP_OK).send('OK');
-  }
-  const filePath = path.resolve(__dirname, 'dist', 'index.html');
-  res.sendFile(filePath, (err) => {
-    if (err) {
-      res.status(HTTP_INTERNAL_SERVER_ERROR).json({ error: err.message, details: null });
-    }
-  });
-});
+// Attach routes with search rate limiting where applicable
+app.use('/api/communes', searchLimiter, communeRoutes);
+app.use('/api/departements', departementRoutes);
+app.use('/api/country', countryRoutes);
+app.use('/api/articles', articleRoutes);
+app.use('/api/qpv', qpvRoutes);
+app.use('/api/rankings', rankingRoutes);
+app.use('/api/subventions', subventionRoutes);
+app.use('/api/migrants', migrantRoutes);
+app.use('/api/mosques', mosqueRoutes);
+app.use('/api/nat1', nat1Routes);
+app.use('/api', otherRoutes);
+app.use('/api/cache', cacheRoutes);
 
 // Handle Vue.js routing - serve index.html for non-API routes
 app.get('/{*path}', (req, res) => {

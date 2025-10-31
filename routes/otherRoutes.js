@@ -27,8 +27,8 @@ router.get(
   `;
 
     db.all(sql, [dept], (err, rows) => {
-      dbHandler(err);
       if (err) {
+        res.status(500).json({ error: 'Database error', details: err.message });
         return;
       }
 
