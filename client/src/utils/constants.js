@@ -25,7 +25,7 @@ export const UI_DIMENSIONS = {
 
 // Chart configuration
 export const CHART_CONFIG = {
-  CORRELATION_COLORS: [-0.7, -0.5, -0.3, -0.1, 0.1, 0.3, 0.5, 0.7],
+  CORRELATION_COLORS: [-0.7, -0.5, -0.3, -0.1, 0, 0.1, 0.3, 0.5, 0.7],
   CORRELATION_THRESHOLDS: [0.1, 0.3, 0.5, 0.7],
   OPACITY: 0.4,
   GRID_SIZE: 36,
