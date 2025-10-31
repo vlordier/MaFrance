@@ -7,6 +7,30 @@ const {
   validateSearchQuery
 } = require('../middleware/validate');
 
+// GET /api/health - Health check endpoint
+router.get('/health', (req, res) => {
+  // Check database connectivity
+  db.get('SELECT 1', (err) => {
+    if (err) {
+      return res.status(503).json({
+        status: 'unhealthy',
+        database: 'disconnected',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime()
+      });
+    }
+
+    res.json({
+      status: 'healthy',
+      database: 'connected',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      version: process.env.npm_package_version || '1.0.0',
+      environment: process.env.NODE_ENV || 'development'
+    });
+  });
+});
+
 // GET /api/search
 router.get(
   '/search',
