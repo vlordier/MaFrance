@@ -22,6 +22,12 @@ MaFrance/
 ├── __tests__/
 │   ├── communeRoutes.test.js ← REFACTORED (81 tests ✅)
 │   ├── communeRoutes.test.js.backup (original - 45 tests)
+│   ├── testUtils.js ← MODULARIZED - Main export file
+│   ├── testUtils/
+│   │   ├── index.js ← Main export for modular utilities
+│   │   ├── appFactory.js ← Express app creation and mock management
+│   │   ├── assertions.js ← Test assertion helpers with JSDoc
+│   │   └── lifecycle.js ← Test lifecycle and setup/teardown utilities
 │   └── fixtures/
 │       ├── README.md ← Fixtures documentation
 │       ├── communeFixtures.js ← Reusable fixtures for commune tests
@@ -105,9 +111,24 @@ npm test
 npm test -- --coverage
 ```
 
+### Use Test Utilities in Your Tests
+```javascript
+const { createAppWithRoute, expectSuccessResponse, setupTestEnvironment }
+  = require('./testUtils');
+
+// Create test app with route
+const app = createAppWithRoute('/api/test', testRoutes);
+
+// Use assertion helpers
+expectSuccessResponse(response, expectedData);
+
+// Setup test environment
+const { mocks, restore } = setupTestEnvironment();
+```
+
 ### Use Fixtures in Your Tests
 ```javascript
-const { MOCK_COMMUNE, VALID_DEPARTMENTS, createMockCommuneWithOverrides } 
+const { MOCK_COMMUNE, VALID_DEPARTMENTS, createMockCommuneWithOverrides }
   = require('./fixtures/communeFixtures');
 
 // Use directly
@@ -156,6 +177,7 @@ VALID_DEPARTMENTS.forEach(dept => {
 ### After Refactoring
 ```
 ✅ Centralized fixtures
+✅ Modular test utilities (appFactory, assertions, lifecycle)
 ✅ 81 organized tests by endpoint
 ✅ Comprehensive error scenarios
 ✅ Parametrized validation tests
@@ -198,6 +220,35 @@ Special Cases (14 tests)
 └─ Boundary values - 2
 ```
 
+## 🧰 Test Utilities
+
+### ✅ Modular Test Utilities (`testUtils/`)
+The monolithic `testUtils.js` has been refactored into focused, maintainable modules:
+
+#### `appFactory.js` - Express App Creation & Mock Management
+- `createAppWithRoute()` - Create Express app with specific route
+- `createAppWithRoutes()` - Create app with multiple routes
+- `createMockApp()` - Create app with mocked dependencies
+- **Usage:** Setting up test applications with proper middleware
+
+#### `assertions.js` - Test Assertion Helpers
+- `expectSuccessResponse()` - Assert successful API responses
+- `expectErrorResponse()` - Assert error responses with validation
+- `expectValidationError()` - Assert validation error structure
+- `expectNotFoundError()` - Assert 404 responses
+- **Usage:** Consistent assertion patterns across all tests
+
+#### `lifecycle.js` - Test Lifecycle & Setup/Teardown
+- `setupTestEnvironment()` - Initialize mocks and test state
+- `teardownTestEnvironment()` - Clean up after tests
+- `withMockedDatabase()` - Database mocking utilities
+- **Usage:** Managing test setup and cleanup
+
+#### `index.js` - Main Export File
+- Centralized exports from all modules
+- Backward compatibility with original `testUtils.js`
+- **Usage:** Import all utilities from single location
+
 ## 📦 Available Fixtures
 
 ### ✅ Commune Fixtures (`communeFixtures.js`)
@@ -208,7 +259,7 @@ Special Cases (14 tests)
 
 ### ✅ Mosque Fixtures (`mosqueFixtures.js`)
 - 4 mock objects
-- 7 parametrization arrays  
+- 7 parametrization arrays
 - 5 utility functions
 - **Usage:** Ready for mosque route refactoring
 
@@ -227,6 +278,18 @@ Special Cases (14 tests)
 ## 🎓 Learning Resources
 
 ### Quick Examples
+
+**Using Modular Test Utilities:**
+```javascript
+const { createAppWithRoute, expectSuccessResponse } = require('./testUtils');
+
+// Create test app
+const app = createAppWithRoute('/api/communes', communeRoutes);
+
+// Test with assertion helper
+const res = await request(app).get('/api/communes?dept=75&q=paris');
+expectSuccessResponse(res, expectedData);
+```
 
 **Using Mock Objects:**
 ```javascript
@@ -247,7 +310,7 @@ VALID_DEPARTMENTS.forEach(dept => {
 
 **Creating Customized Mocks:**
 ```javascript
-const { createMockCommuneWithOverrides } = 
+const { createMockCommuneWithOverrides } =
   require('./fixtures/communeFixtures');
 const custom = createMockCommuneWithOverrides({
   population: 100000,
@@ -288,11 +351,12 @@ The pattern is ready to apply to:
 
 ## 💡 Key Takeaways
 
-1. **Centralized Fixtures** - Single source of truth for test data
-2. **Parametrization** - Test many scenarios with less code
-3. **Organization** - Clear structure makes tests easy to navigate
-4. **Reusability** - Utilities and fixtures shared across tests
-5. **Documentation** - Clear guides for implementation and usage
+1. **Modular Test Utilities** - Organized, maintainable test helper functions
+2. **Centralized Fixtures** - Single source of truth for test data
+3. **Parametrization** - Test many scenarios with less code
+4. **Organization** - Clear structure makes tests easy to navigate
+5. **Reusability** - Utilities and fixtures shared across tests
+6. **Documentation** - Clear guides for implementation and usage
 
 ## 📞 Support
 
