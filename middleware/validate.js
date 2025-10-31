@@ -239,7 +239,6 @@ function validateSearchQuery(req, res, next) {
   const { q } = req.query;
   if (
     !q ||
-    q === '' ||
     typeof q !== 'string' ||
     q.length < MIN_SEARCH_QUERY_LENGTH ||
     q.length > MAX_LIEU_LENGTH
