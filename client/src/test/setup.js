@@ -1,14 +1,36 @@
 import { createVuetify } from 'vuetify'
-import { createPinia } from 'pinia'
 import 'vuetify/styles'
 
-global.CSS = { supports: () => false }
+global.CSS = {
+  supports: () => false
+}
 
 const vuetify = createVuetify()
-const pinia = createPinia()
 
-export default {
-  global: {
-    plugins: [vuetify, pinia]
+// Mock IntersectionObserver
+global.IntersectionObserver = class IntersectionObserver {
+  constructor() {}
+  observe() {
+    return null
+  }
+  disconnect() {
+    return null
+  }
+  unobserve() {
+    return null
+  }
+}
+
+// Mock ResizeObserver
+global.ResizeObserver = class ResizeObserver {
+  constructor() {}
+  observe() {
+    return null
+  }
+  disconnect() {
+    return null
+  }
+  unobserve() {
+    return null
   }
 }
