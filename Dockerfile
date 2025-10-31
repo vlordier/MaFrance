@@ -10,20 +10,24 @@ RUN apk add --no-cache sqlite
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production && npm cache clean --force
+# Install all dependencies (including dev dependencies for build)
+RUN npm ci && npm cache clean --force
 
 # Copy client package files
 COPY client/package*.json ./client/
 
-# Install client dependencies
-RUN cd client && npm ci --only=production && npm cache clean --force
+# Install client dependencies (including dev dependencies for build)
+RUN cd client && npm ci && npm cache clean --force
 
 # Copy application code
 COPY . .
 
 # Build client
 RUN npm run build
+
+# Remove dev dependencies to keep image small
+RUN npm prune --production && npm cache clean --force
+RUN cd client && npm prune --production && npm cache clean --force
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
