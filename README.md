@@ -53,10 +53,12 @@ L'application est composée de deux parties principales :
 │   ├── db.js             # Configuration base de données SQLite
 │   └── index.js          # Configuration générale
 ├── routes/               # Routes API
+│   ├── base/
+│   │   └── BaseRoute.js  # Classe de base pour toutes les routes API (DRY pattern)
 │   ├── articleRoutes.js  # Articles FdeSouche
-│   ├── communeRoutes.js  # Données communes
-│   ├── countryRoutes.js  # Données nationales
-│   ├── departementRoutes.js # Données départementales
+│   ├── communeRoutes.js  # Données communes (utilise BaseRoute)
+│   ├── countryRoutes.js  # Données nationales (utilise BaseRoute)
+│   ├── departementRoutes.js # Données départementales (utilise BaseRoute)
 │   ├── migrantRoutes.js  # Centres migrants
 │   ├── mosqueRoutes.js   # Mosquées
 │   ├── nat1Routes.js     # Données nationalité NAT1

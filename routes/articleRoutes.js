@@ -138,7 +138,7 @@ router.get(
       SUM(defrancisation) as defrancisation_count,
       SUM(wokisme) as wokisme_count
     FROM articles
-    WHERE ${baseCondition}`;
+    WHERE ${getBaseCondition(true)}`;
     const params = [dept];
 
     if (cog) {
