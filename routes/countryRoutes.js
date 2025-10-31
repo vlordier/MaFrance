@@ -1,15 +1,12 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const db = require("../config/db");
-const { createDbHandler } = require("../middleware/errorHandler");
-const { cacheMiddleware } = require("../middleware/cache");
-const { validateCountry } = require("../middleware/validate");
+const db = require('../config/db');
+const { createDbHandler, NotFoundError } = require('../middleware/errorHandler');
+const { cacheMiddleware } = require('../middleware/cache');
+const { validateCountry } = require('../middleware/validate');
+const { HTTP_NOT_FOUND } = require('../constants');
 
-// GET /api/country/details
-router.get("/details", validateCountry, cacheMiddleware((req) => {
-  const country = req.query.country;
-  return country ? `country_details_${country.toLowerCase()}` : "country_details_all";
-}), (req, res, next) => {
+const handleGetDetails = (req, res, next) => {
   const handleDbError = createDbHandler(res, next);
   const country = req.query.country;
 
@@ -18,24 +15,29 @@ router.get("/details", validateCountry, cacheMiddleware((req) => {
   let params = [];
 
   if (country) {
-    sql += ` WHERE UPPER(country) = ?`;
+    sql += ' WHERE UPPER(country) = ?';
     params = [country.toUpperCase()];
   }
 
-  db.all(sql, params, (err, rows) => {
-    if (err) return handleDbError(err);
-    if (!rows || rows.length === 0)
-      return res.status(404).json({ error: "Données pays non trouvées" });
+   db.all(sql, params, (err, rows) => {
+     if (err) {
+       return handleDbError(err);
+     }
+     if (!rows || rows.length === 0) {
+       return next(new NotFoundError('Données pays non trouvées', { country }));
+     }
 
-    res.json(rows);
-  });
-});
+     res.json(rows);
+   });
+};
 
-// GET /api/country/names
-router.get("/names", validateCountry, cacheMiddleware((req) => {
+// GET /api/country/details
+router.get('/details', validateCountry, cacheMiddleware((req) => {
   const country = req.query.country;
-  return country ? `country_names_${country.toLowerCase()}` : "country_names_all";
-}), (req, res, next) => {
+  return country ? `country_details_${country.toLowerCase()}` : 'country_details_all';
+}), handleGetDetails);
+
+const handleGetNames = (req, res, next) => {
   const handleDbError = createDbHandler(res, next);
   const country = req.query.country;
 
@@ -44,29 +46,33 @@ router.get("/names", validateCountry, cacheMiddleware((req) => {
   let params = [];
 
   if (country) {
-    sql += ` WHERE UPPER(country) = ? AND annais = (SELECT MAX(annais) FROM country_names WHERE UPPER(country) = ?)`;
+    sql += ' WHERE UPPER(country) = ? AND annais = (SELECT MAX(annais) FROM country_names WHERE UPPER(country) = ?)';
     params = [country.toUpperCase(), country.toUpperCase()];
   } else {
-    sql += ` WHERE annais = (SELECT MAX(annais) FROM country_names)`;
+    sql += ' WHERE annais = (SELECT MAX(annais) FROM country_names)';
   }
 
   db.all(sql, params, (err, rows) => {
-    if (err) return handleDbError(err);
-    if (!rows || rows.length === 0)
-      return res.status(404).json({
-        error: "Données de prénoms non trouvées pour la dernière année",
+    if (err) {
+      return handleDbError(err);
+    }
+    if (!rows || rows.length === 0) {
+      return res.status(HTTP_NOT_FOUND).json({
+        error: 'Données de prénoms non trouvées pour la dernière année'
       });
+    }
 
     res.json(rows);
   });
-});
+};
 
-
-// GET /api/country/names_history
-router.get("/names_history", validateCountry, cacheMiddleware((req) => {
+// GET /api/country/names
+router.get('/names', validateCountry, cacheMiddleware((req) => {
   const country = req.query.country;
-  return country ? `country_names_history_${country.toLowerCase().replace(' ', '_')}` : "country_names_history_all";
-}), (req, res, next) => {
+  return country ? `country_names_${country.toLowerCase()}` : 'country_names_all';
+}), handleGetNames);
+
+const handleGetNamesHistory = (req, res, next) => {
   const handleDbError = createDbHandler(res, next);
   const country = req.query.country;
 
@@ -84,17 +90,21 @@ router.get("/names_history", validateCountry, cacheMiddleware((req) => {
   }
 
   db.all(sql, params, (err, rows) => {
-    if (err) return handleDbError(err);
+    if (err) {
+      return handleDbError(err);
+    }
 
     res.json(rows);
   });
-});
+};
 
-// GET /api/country/crime
-router.get("/crime", cacheMiddleware((req) => {
+// GET /api/country/names_history
+router.get('/names_history', validateCountry, cacheMiddleware((req) => {
   const country = req.query.country;
-  return country ? `country_crime_${country.toLowerCase()}` : "country_crime_all";
-}), (req, res, next) => {
+  return country ? `country_names_history_${country.toLowerCase().replace(' ', '_')}` : 'country_names_history_all';
+}), handleGetNamesHistory);
+
+const handleGetCrime = (req, res, next) => {
   const handleDbError = createDbHandler(res, next);
   const country = req.query.country;
 
@@ -103,29 +113,33 @@ router.get("/crime", cacheMiddleware((req) => {
   let params = [];
 
   if (country) {
-    sql += ` WHERE UPPER(country) = ? AND annee = (SELECT MAX(annee) FROM country_crime WHERE UPPER(country) = ?)`;
+    sql += ' WHERE UPPER(country) = ? AND annee = (SELECT MAX(annee) FROM country_crime WHERE UPPER(country) = ?)';
     params = [country.toUpperCase(), country.toUpperCase()];
   } else {
-    sql += ` WHERE annee = (SELECT MAX(annee) FROM country_crime)`;
+    sql += ' WHERE annee = (SELECT MAX(annee) FROM country_crime)';
   }
 
-
   db.all(sql, params, (err, rows) => {
-    if (err) return handleDbError(err);
-    if (!rows || rows.length === 0)
-      return res.status(404).json({
-        error: "Données criminelles non trouvées pour la dernière année",
+    if (err) {
+      return handleDbError(err);
+    }
+    if (!rows || rows.length === 0) {
+      return res.status(HTTP_NOT_FOUND).json({
+        error: 'Données criminelles non trouvées pour la dernière année'
       });
+    }
 
     res.json(rows);
   });
-});
+};
 
-// GET /api/country/crime_history
-router.get("/crime_history", validateCountry, cacheMiddleware((req) => {
+// GET /api/country/crime
+router.get('/crime', cacheMiddleware((req) => {
   const country = req.query.country;
-  return country ? `country_crime_history_${country.toLowerCase().replace(' ', '_')}` : "country_crime_history_all";
-}), (req, res, next) => {
+  return country ? `country_crime_${country.toLowerCase()}` : 'country_crime_all';
+}), handleGetCrime);
+
+const handleGetCrimeHistory = (req, res, next) => {
   const handleDbError = createDbHandler(res, next);
   const country = req.query.country;
 
@@ -143,14 +157,21 @@ router.get("/crime_history", validateCountry, cacheMiddleware((req) => {
   }
 
   db.all(sql, params, (err, rows) => {
-    if (err) return handleDbError(err);
+    if (err) {
+      return handleDbError(err);
+    }
 
     res.json(rows);
   });
-});
+};
 
-// GET /api/country/ministre
-router.get("/ministre", cacheMiddleware(() => "ministre_france"), (req, res, next) => {
+// GET /api/country/crime_history
+router.get('/crime_history', validateCountry, cacheMiddleware((req) => {
+  const country = req.query.country;
+  return country ? `country_crime_history_${country.toLowerCase().replace(' ', '_')}` : 'country_crime_history_all';
+}), handleGetCrimeHistory);
+
+const handleGetMinistre = (_req, res, next) => {
   const handleDbError = createDbHandler(res, next);
 
   const sql = `SELECT country, prenom, nom, date_mandat, famille_nuance, nuance_politique
@@ -159,11 +180,18 @@ router.get("/ministre", cacheMiddleware(() => "ministre_france"), (req, res, nex
                ORDER BY date_mandat DESC LIMIT 1`;
 
   db.get(sql, [], (err, row) => {
-    if (err) return handleDbError(err);
-    if (!row) return res.status(404).json({ error: "Ministre non trouvé" });
+    if (err) {
+      return handleDbError(err);
+    }
+    if (!row) {
+      return res.status(HTTP_NOT_FOUND).json({ error: 'Ministre non trouvé' });
+    }
 
     res.json(row);
   });
-});
+};
 
-module.exports = router;
+// GET /api/country/ministre
+router.get('/ministre', cacheMiddleware(() => 'ministre_france'), handleGetMinistre);
+
+module.exports = { handleGetDetails, handleGetNames, handleGetNamesHistory, handleGetCrime, handleGetCrimeHistory, handleGetMinistre, router };

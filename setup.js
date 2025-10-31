@@ -1,6 +1,6 @@
-const sqlite3 = require("sqlite3").verbose();
-const fs = require("fs");
-const config = require("./config");
+const sqlite3 = require('sqlite3').verbose();
+const fs = require('fs');
+const config = require('./config');
 const { importScores } = require('./setup/importScores');
 const { importArticles } = require('./setup/importArticles');
 const { importElus } = require('./setup/importElus');
@@ -13,169 +13,113 @@ const { importMigrants } = require('./setup/importMigrants');
 const { importNat1 } = require('./setup/importNat1');
 const { importMosques } = require('./setup/importMosques');
 
-
 const dbFile = config.database.path;
 
 // Initialize SQLite database
 function initializeDatabase() {
   // Create .data directory if it doesn't exist
-  const path = require("path");
+  const path = require('path');
   const dbDir = path.dirname(dbFile);
+  // eslint-disable-next-line security/detect-non-literal-fs-filename
   if (!fs.existsSync(dbDir)) {
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
     fs.mkdirSync(dbDir, { recursive: true });
-    console.log(`Created directory: ${dbDir}`);
   }
 
+  // eslint-disable-next-line security/detect-non-literal-fs-filename
   if (fs.existsSync(dbFile)) {
     try {
+      // eslint-disable-next-line security/detect-non-literal-fs-filename
       fs.unlinkSync(dbFile);
-      console.log("Existing .data/france.db deleted");
-    } catch (err) {
-      console.error("Error deleting existing .data/france.db:", err.message);
+    } catch {
       process.exit(1);
     }
   }
   return new sqlite3.Database(dbFile);
 }
 
-function runImports() {
-  const db = initializeDatabase();
+// Create indexes for better search performance
+async function createSearchIndexes() {
+  return new Promise((resolve, reject) => {
+    const sqlite = require('sqlite3').verbose();
+    const indexDb = new sqlite.Database(config.database.path);
 
-  importScores(db, (err) => {
-    if (err) {
-      console.error('Échec importation scores:', err.message);
-      process.exit(1);
-    }
-    console.log('✓ Importation scores terminée');
+    const indexes = [
+      'CREATE INDEX IF NOT EXISTS idx_locations_commune ON locations(commune)',
+      'CREATE INDEX IF NOT EXISTS idx_locations_dept_commune ON locations(departement, commune)',
+      'CREATE INDEX IF NOT EXISTS idx_locations_search ON locations(commune COLLATE NOCASE)'
+    ];
 
-    importArticles(db, (err) => {
-      if (err) {
-        console.error('Échec importation articles:', err.message);
-        process.exit(1);
-      }
-      console.log('✓ Importation articles terminée');
+    let completed = 0;
 
-      importElus(db, (err) => {
+    indexes.forEach(indexQuery => {
+      indexDb.run(indexQuery, (err) => {
         if (err) {
-          console.error('Échec importation élus:', err.message);
-          process.exit(1);
+          reject(err);
+          return;
         }
-        console.log('✓ Importation élus terminée');
-
-        importNames(db, (err) => {
-          if (err) {
-            console.error('Échec importation noms:', err.message);
-            process.exit(1);
-          }
-          console.log('✓ Importation noms terminée');
-
-          importCrimeData(db, (err) => {
-            if (err) {
-              console.error('Échec importation données criminalité:', err.message);
-              process.exit(1);
-            }
-            console.log('✓ Importation données criminalité terminée');
-
-            importQPV(db, (err) => {
-              if (err) {
-                console.error('Échec importation données QPV:', err.message);
-                process.exit(1);
-              }
-              console.log('✓ Importation données QPV terminée');
-
-              importQpvGeoJson(db, (err) => {
-                if (err) {
-                  console.error('Échec importation QPV GeoJSON:', err.message);
-                  process.exit(1);
-                }
-                console.log('✓ Importation QPV GeoJSON terminée');
-
-                importSubventions(db, (err) => {
-                  if (err) {
-                    console.error('Échec importation données subventions:', err.message);
-                    process.exit(1);
-                  }
-                  console.log('✓ Importation données subventions terminée');
-
-                  importMigrants(db, (err) => {
-                    if (err) {
-                      console.error('Échec importation données centres migrants:', err.message);
-                      process.exit(1);
-                    }
-                    console.log('✓ Importation données centres migrants terminée');
-
-                    importMosques(db, (err) => {
-                      if (err) {
-                        console.error('Échec importation données mosquées:', err.message);
-                        process.exit(1);
-                      }
-                      console.log('✓ Importation données mosquées terminée');
-
-                      importNat1(db, (err) => {
-                        if (err) {
-                          console.error('Échec importation données NAT1:', err.message);
-                          process.exit(1);
-                        }
-                        console.log('✓ Importation données NAT1 terminée');
-
-                        // Create search indexes for better performance
-                        createSearchIndexes()
-                          .then(() => {
-                            console.log('✓ Index de recherche créés');
-                            console.log('🎉 Configuration de la base de données terminée !');
-                            db.close();
-                            process.exit(0);
-                          })
-                          .catch((indexErr) => {
-                            console.error('Échec création des index:', indexErr.message);
-                            db.close();
-                            process.exit(1);
-                          });
-                      });
-                    });
-                  });
-                });
-              });
-            });
-          });
-        });
+        completed++;
+        if (completed === indexes.length) {
+          indexDb.close();
+          resolve();
+        }
       });
     });
   });
 }
 
-runImports();
+function runImports() {
+  const db = initializeDatabase();
 
-// Create indexes for better search performance
-async function createSearchIndexes() {
-    return new Promise((resolve, reject) => {
-        const sqlite3 = require("sqlite3").verbose();
-        const indexDb = new sqlite3.Database(config.database.path);
+  const imports = [
+    { name: 'scores', fn: importScores },
+    { name: 'articles', fn: importArticles },
+    { name: 'élus', fn: importElus },
+    { name: 'noms', fn: importNames },
+    { name: 'données criminalité', fn: importCrimeData },
+    { name: 'données QPV', fn: importQPV },
+    { name: 'QPV GeoJSON', fn: importQpvGeoJson },
+    { name: 'données subventions', fn: importSubventions },
+    { name: 'données centres migrants', fn: importMigrants },
+    { name: 'données mosquées', fn: importMosques },
+    { name: 'données NAT1', fn: importNat1 }
+  ];
 
-        console.log("Creating search indexes...");
-
-        const indexes = [
-            "CREATE INDEX IF NOT EXISTS idx_locations_commune ON locations(commune)",
-            "CREATE INDEX IF NOT EXISTS idx_locations_dept_commune ON locations(departement, commune)",
-            "CREATE INDEX IF NOT EXISTS idx_locations_search ON locations(commune COLLATE NOCASE)",
-        ];
-
-        let completed = 0;
-
-        indexes.forEach(indexQuery => {
-            indexDb.run(indexQuery, (err) => {
-                if (err) {
-                    console.error("Error creating index:", err);
-                    reject(err);
-                    return;
-                }
-                completed++;
-                if (completed === indexes.length) {
-                    console.log("Search indexes created successfully");
-                    indexDb.close();
-                    resolve();
-                }
-            });
+  function runNextImport(index) {
+    if (index >= imports.length) {
+      // All imports completed, create search indexes
+      createSearchIndexes()
+        .then(() => {
+          db.close();
+          process.exit(0);
+        })
+        .catch((_indexErr) => {
+          db.close();
+          process.exit(1);
         });
+      return;
+    }
+
+    const { fn } = imports[index];
+    fn(db, (err) => {
+      if (err) {
+        process.exit(1);
+      }
+      runNextImport(index + 1);
     });
+  }
+
+  runNextImport(0);
+}
+
+// Export functions for testing
+module.exports = {
+  initializeDatabase,
+  createSearchIndexes,
+  runImports
+};
+
+// Run setup if called directly
+if (require.main === module) {
+  runImports();
 }
