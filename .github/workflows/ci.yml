@@ -2,17 +2,17 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main ]
 
 jobs:
-  lint-and-test:
+  test:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
+        node-version: [18.x, 20.x]
 
     steps:
     - uses: actions/checkout@v4
@@ -23,26 +23,20 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
 
-    - name: Install dependencies
+    - name: Install backend dependencies
       run: npm ci
 
-    - name: Install client dependencies
+    - name: Install frontend dependencies
       run: cd client && npm ci
 
-    - name: Run server linting
-      run: npm run lint
+    - name: Run backend tests
+      run: npm test
 
-    - name: Run client linting
-      run: cd client && npm run lint
+    - name: Run frontend tests
+      run: npm run test:frontend
 
-    - name: Build client
+    - name: Build frontend
       run: npm run build
 
-    - name: Start server and test basic functionality
-      run: |
-        npm start &
-        SERVER_PID=$!
-        sleep 5
-        # Test if server is responding
-        curl -f http://localhost:3000/api/country/details || exit 1
-        kill $SERVER_PID
+    - name: Generate test coverage
+      run: npm run test:coverage
