@@ -45,6 +45,8 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.0",
+    "eslint": "^9.38.0",
+    "eslint-plugin-security": "^3.0.1",
     "jest": "^30.2.0",
     "supertest": "^7.1.4"
   }

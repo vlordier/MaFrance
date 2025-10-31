@@ -5,7 +5,7 @@ const subventionRoutes = require('../../routes/subventionRoutes');
 // Mock the database
 jest.mock('../../config/db', () => ({
   all: jest.fn(),
-  get: jest.fn(),
+  get: jest.fn()
 }));
 
 const db = require('../../config/db');
@@ -29,7 +29,7 @@ describe('Subvention Routes', () => {
   });
 
   describe('GET /api/subventions/country', () => {
-    it('should return all country subventions', async () => {
+    it('should return all country subventions', async() => {
       const mockSubventions = [
         {
           country: 'France',
@@ -55,7 +55,7 @@ describe('Subvention Routes', () => {
       expect(response.body[0]).toEqual(mockSubventions[0]);
     });
 
-    it('should return 404 when no data found', async () => {
+    it('should return 404 when no data found', async() => {
       db.all.mockImplementation((sql, params, callback) => {
         callback(null, []);
       });
@@ -69,7 +69,7 @@ describe('Subvention Routes', () => {
       });
     });
 
-    it('should handle database errors', async () => {
+    it('should handle database errors', async() => {
       db.all.mockImplementation((sql, params, callback) => {
         callback(new Error('Database error'), null);
       });
@@ -83,7 +83,7 @@ describe('Subvention Routes', () => {
   });
 
   describe('GET /api/subventions/departement/:dept', () => {
-    it('should return subventions for a department', async () => {
+    it('should return subventions for a department', async() => {
       const mockData = {
         subvention_region_distributed: 500000,
         subvention_departement: 300000,
@@ -105,7 +105,7 @@ describe('Subvention Routes', () => {
       });
     });
 
-    it('should return 404 when department not found', async () => {
+    it('should return 404 when department not found', async() => {
       db.get.mockImplementation((sql, params, callback) => {
         callback(null, null);
       });
@@ -119,7 +119,7 @@ describe('Subvention Routes', () => {
       });
     });
 
-    it('should validate department parameter', async () => {
+    it('should validate department parameter', async() => {
       const response = await request(app)
         .get('/api/subventions/departement/invalid')
         .expect(400);
@@ -129,7 +129,7 @@ describe('Subvention Routes', () => {
   });
 
   describe('GET /api/subventions/commune/:cog', () => {
-    it('should return subventions for a commune', async () => {
+    it('should return subventions for a commune', async() => {
       const mockData = {
         subvention_EPCI_distributed: 200000,
         subvention_commune: 150000,
@@ -151,7 +151,7 @@ describe('Subvention Routes', () => {
       });
     });
 
-    it('should return 404 when commune not found', async () => {
+    it('should return 404 when commune not found', async() => {
       db.get.mockImplementation((sql, params, callback) => {
         callback(null, null);
       });
@@ -165,7 +165,7 @@ describe('Subvention Routes', () => {
       });
     });
 
-    it('should validate COG parameter', async () => {
+    it('should validate COG parameter', async() => {
       const response = await request(app)
         .get('/api/subventions/commune/invalid')
         .expect(400);

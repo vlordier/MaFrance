@@ -5,12 +5,12 @@ const nat1Routes = require('../../routes/nat1Routes');
 // Mock the database
 jest.mock('../../config/db', () => ({
   all: jest.fn(),
-  get: jest.fn(),
+  get: jest.fn()
 }));
 
 // Mock cache middleware
 jest.mock('../../middleware/cache', () => ({
-  cacheMiddleware: jest.fn(() => (req, res, next) => next()),
+  cacheMiddleware: jest.fn(() => (req, res, next) => next())
 }));
 
 const db = require('../../config/db');
@@ -33,7 +33,7 @@ describe('NAT1 Routes', () => {
   });
 
   describe('GET /api/nat1/country', () => {
-    it('should return all country NAT1 data', async () => {
+    it('should return all country NAT1 data', async() => {
       const mockData = [
         {
           Type: 'Country',
@@ -80,7 +80,7 @@ describe('NAT1 Routes', () => {
       });
     });
 
-    it('should return 404 when no data found', async () => {
+    it('should return 404 when no data found', async() => {
       db.all.mockImplementation((sql, params, callback) => {
         callback(null, []);
       });
@@ -94,7 +94,7 @@ describe('NAT1 Routes', () => {
       });
     });
 
-    it('should handle database errors', async () => {
+    it('should handle database errors', async() => {
       db.all.mockImplementation((sql, params, callback) => {
         callback(new Error('Database error'), null);
       });
@@ -108,7 +108,7 @@ describe('NAT1 Routes', () => {
   });
 
   describe('GET /api/nat1/departement', () => {
-    it('should return NAT1 data for a department', async () => {
+    it('should return NAT1 data for a department', async() => {
       const mockData = {
         Type: 'Department',
         Code: '75',
@@ -152,7 +152,7 @@ describe('NAT1 Routes', () => {
       });
     });
 
-    it('should normalize single digit department codes', async () => {
+    it('should normalize single digit department codes', async() => {
       const mockData = {
         Type: 'Department',
         Code: '01',
@@ -188,7 +188,7 @@ describe('NAT1 Routes', () => {
       );
     });
 
-    it('should return 404 when department not found', async () => {
+    it('should return 404 when department not found', async() => {
       db.get.mockImplementation((sql, params, callback) => {
         callback(null, null);
       });
@@ -202,7 +202,7 @@ describe('NAT1 Routes', () => {
       });
     });
 
-    it('should require dept parameter', async () => {
+    it('should require dept parameter', async() => {
       const response = await request(app)
         .get('/api/nat1/departement')
         .expect(400);
@@ -214,7 +214,7 @@ describe('NAT1 Routes', () => {
   });
 
   describe('GET /api/nat1/commune', () => {
-    it('should return NAT1 data for a commune', async () => {
+    it('should return NAT1 data for a commune', async() => {
       const mockData = {
         Type: 'Commune',
         Code: '75001',
@@ -258,7 +258,7 @@ describe('NAT1 Routes', () => {
       });
     });
 
-    it('should return 404 when commune not found', async () => {
+    it('should return 404 when commune not found', async() => {
       db.get.mockImplementation((sql, params, callback) => {
         callback(null, null);
       });
@@ -272,7 +272,7 @@ describe('NAT1 Routes', () => {
       });
     });
 
-    it('should require cog parameter', async () => {
+    it('should require cog parameter', async() => {
       const response = await request(app)
         .get('/api/nat1/commune')
         .expect(400);

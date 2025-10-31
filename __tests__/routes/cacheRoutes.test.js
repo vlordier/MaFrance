@@ -2,29 +2,29 @@
 jest.mock('../../services/cacheService', () => ({
   getStats: jest.fn(),
   clear: jest.fn(),
-  initializeCache: jest.fn(),
+  initializeCache: jest.fn()
 }));
 
 // Mock the cache middleware
 jest.mock('../../middleware/cache', () => ({
-  cacheMiddleware: jest.fn((keyFn) => (req, res, next) => {
+  cacheMiddleware: jest.fn((_keyFn) => (_req, _res, next) => {
     // For testing, just call next
     next();
-  }),
+  })
 }));
 
 const request = require('supertest');
 const express = require('express');
 const cacheRoutes = require('../../routes/cacheRoutes');
 const cacheService = require('../../services/cacheService');
-const { cacheMiddleware } = require('../../middleware/cache');
+// const { cacheMiddleware } = require('../../middleware/cache'); // Not used in tests
 
 const app = express();
 app.use(express.json());
 app.use('/api/cache', cacheRoutes);
 
 // Error handling middleware for tests
-app.use((err, req, res, next) => {
+app.use((err, _req, res, _next) => {
   console.error('Test error:', err);
   res.status(err.status || 500).json({
     error: err.message,
@@ -38,7 +38,7 @@ describe('Cache Routes', () => {
   });
 
   describe('GET /api/cache/stats', () => {
-    it('should return cache statistics', async () => {
+    it('should return cache statistics', async() => {
       const mockStats = {
         hits: 100,
         misses: 20,
@@ -58,7 +58,7 @@ describe('Cache Routes', () => {
   });
 
   describe('POST /api/cache/clear', () => {
-    it('should clear the cache successfully', async () => {
+    it('should clear the cache successfully', async() => {
       cacheService.clear.mockReturnValue();
 
       const response = await request(app)
@@ -71,7 +71,7 @@ describe('Cache Routes', () => {
   });
 
   describe('POST /api/cache/refresh', () => {
-    it('should refresh cache successfully', async () => {
+    it('should refresh cache successfully', async() => {
       cacheService.initializeCache.mockResolvedValue();
 
       const response = await request(app)
@@ -82,7 +82,7 @@ describe('Cache Routes', () => {
       expect(cacheService.initializeCache).toHaveBeenCalled();
     });
 
-    it('should handle refresh errors', async () => {
+    it('should handle refresh errors', async() => {
       const errorMessage = 'Database connection failed';
       cacheService.initializeCache.mockRejectedValue(new Error(errorMessage));
 

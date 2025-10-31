@@ -1,6 +1,7 @@
 const request = require('supertest');
 const express = require('express');
 const db = require('../../config/db');
+const { HTTP_NOT_FOUND, HTTP_BAD_REQUEST } = require('../../constants');
 
 // Import route modules
 const countryRoutes = require('../../routes/countryRoutes');
@@ -20,7 +21,7 @@ app.use('/api/departement', departementRoutes);
 app.use('/api/commune', communeRoutes);
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use((err, _req, res, _next) => {
   console.error('Integration test error:', err);
   res.status(err.status || 500).json({
     error: err.message,
@@ -35,13 +36,13 @@ describe('API Integration Tests', () => {
 
   describe('Country Routes', () => {
     describe('GET /api/country/details', () => {
-      it('should return all countries when no query params', async () => {
+      it('should return all countries when no query params', async() => {
         const mockCountries = [
           { country: 'France', population: 67000000 },
           { country: 'Germany', population: 83000000 }
         ];
 
-        db.all.mockImplementation((sql, params, callback) => {
+        db.all.mockImplementation((_sql, _params, callback) => {
           callback(null, mockCountries);
         });
 
@@ -53,10 +54,10 @@ describe('API Integration Tests', () => {
         expect(db.all).toHaveBeenCalled();
       });
 
-      it('should filter by specific country', async () => {
+      it('should filter by specific country', async() => {
         const mockCountry = [{ country: 'France', population: 67000000 }];
 
-        db.all.mockImplementation((sql, params, callback) => {
+        db.all.mockImplementation((_sql, _params, callback) => {
           callback(null, mockCountry);
         });
 
@@ -69,12 +70,12 @@ describe('API Integration Tests', () => {
     });
 
     describe('GET /api/country/names', () => {
-      it('should return latest names data for all countries', async () => {
+      it('should return latest names data for all countries', async() => {
         const mockNames = [
           { country: 'France', musulman_pct: 8.5, annais: 2022 }
         ];
 
-        db.all.mockImplementation((sql, params, callback) => {
+        db.all.mockImplementation((_sql, _params, callback) => {
           callback(null, mockNames);
         });
 
@@ -85,16 +86,15 @@ describe('API Integration Tests', () => {
         expect(response.body).toEqual(mockNames);
       });
 
-
     });
 
     describe('GET /api/country/crime', () => {
-      it('should return latest crime data for all countries', async () => {
+      it('should return latest crime data for all countries', async() => {
         const mockCrime = [
           { country: 'France', homicides_p100k: 1.2, annee: 2022 }
         ];
 
-        db.all.mockImplementation((sql, params, callback) => {
+        db.all.mockImplementation((_sql, _params, callback) => {
           callback(null, mockCrime);
         });
 
@@ -107,7 +107,7 @@ describe('API Integration Tests', () => {
     });
 
     describe('GET /api/country/ministre', () => {
-      it('should return minister information', async () => {
+      it('should return minister information', async() => {
         const mockMinister = {
           country: 'France',
           prenom: 'Gérald',
@@ -115,7 +115,7 @@ describe('API Integration Tests', () => {
           date_mandat: '2020-01-01'
         };
 
-        db.get.mockImplementation((sql, params, callback) => {
+        db.get.mockImplementation((_sql, _params, callback) => {
           callback(null, mockMinister);
         });
 
@@ -130,14 +130,14 @@ describe('API Integration Tests', () => {
 
   describe('Departement Routes', () => {
     describe('GET /api/departement/', () => {
-      it('should return all departments sorted', async () => {
+      it('should return all departments sorted', async() => {
         const mockDepartments = [
           { departement: '95' },
           { departement: '01' },
           { departement: '75' }
         ];
 
-        db.all.mockImplementation((sql, params, callback) => {
+        db.all.mockImplementation((_sql, _params, callback) => {
           callback(null, mockDepartments);
         });
 
@@ -155,14 +155,14 @@ describe('API Integration Tests', () => {
     });
 
     describe('GET /api/departement/details', () => {
-      it('should return department details', async () => {
+      it('should return department details', async() => {
         const mockDetails = {
           departement: '75',
           population: 2161000,
           insecurite_score: 7.2
         };
 
-        db.get.mockImplementation((sql, params, callback) => {
+        db.get.mockImplementation((_sql, _params, callback) => {
           callback(null, mockDetails);
         });
 
@@ -173,18 +173,17 @@ describe('API Integration Tests', () => {
         expect(response.body).toEqual(mockDetails);
       });
 
-
     });
 
     describe('GET /api/departement/names', () => {
-      it('should return names data for department', async () => {
+      it('should return names data for department', async() => {
         const mockNames = {
           dpt: '75',
           musulman_pct: 12.5,
           annais: 2022
         };
 
-        db.get.mockImplementation((sql, params, callback) => {
+        db.get.mockImplementation((_sql, _params, callback) => {
           callback(null, mockNames);
         });
 
@@ -197,14 +196,14 @@ describe('API Integration Tests', () => {
     });
 
     describe('GET /api/departement/crime', () => {
-      it('should return crime data for department', async () => {
+      it('should return crime data for department', async() => {
         const mockCrime = {
           dep: '75',
           homicides_p100k: 1.8,
           annee: 2022
         };
 
-        db.get.mockImplementation((sql, params, callback) => {
+        db.get.mockImplementation((_sql, _params, callback) => {
           callback(null, mockCrime);
         });
 
@@ -217,14 +216,14 @@ describe('API Integration Tests', () => {
     });
 
     describe('GET /api/departement/prefet', () => {
-      it('should return prefect information', async () => {
+      it('should return prefect information', async() => {
         const mockPrefect = {
           code: '75',
           prenom: 'Michel',
           nom: 'Delpuech'
         };
 
-        db.get.mockImplementation((sql, params, callback) => {
+        db.get.mockImplementation((_sql, _params, callback) => {
           callback(null, mockPrefect);
         });
 
@@ -239,12 +238,12 @@ describe('API Integration Tests', () => {
 
   describe('Commune Routes', () => {
     describe('GET /api/commune/all', () => {
-      it('should return all communes', async () => {
+      it('should return all communes', async() => {
         const mockCommunes = [
           { COG: '75001', commune: 'Paris 1er', population: 16000 }
         ];
 
-        db.all.mockImplementation((sql, params, callback) => {
+        db.all.mockImplementation((_sql, _params, callback) => {
           callback(null, mockCommunes);
         });
 
@@ -257,14 +256,14 @@ describe('API Integration Tests', () => {
     });
 
     describe('GET /api/commune/details', () => {
-      it('should return commune details', async () => {
+      it('should return commune details', async() => {
         const mockDetails = {
           COG: '75001',
           commune: 'Paris 1er',
           population: 16000
         };
 
-        db.get.mockImplementation((sql, params, callback) => {
+        db.get.mockImplementation((_sql, _params, callback) => {
           callback(null, mockDetails);
         });
 
@@ -277,14 +276,14 @@ describe('API Integration Tests', () => {
     });
 
     describe('GET /api/commune/names', () => {
-      it('should return names data for commune', async () => {
+      it('should return names data for commune', async() => {
         const mockNames = {
           COG: '75001',
           musulman_pct: 15.2,
           annais: 2022
         };
 
-        db.get.mockImplementation((sql, params, callback) => {
+        db.get.mockImplementation((_sql, _params, callback) => {
           callback(null, mockNames);
         });
 
@@ -297,14 +296,14 @@ describe('API Integration Tests', () => {
     });
 
     describe('GET /api/commune/crime', () => {
-      it('should return crime data for commune', async () => {
+      it('should return crime data for commune', async() => {
         const mockCrime = {
           COG: '75001',
           homicides_p100k: 2.1,
           annee: 2022
         };
 
-        db.get.mockImplementation((sql, params, callback) => {
+        db.get.mockImplementation((_sql, _params, callback) => {
           callback(null, mockCrime);
         });
 
@@ -317,7 +316,7 @@ describe('API Integration Tests', () => {
     });
 
     describe('GET /api/commune/maire', () => {
-      it('should return mayor information', async () => {
+      it('should return mayor information', async() => {
         const mockMayor = {
           cog: '75001',
           prenom: 'Test',
@@ -325,7 +324,7 @@ describe('API Integration Tests', () => {
           nuance_politique: 'LSOC'
         };
 
-        db.get.mockImplementation((sql, params, callback) => {
+        db.get.mockImplementation((_sql, _params, callback) => {
           callback(null, mockMayor);
         });
 
@@ -339,17 +338,17 @@ describe('API Integration Tests', () => {
   });
 
   describe('Error Handling', () => {
-    it('should handle 404 for unknown routes', async () => {
-      const response = await request(app)
+    it('should handle 404 for unknown routes', async() => {
+      await request(app)
         .get('/api/unknown')
-        .expect(404);
+        .expect(HTTP_NOT_FOUND);
     });
 
-    it('should handle validation errors', async () => {
+    it('should handle validation errors', async() => {
       // Test with invalid parameters if validation is enabled
-      const response = await request(app)
+      await request(app)
         .get('/api/commune/details')
-        .expect(400); // Assuming validation returns 400
+        .expect(HTTP_BAD_REQUEST); // Assuming validation returns 400
     });
   });
 });

@@ -4,7 +4,7 @@ const otherRoutes = require('../../routes/otherRoutes');
 
 // Mock the database
 jest.mock('../../config/db', () => ({
-  all: jest.fn(),
+  all: jest.fn()
 }));
 
 const db = require('../../config/db');
@@ -27,7 +27,7 @@ describe('Other Routes', () => {
   });
 
   describe('GET /api/search', () => {
-    it('should search communes by name within department', async () => {
+    it('should search communes by name within department', async() => {
       const mockCommunes = [
         {
           COG: '75001',
@@ -91,7 +91,7 @@ describe('Other Routes', () => {
       expect(response.body[0]).toHaveProperty('insecurite_score');
     });
 
-    it('should prioritize exact matches', async () => {
+    it('should prioritize exact matches', async() => {
       const mockCommunes = [
         {
           COG: '75001',
@@ -126,7 +126,7 @@ describe('Other Routes', () => {
       expect(response.body[0].commune).toBe('Paris');
     });
 
-    it('should prioritize startsWith matches over contains', async () => {
+    it('should prioritize startsWith matches over contains', async() => {
       const mockCommunes = [
         {
           COG: '75001',
@@ -156,7 +156,7 @@ describe('Other Routes', () => {
       expect(response.body[1].commune).toBe('Saint-Paris');
     });
 
-    it('should handle text normalization (accents)', async () => {
+    it('should handle text normalization (accents)', async() => {
       const mockCommunes = [
         {
           COG: '75001',
@@ -184,7 +184,7 @@ describe('Other Routes', () => {
       expect(response.body[0].commune).toBe('Mâcon');
     });
 
-    it('should limit results to 10', async () => {
+    it('should limit results to 10', async() => {
       const mockCommunes = Array(15).fill().map((_, i) => ({
         COG: `750${String(i + 1).padStart(2, '0')}`,
         departement: '75',
@@ -203,7 +203,7 @@ describe('Other Routes', () => {
       expect(response.body).toHaveLength(10);
     });
 
-    it('should handle missing dept parameter', async () => {
+    it('should handle missing dept parameter', async() => {
       db.all.mockImplementation((sql, params, callback) => {
         callback(null, []);
       });
@@ -216,7 +216,7 @@ describe('Other Routes', () => {
       expect(response.body).toEqual([]);
     });
 
-    it('should require q parameter', async () => {
+    it('should require q parameter', async() => {
       // This should cause a 500 because the route tries to call .toLowerCase() on undefined q
       const response = await request(app)
         .get('/api/search?dept=75')
@@ -225,7 +225,7 @@ describe('Other Routes', () => {
       expect(response.body).toHaveProperty('error');
     });
 
-    it('should handle database errors', async () => {
+    it('should handle database errors', async() => {
       db.all.mockImplementation((sql, params, callback) => {
         callback(new Error('Database error'), null);
       });
@@ -237,7 +237,7 @@ describe('Other Routes', () => {
       expect(response.body).toHaveProperty('error');
     });
 
-    it('should return empty array when no matches found', async () => {
+    it('should return empty array when no matches found', async() => {
       db.all.mockImplementation((sql, params, callback) => {
         callback(null, []);
       });

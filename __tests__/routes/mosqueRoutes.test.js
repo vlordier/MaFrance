@@ -4,12 +4,12 @@ const mosqueRoutes = require('../../routes/mosqueRoutes');
 
 // Mock the database
 jest.mock('../../config/db', () => ({
-  all: jest.fn(),
+  all: jest.fn()
 }));
 
 // Mock cache middleware
 jest.mock('../../middleware/cache', () => ({
-  cacheMiddleware: jest.fn(() => (req, res, next) => next()),
+  cacheMiddleware: jest.fn(() => (req, res, next) => next())
 }));
 
 const db = require('../../config/db');
@@ -33,7 +33,7 @@ describe('Mosque Routes', () => {
   });
 
   describe('GET /api/mosques', () => {
-    it('should return all mosques without filters', async () => {
+    it('should return all mosques without filters', async() => {
       const mockMosques = [
         {
           id: 1,
@@ -63,7 +63,7 @@ describe('Mosque Routes', () => {
       expect(response.body.pagination.nextCursor).toBe(null);
     });
 
-    it('should filter by department', async () => {
+    it('should filter by department', async() => {
       const mockMosques = [
         {
           id: 1,
@@ -92,7 +92,7 @@ describe('Mosque Routes', () => {
       );
     });
 
-    it('should filter by COG', async () => {
+    it('should filter by COG', async() => {
       const mockMosques = [
         {
           id: 1,
@@ -121,7 +121,7 @@ describe('Mosque Routes', () => {
       );
     });
 
-    it('should reject requests with both dept and cog', async () => {
+    it('should reject requests with both dept and cog', async() => {
       const response = await request(app)
         .get('/api/mosques?dept=75&cog=75001')
         .expect(400);
@@ -131,7 +131,7 @@ describe('Mosque Routes', () => {
       });
     });
 
-    it('should handle pagination with cursor', async () => {
+    it('should handle pagination with cursor', async() => {
       const mockMosques = [
         {
           id: 101,
@@ -160,7 +160,7 @@ describe('Mosque Routes', () => {
       );
     });
 
-    it('should handle pagination with hasMore', async () => {
+    it('should handle pagination with hasMore', async() => {
       const mockMosques = Array(21).fill().map((_, i) => ({
         id: i + 1,
         name: `Mosque ${i + 1}`,
@@ -185,7 +185,7 @@ describe('Mosque Routes', () => {
       expect(response.body.pagination.nextCursor).toBe(20);
     });
 
-    it('should handle database errors', async () => {
+    it('should handle database errors', async() => {
       db.all.mockImplementation((sql, params, callback) => {
         callback(new Error('Database error'), null);
       });
@@ -199,7 +199,7 @@ describe('Mosque Routes', () => {
   });
 
   describe('GET /api/mosques/closest', () => {
-    it('should return closest mosques to coordinates', async () => {
+    it('should return closest mosques to coordinates', async() => {
       const mockResults = [
         {
           id: 1,
@@ -227,7 +227,7 @@ describe('Mosque Routes', () => {
       expect(response.body.list[0].distance_km).toBe(0.5);
     });
 
-    it('should require latitude and longitude', async () => {
+    it('should require latitude and longitude', async() => {
       const response = await request(app)
         .get('/api/mosques/closest')
         .expect(400);
@@ -237,7 +237,7 @@ describe('Mosque Routes', () => {
       });
     });
 
-    it('should validate coordinates are numbers', async () => {
+    it('should validate coordinates are numbers', async() => {
       const response = await request(app)
         .get('/api/mosques/closest?lat=invalid&lng=2.3522')
         .expect(400);
@@ -247,7 +247,7 @@ describe('Mosque Routes', () => {
       });
     });
 
-    it('should cap limit at 20', async () => {
+    it('should cap limit at 20', async() => {
       db.all.mockImplementation((sql, params, callback) => {
         callback(null, []);
       });
@@ -263,7 +263,7 @@ describe('Mosque Routes', () => {
       );
     });
 
-    it('should handle database errors for closest', async () => {
+    it('should handle database errors for closest', async() => {
       db.all.mockImplementation((sql, params, callback) => {
         callback(new Error('Database error'), null);
       });

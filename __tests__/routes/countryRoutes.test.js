@@ -4,7 +4,7 @@ const CountryRoute = routeModule.CountryRoute;
 
 // Mock the database
 jest.mock('../../config/db');
-const db = require('../../config/db');
+// const db = require('../../config/db'); // Not used in this test
 
 // Mock BaseRoute to avoid Express router setup
 jest.mock('../../routes/base/BaseRoute', () => {
@@ -32,7 +32,7 @@ describe('CountryRoute Handlers', () => {
   });
 
   describe('handleGetDetails', () => {
-    it('should return all countries when no country specified', async () => {
+    it('should return all countries when no country specified', async() => {
       const mockCountries = [
         { country: 'France', population: 67000000 },
         { country: 'Germany', population: 83000000 }
@@ -46,7 +46,7 @@ describe('CountryRoute Handlers', () => {
       expect(result).toEqual(mockCountries);
     });
 
-    it('should filter by specific country', async () => {
+    it('should filter by specific country', async() => {
       const mockCountry = [{ country: 'France', population: 67000000 }];
 
       countryRoute.createDbHandler.mockReturnValue(jest.fn().mockResolvedValue(mockCountry));
@@ -58,7 +58,7 @@ describe('CountryRoute Handlers', () => {
   });
 
   describe('handleGetNames', () => {
-    it('should return latest names data for all countries', async () => {
+    it('should return latest names data for all countries', async() => {
       const mockNames = [
         { country: 'France', musulman_pct: 8.5, annais: 2022 },
         { country: 'Germany', musulman_pct: 6.2, annais: 2022 }
@@ -71,7 +71,7 @@ describe('CountryRoute Handlers', () => {
       expect(result).toEqual(mockNames);
     });
 
-    it('should filter by specific country', async () => {
+    it('should filter by specific country', async() => {
       const mockNames = [{ country: 'France', musulman_pct: 8.5, annais: 2022 }];
 
       countryRoute.createDbHandler.mockReturnValue(jest.fn().mockResolvedValue(mockNames));
@@ -83,7 +83,7 @@ describe('CountryRoute Handlers', () => {
   });
 
   describe('handleGetNamesHistory', () => {
-    it('should return names history for all countries', async () => {
+    it('should return names history for all countries', async() => {
       const mockHistory = [
         { country: 'France', annais: 2020, musulman_pct: 7.8 },
         { country: 'France', annais: 2021, musulman_pct: 8.1 }
@@ -96,7 +96,7 @@ describe('CountryRoute Handlers', () => {
       expect(result).toEqual(mockHistory);
     });
 
-    it('should filter history by specific country', async () => {
+    it('should filter history by specific country', async() => {
       const mockHistory = [
         { country: 'France', annais: 2020, musulman_pct: 7.8 }
       ];
@@ -110,7 +110,7 @@ describe('CountryRoute Handlers', () => {
   });
 
   describe('handleGetCrime', () => {
-    it('should return latest crime data for all countries', async () => {
+    it('should return latest crime data for all countries', async() => {
       const mockCrime = [
         { country: 'France', homicides_p100k: 1.2, annee: 2022 }
       ];
@@ -122,7 +122,7 @@ describe('CountryRoute Handlers', () => {
       expect(result).toEqual(mockCrime);
     });
 
-    it('should filter by specific country', async () => {
+    it('should filter by specific country', async() => {
       const mockCrime = [{ country: 'France', homicides_p100k: 1.2, annee: 2022 }];
 
       countryRoute.createDbHandler.mockReturnValue(jest.fn().mockResolvedValue(mockCrime));
@@ -134,7 +134,7 @@ describe('CountryRoute Handlers', () => {
   });
 
   describe('handleGetCrimeHistory', () => {
-    it('should return crime history for all countries', async () => {
+    it('should return crime history for all countries', async() => {
       const mockHistory = [
         { country: 'France', annee: 2020, homicides_p100k: 1.0 }
       ];
@@ -146,7 +146,7 @@ describe('CountryRoute Handlers', () => {
       expect(result).toEqual(mockHistory);
     });
 
-    it('should filter history by specific country', async () => {
+    it('should filter history by specific country', async() => {
       const mockHistory = [
         { country: 'France', annee: 2020, homicides_p100k: 1.0 }
       ];
@@ -160,7 +160,7 @@ describe('CountryRoute Handlers', () => {
   });
 
   describe('handleGetMinistre', () => {
-    it('should return minister information for France', async () => {
+    it('should return minister information for France', async() => {
       const mockMinister = {
         country: 'France',
         prenom: 'Gérald',

@@ -1,11 +1,12 @@
 const request = require('supertest');
 const express = require('express');
 const articleRoutes = require('../../routes/articleRoutes');
+const { HTTP_OK, GLOBAL_SEARCH_LIMIT } = require('../../constants');
 
 // Mock the database
 jest.mock('../../config/db', () => ({
   get: jest.fn(),
-  all: jest.fn(),
+  all: jest.fn()
 }));
 
 const db = require('../../config/db');
@@ -15,7 +16,7 @@ app.use(express.json());
 app.use('/api/articles', articleRoutes);
 
 // Error handling middleware for tests
-app.use((err, req, res, next) => {
+app.use((err, _req, res, _next) => {
   console.error('Test error:', err);
   res.status(err.status || 500).json({
     error: err.message,
@@ -29,7 +30,7 @@ describe('Article Routes', () => {
   });
 
   describe('GET /api/articles', () => {
-    it('should return articles with counts and pagination', async () => {
+    it('should return articles with counts and pagination', async() => {
       const mockCountRow = {
         insecurite_count: 5,
         immigration_count: 3,
@@ -56,28 +57,28 @@ describe('Article Routes', () => {
         }
       ];
 
-      db.get.mockImplementation((sql, params, callback) => {
+      db.get.mockImplementation((_sql, _params, callback) => {
         callback(null, mockCountRow);
       });
 
-      db.all.mockImplementation((sql, params, callback) => {
+      db.all.mockImplementation((_sql, _params, callback) => {
         callback(null, mockArticles);
       });
 
       const response = await request(app)
         .get('/api/articles?dept=75&limit=10')
-        .expect(200);
+        .expect(HTTP_OK);
 
       expect(response.body).toHaveProperty('list');
       expect(response.body).toHaveProperty('counts');
       expect(response.body).toHaveProperty('pagination');
-      expect(response.body.counts.total).toBe(15);
+      expect(response.body.counts.total).toBe(GLOBAL_SEARCH_LIMIT);
       expect(response.body.list).toHaveLength(1);
       expect(response.body.list[0]).not.toHaveProperty('rowid');
     });
 
-    it('should filter by category', async () => {
-      db.get.mockImplementation((sql, params, callback) => {
+    it('should filter by category', async() => {
+      db.get.mockImplementation((_sql, _params, callback) => {
         callback(null, {
           insecurite_count: 5,
           immigration_count: 3,
@@ -88,13 +89,13 @@ describe('Article Routes', () => {
         });
       });
 
-      db.all.mockImplementation((sql, params, callback) => {
+      db.all.mockImplementation((_sql, _params, callback) => {
         callback(null, []);
       });
 
       await request(app)
         .get('/api/articles?dept=75&category=insecurite')
-        .expect(200);
+        .expect(HTTP_OK);
 
       expect(db.all).toHaveBeenCalledWith(
         expect.stringContaining('AND insecurite = 1'),
@@ -103,8 +104,8 @@ describe('Article Routes', () => {
       );
     });
 
-    it('should handle cursor pagination', async () => {
-      db.get.mockImplementation((sql, params, callback) => {
+    it('should handle cursor pagination', async() => {
+      db.get.mockImplementation((_sql, _params, callback) => {
         callback(null, {
           insecurite_count: 5,
           immigration_count: 3,
@@ -115,13 +116,13 @@ describe('Article Routes', () => {
         });
       });
 
-      db.all.mockImplementation((sql, params, callback) => {
+      db.all.mockImplementation((_sql, _params, callback) => {
         callback(null, []);
       });
 
       await request(app)
         .get('/api/articles?dept=75&cursor=100&limit=5')
-        .expect(200);
+        .expect(HTTP_OK);
 
       expect(db.all).toHaveBeenCalledWith(
         expect.stringContaining('AND rowid > ?'),
@@ -130,8 +131,8 @@ describe('Article Routes', () => {
       );
     });
 
-    it('should handle database errors', async () => {
-      db.get.mockImplementation((sql, params, callback) => {
+    it('should handle database errors', async() => {
+      db.get.mockImplementation((_sql, _params, callback) => {
         callback(new Error('Database error'), null);
       });
 
@@ -144,7 +145,7 @@ describe('Article Routes', () => {
   });
 
   describe('GET /api/articles/counts', () => {
-    it('should return category counts for department', async () => {
+    it('should return category counts for department', async() => {
       const mockRow = {
         insecurite_count: 5,
         immigration_count: 3,
@@ -153,13 +154,13 @@ describe('Article Routes', () => {
         wokisme_count: 4
       };
 
-      db.get.mockImplementation((sql, params, callback) => {
+      db.get.mockImplementation((_sql, _params, callback) => {
         callback(null, mockRow);
       });
 
       const response = await request(app)
         .get('/api/articles/counts?dept=75')
-        .expect(200);
+        .expect(HTTP_OK);
 
       expect(response.body).toEqual({
         insecurite: 5,
@@ -170,8 +171,8 @@ describe('Article Routes', () => {
       });
     });
 
-    it('should filter by cog and lieu', async () => {
-      db.get.mockImplementation((sql, params, callback) => {
+    it('should filter by cog and lieu', async() => {
+      db.get.mockImplementation((_sql, _params, callback) => {
         callback(null, {
           insecurite_count: 2,
           immigration_count: 1,
@@ -183,7 +184,7 @@ describe('Article Routes', () => {
 
       await request(app)
         .get('/api/articles/counts?dept=75&cog=75056&lieu=Paris')
-        .expect(200);
+        .expect(HTTP_OK);
 
       expect(db.get).toHaveBeenCalledWith(
         expect.stringContaining('AND COG = ?'),
@@ -194,20 +195,20 @@ describe('Article Routes', () => {
   });
 
   describe('GET /api/articles/lieux', () => {
-    it('should return distinct lieux for cog', async () => {
+    it('should return distinct lieux for cog', async() => {
       const mockRows = [
         { lieu: 'Paris 1er' },
         { lieu: 'Paris 2e' },
         { lieu: 'Paris 3e' }
       ];
 
-      db.all.mockImplementation((sql, params, callback) => {
+      db.all.mockImplementation((_sql, _params, callback) => {
         callback(null, mockRows);
       });
 
       const response = await request(app)
         .get('/api/articles/lieux?cog=75056&lieu=test')
-        .expect(200);
+        .expect(HTTP_OK);
 
       expect(response.body).toEqual([
         { lieu: 'Paris 1er' },
@@ -222,8 +223,8 @@ describe('Article Routes', () => {
       );
     });
 
-    it('should handle database errors for lieux', async () => {
-      db.all.mockImplementation((sql, params, callback) => {
+    it('should handle database errors for lieux', async() => {
+      db.all.mockImplementation((_sql, _params, callback) => {
         callback(new Error('Database error'), null);
       });
 

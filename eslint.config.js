@@ -102,6 +102,48 @@ export default [
   }
   ,
   {
+    // Test files override: expose Jest globals
+    files: [
+      '__tests__/**',
+      '**/*.test.js',
+      '**/*.spec.js'
+    ],
+    languageOptions: {
+      globals: {
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
+        jest: 'readonly',
+        require: 'readonly',
+        module: 'readonly',
+        exports: 'readonly',
+        process: 'readonly',
+        console: 'readonly',
+        Buffer: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly'
+      },
+      parserOptions: {
+        ecmaVersion: 2021
+      }
+    },
+    rules: {
+      // test files commonly use console for debugging and rely on Jest globals
+      'no-console': 'off',
+      'max-lines-per-function': 'off', // tests can be long
+      'no-magic-numbers': ['error', { 'ignore': [0, 0.5, 1, -1, 2, 3, 4, 5, 6, 10, 11, 15, 20, 21, 25, 48.8566, 2.3522, 50, 100, 200, 400, 404, 500, 1000, 15000] }],
+      'no-unused-vars': ['error', { 'vars': 'all', 'args': 'all', 'ignoreRestSiblings': false, 'argsIgnorePattern': '^(_|sql|params|req|res|next|keyFn)' }]
+    }
+  }
+  ,
+  {
     // Browser files override: expose browser globals
     files: [
       'public/sw.js',

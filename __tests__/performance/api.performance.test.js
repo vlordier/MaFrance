@@ -15,17 +15,17 @@ jest.mock('../../config/db');
 jest.mock('../../services/cacheService', () => ({
   getStats: jest.fn(() => ({ hits: 0, misses: 0, size: 0 })),
   clear: jest.fn(),
-  initializeCache: jest.fn().mockResolvedValue(),
+  initializeCache: jest.fn().mockResolvedValue()
 }));
 
 jest.mock('../../services/searchService', () => ({
   searchCommunes: jest.fn().mockResolvedValue([]),
   searchCommunesGlobally: jest.fn().mockResolvedValue([]),
-  getCommuneSuggestions: jest.fn().mockResolvedValue([]),
+  getCommuneSuggestions: jest.fn().mockResolvedValue([])
 }));
 
 jest.mock('../../middleware/cache', () => ({
-  cacheMiddleware: jest.fn(() => (req, res, next) => next()),
+  cacheMiddleware: jest.fn(() => (_req, _res, next) => next())
 }));
 
 const db = require('../../config/db');
@@ -41,7 +41,7 @@ app.use('/api/articles', articleRoutes);
 app.use('/api/cache', cacheRoutes);
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use((err, _req, res, _next) => {
   res.status(err.status || 500).json({
     error: err.message,
     details: process.env.NODE_ENV === 'test' ? err.details : undefined
@@ -51,7 +51,7 @@ app.use((err, req, res, next) => {
 describe('API Performance Tests', () => {
   beforeAll(() => {
     // Mock database responses for performance testing
-    db.all.mockImplementation((sql, params, callback) => {
+    db.all.mockImplementation((_sql, _params, callback) => {
       // Simulate some processing time with immediate callback
       callback(null, [
         { country: 'France', population: 67000000 },
@@ -59,7 +59,7 @@ describe('API Performance Tests', () => {
       ]);
     });
 
-    db.get.mockImplementation((sql, params, callback) => {
+    db.get.mockImplementation((_sql, _params, callback) => {
       callback(null, { country: 'France', population: 67000000 });
     });
   });
@@ -69,7 +69,7 @@ describe('API Performance Tests', () => {
   });
 
   describe('Response Time Benchmarks', () => {
-    it('should respond to country details within acceptable time', async () => {
+    it('should respond to country details within acceptable time', async() => {
       const startTime = Date.now();
 
       await request(app)
@@ -84,7 +84,7 @@ describe('API Performance Tests', () => {
       console.log(`Country details response time: ${responseTime}ms`);
     });
 
-    it('should respond to department details within acceptable time', async () => {
+    it('should respond to department details within acceptable time', async() => {
       const startTime = Date.now();
 
       await request(app)
@@ -99,7 +99,7 @@ describe('API Performance Tests', () => {
       console.log(`Department details response time: ${responseTime}ms`);
     });
 
-    it('should respond to commune search within acceptable time', async () => {
+    it('should respond to commune search within acceptable time', async() => {
       const startTime = Date.now();
 
       await request(app)
@@ -114,9 +114,9 @@ describe('API Performance Tests', () => {
       console.log(`Commune search response time: ${responseTime}ms`);
     });
 
-    it('should respond to articles endpoint within acceptable time', async () => {
+    it('should respond to articles endpoint within acceptable time', async() => {
       // Mock the counts query
-      db.get.mockImplementationOnce((sql, params, callback) => {
+      db.get.mockImplementationOnce((_sql, _params, callback) => {
         callback(null, {
           insecurite_count: 5,
           immigration_count: 3,
@@ -128,7 +128,7 @@ describe('API Performance Tests', () => {
       });
 
       // Mock the articles query
-      db.all.mockImplementationOnce((sql, params, callback) => {
+      db.all.mockImplementationOnce((_sql, _params, callback) => {
         callback(null, []);
       });
 
@@ -146,7 +146,7 @@ describe('API Performance Tests', () => {
       console.log(`Articles response time: ${responseTime}ms`);
     });
 
-    it('should respond to cache stats within acceptable time', async () => {
+    it('should respond to cache stats within acceptable time', async() => {
       const startTime = Date.now();
 
       await request(app)
@@ -163,7 +163,7 @@ describe('API Performance Tests', () => {
   });
 
   describe('Concurrent Load Simulation', () => {
-    it('should handle multiple concurrent requests', async () => {
+    it('should handle multiple concurrent requests', async() => {
       const startTime = Date.now();
 
       // Make 10 concurrent requests

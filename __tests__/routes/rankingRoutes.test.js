@@ -5,12 +5,12 @@ const rankingRoutes = require('../../routes/rankingRoutes');
 // Mock the database
 jest.mock('../../config/db', () => ({
   all: jest.fn(),
-  get: jest.fn(),
+  get: jest.fn()
 }));
 
 // Mock cache service
 jest.mock('../../services/cacheService', () => ({
-  get: jest.fn(),
+  get: jest.fn()
 }));
 
 const db = require('../../config/db');
@@ -34,7 +34,7 @@ describe('Ranking Routes', () => {
   });
 
   describe('GET /api/rankings/communes', () => {
-    it('should return commune rankings for a department', async () => {
+    it('should return commune rankings for a department', async() => {
       const mockCommunes = [
         {
           COG: '75001',
@@ -71,7 +71,7 @@ describe('Ranking Routes', () => {
       expect(response.body.data[0].COG).toBe('75001');
     });
 
-    it('should handle population range filtering', async () => {
+    it('should handle population range filtering', async() => {
       const mockCommunes = [];
       const mockCount = { total_count: 0 };
 
@@ -94,7 +94,7 @@ describe('Ranking Routes', () => {
       );
     });
 
-    it('should handle minimum population filtering', async () => {
+    it('should handle minimum population filtering', async() => {
       db.all.mockImplementation((sql, params, callback) => {
         callback(null, []);
       });
@@ -114,7 +114,7 @@ describe('Ranking Routes', () => {
       );
     });
 
-    it('should reject invalid population range format', async () => {
+    it('should reject invalid population range format', async() => {
       const response = await request(app)
         .get('/api/rankings/communes?dept=75&population_range=invalid')
         .expect(400);
@@ -123,7 +123,7 @@ describe('Ranking Routes', () => {
       expect(response.body.errors[0].msg).toContain('Format de population invalide');
     });
 
-    it('should reject invalid population range values', async () => {
+    it('should reject invalid population range values', async() => {
       const response = await request(app)
         .get('/api/rankings/communes?dept=75&population_range=100000-50000')
         .expect(400);
@@ -132,9 +132,7 @@ describe('Ranking Routes', () => {
       expect(response.body.errors[0].msg).toContain('Plage de population invalide');
     });
 
-
-
-    it('should handle database errors', async () => {
+    it('should handle database errors', async() => {
       db.all.mockImplementation((sql, params, callback) => {
         callback(new Error('Database error'), null);
       });
@@ -148,7 +146,7 @@ describe('Ranking Routes', () => {
   });
 
   describe('GET /api/rankings/departements', () => {
-    it('should return department rankings', async () => {
+    it('should return department rankings', async() => {
       const mockDepartments = [
         {
           departement: '75',
@@ -183,7 +181,7 @@ describe('Ranking Routes', () => {
       expect(response.body.data[1].departement).toBe('13');
     });
 
-    it('should handle sorting in ascending order', async () => {
+    it('should handle sorting in ascending order', async() => {
       const mockDepartments = [
         { departement: '75', insecurite_score: 8.5 },
         { departement: '13', insecurite_score: 7.8 }
@@ -201,9 +199,7 @@ describe('Ranking Routes', () => {
       expect(response.body.data[1].departement).toBe('75');
     });
 
-
-
-    it('should handle missing cache data', async () => {
+    it('should handle missing cache data', async() => {
       cacheService.get.mockReturnValue(null);
 
       const response = await request(app)

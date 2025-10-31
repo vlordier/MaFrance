@@ -5,21 +5,21 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', message: 'Server is running' });
 });
 
-app.get('/api/test-error', (req, res) => {
+app.get('/api/test-error', (_req, _res) => {
   throw new Error('Test error');
 });
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use((err, _req, res, _next) => {
   res.status(500).json({ error: err.message });
 });
 
 describe('Basic API Tests', () => {
-  it('should return health check', async () => {
+  it('should return health check', async() => {
     const response = await request(app)
       .get('/api/health')
       .expect(200);
@@ -30,7 +30,7 @@ describe('Basic API Tests', () => {
     });
   });
 
-  it('should handle errors properly', async () => {
+  it('should handle errors properly', async() => {
     const response = await request(app)
       .get('/api/test-error')
       .expect(500);
@@ -44,7 +44,7 @@ describe('Testing Framework', () => {
     expect(true).toBe(true);
   });
 
-  it('should support async/await', async () => {
+  it('should support async/await', async() => {
     const result = await Promise.resolve('test');
     expect(result).toBe('test');
   });

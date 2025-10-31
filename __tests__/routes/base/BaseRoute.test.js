@@ -14,7 +14,7 @@ describe('BaseRoute', () => {
   beforeEach(() => {
     mockRouter = {
       get: jest.fn(),
-      post: jest.fn(),
+      post: jest.fn()
     };
 
     // Mock express.Router
@@ -64,7 +64,7 @@ describe('BaseRoute', () => {
   });
 
   describe('createHandler', () => {
-    it('should create a handler that wraps async functions', async () => {
+    it('should create a handler that wraps async functions', async() => {
       const mockHandler = jest.fn().mockResolvedValue({ data: 'test' });
       const handler = baseRoute.createHandler(mockHandler);
 
@@ -79,7 +79,7 @@ describe('BaseRoute', () => {
       expect(mockNext).not.toHaveBeenCalled();
     });
 
-    it('should call next with error on handler failure', async () => {
+    it('should call next with error on handler failure', async() => {
       const mockError = new Error('Test error');
       const mockHandler = jest.fn().mockRejectedValue(mockError);
       const handler = baseRoute.createHandler(mockHandler);

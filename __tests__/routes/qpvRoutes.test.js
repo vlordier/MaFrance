@@ -4,12 +4,12 @@ const qpvRoutes = require('../../routes/qpvRoutes');
 
 // Mock the database
 jest.mock('../../config/db', () => ({
-  all: jest.fn(),
+  all: jest.fn()
 }));
 
 // Mock cache middleware
 jest.mock('../../middleware/cache', () => ({
-  cacheMiddleware: jest.fn(() => (req, res, next) => next()),
+  cacheMiddleware: jest.fn(() => (req, res, next) => next())
 }));
 
 const db = require('../../config/db');
@@ -32,7 +32,7 @@ describe('QPV Routes', () => {
   });
 
   describe('GET /api/qpv', () => {
-    it('should return all QPV data without filters', async () => {
+    it('should return all QPV data without filters', async() => {
       const mockQpvData = [
         {
           rowid: 1,
@@ -84,7 +84,7 @@ describe('QPV Routes', () => {
       });
     });
 
-    it('should filter by department', async () => {
+    it('should filter by department', async() => {
       const mockQpvData = [
         {
           rowid: 1,
@@ -113,7 +113,7 @@ describe('QPV Routes', () => {
       );
     });
 
-    it('should filter by commune name', async () => {
+    it('should filter by commune name', async() => {
       const mockQpvData = [
         {
           rowid: 1,
@@ -141,7 +141,7 @@ describe('QPV Routes', () => {
       );
     });
 
-    it('should reject requests with both dept and cog', async () => {
+    it('should reject requests with both dept and cog', async() => {
       const response = await request(app)
         .get('/api/qpv?dept=75&cog=75001')
         .expect(400);
@@ -151,7 +151,7 @@ describe('QPV Routes', () => {
       });
     });
 
-    it('should handle pagination with cursor for country-level requests', async () => {
+    it('should handle pagination with cursor for country-level requests', async() => {
       const mockQpvData = [
         {
           rowid: 101,
@@ -178,7 +178,7 @@ describe('QPV Routes', () => {
       );
     });
 
-    it('should handle database errors', async () => {
+    it('should handle database errors', async() => {
       db.all.mockImplementation((sql, params, callback) => {
         callback(new Error('Database error'), null);
       });
@@ -192,7 +192,7 @@ describe('QPV Routes', () => {
   });
 
   describe('GET /api/qpv/geojson', () => {
-    it('should return QPV GeoJSON data', async () => {
+    it('should return QPV GeoJSON data', async() => {
       const mockGeoData = [
         {
           code_qp: 'QP001',
@@ -220,7 +220,7 @@ describe('QPV Routes', () => {
       expect(response.body.geojson.features[0].geometry.type).toBe('Polygon');
     });
 
-    it('should handle database errors for geojson', async () => {
+    it('should handle database errors for geojson', async() => {
       db.all.mockImplementation((sql, params, callback) => {
         callback(new Error('Database error'), null);
       });
@@ -232,7 +232,7 @@ describe('QPV Routes', () => {
       expect(response.body).toHaveProperty('error');
     });
 
-    it('should handle JSON parsing errors', async () => {
+    it('should handle JSON parsing errors', async() => {
       const mockGeoData = [
         {
           code_qp: 'QP001',
@@ -258,7 +258,7 @@ describe('QPV Routes', () => {
   });
 
   describe('GET /api/qpv/closest', () => {
-    it('should return closest QPVs to coordinates', async () => {
+    it('should return closest QPVs to coordinates', async() => {
       const mockResults = [
         {
           code_qp: 'QP001',
@@ -287,7 +287,7 @@ describe('QPV Routes', () => {
       expect(response.body.list[0].code_qp).toBe('QP001');
     });
 
-    it('should require latitude and longitude', async () => {
+    it('should require latitude and longitude', async() => {
       const response = await request(app)
         .get('/api/qpv/closest')
         .expect(400);
@@ -297,7 +297,7 @@ describe('QPV Routes', () => {
       });
     });
 
-    it('should handle large limit values', async () => {
+    it('should handle large limit values', async() => {
       db.all.mockImplementation((sql, params, callback) => {
         callback(null, []);
       });
@@ -308,14 +308,14 @@ describe('QPV Routes', () => {
 
       expect(db.all).toHaveBeenCalledWith(
         expect.any(String),
-        ["48.8566", "48.8566", "2.3522", "2.3522", 50],
+        ['48.8566', '48.8566', '2.3522', '2.3522', 50],
         expect.any(Function)
       );
     });
   });
 
   describe('GET /api/qpv/nearby', () => {
-    it('should return nearby QPVs with detailed data', async () => {
+    it('should return nearby QPVs with detailed data', async() => {
       const mockResults = [
         {
           code_qp: 'QP001',
@@ -362,7 +362,7 @@ describe('QPV Routes', () => {
       });
     });
 
-    it('should require latitude and longitude for nearby', async () => {
+    it('should require latitude and longitude for nearby', async() => {
       const response = await request(app)
         .get('/api/qpv/nearby')
         .expect(400);
@@ -372,7 +372,7 @@ describe('QPV Routes', () => {
       });
     });
 
-    it('should validate coordinates are numbers', async () => {
+    it('should validate coordinates are numbers', async() => {
       const response = await request(app)
         .get('/api/qpv/nearby?lat=invalid&lng=2.3522')
         .expect(400);

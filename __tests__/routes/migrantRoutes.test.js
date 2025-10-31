@@ -4,16 +4,16 @@ const migrantRoutes = require('../../routes/migrantRoutes');
 
 // Mock the database
 jest.mock('../../config/db', () => ({
-  all: jest.fn(),
+  all: jest.fn()
 }));
 
 // Mock cache middleware
 jest.mock('../../middleware/cache', () => ({
-  cacheMiddleware: jest.fn(() => (req, res, next) => next()),
+  cacheMiddleware: jest.fn(() => (req, res, next) => next())
 }));
 
 const db = require('../../config/db');
-const { cacheMiddleware } = require('../../middleware/cache');
+// const { cacheMiddleware } = require('../../middleware/cache'); // Not used in this test
 
 const app = express();
 app.use(express.json());
@@ -34,7 +34,7 @@ describe('Migrant Routes', () => {
   });
 
   describe('GET /api/migrants', () => {
-    it('should return all migrant centers without filters', async () => {
+    it('should return all migrant centers without filters', async() => {
       const mockCenters = [
         {
           rowid: 1,
@@ -76,7 +76,7 @@ describe('Migrant Routes', () => {
       expect(response.body.pagination.nextCursor).toBe(null);
     });
 
-    it('should filter by department', async () => {
+    it('should filter by department', async() => {
       const mockCenters = [
         {
           rowid: 1,
@@ -107,7 +107,7 @@ describe('Migrant Routes', () => {
       );
     });
 
-    it('should filter by COG', async () => {
+    it('should filter by COG', async() => {
       const mockCenters = [
         {
           rowid: 1,
@@ -138,7 +138,7 @@ describe('Migrant Routes', () => {
       );
     });
 
-    it('should reject requests with both dept and cog', async () => {
+    it('should reject requests with both dept and cog', async() => {
       const response = await request(app)
         .get('/api/migrants?dept=75&cog=75001')
         .expect(400);
@@ -148,7 +148,7 @@ describe('Migrant Routes', () => {
       });
     });
 
-    it('should handle pagination with cursor', async () => {
+    it('should handle pagination with cursor', async() => {
       const mockCenters = [
         {
           rowid: 101,
@@ -179,7 +179,7 @@ describe('Migrant Routes', () => {
       );
     });
 
-    it('should handle pagination with hasMore', async () => {
+    it('should handle pagination with hasMore', async() => {
       const mockCenters = Array(21).fill().map((_, i) => ({
         rowid: i + 1,
         type: 'CADA',
@@ -206,7 +206,7 @@ describe('Migrant Routes', () => {
       expect(response.body.pagination.nextCursor).toBe(20);
     });
 
-    it('should reject invalid limit values', async () => {
+    it('should reject invalid limit values', async() => {
       const response = await request(app)
         .get('/api/migrants?limit=5000')
         .expect(400);
@@ -215,7 +215,7 @@ describe('Migrant Routes', () => {
       expect(response.body.errors[0].msg).toContain('Limit doit être un entier entre 1 et 3000');
     });
 
-    it('should handle database errors', async () => {
+    it('should handle database errors', async() => {
       db.all.mockImplementation((sql, params, callback) => {
         callback(new Error('Database error'), null);
       });
@@ -226,7 +226,6 @@ describe('Migrant Routes', () => {
 
       expect(response.body).toHaveProperty('error');
     });
-
 
   });
 });

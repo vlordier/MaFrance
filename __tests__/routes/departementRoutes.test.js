@@ -4,7 +4,7 @@ const DepartementRoute = routeModule.DepartementRoute;
 
 // Mock the database
 jest.mock('../../config/db');
-const db = require('../../config/db');
+// const db = require('../../config/db'); // Not used in this test
 
 // Mock BaseRoute to avoid Express router setup
 jest.mock('../../routes/base/BaseRoute', () => {
@@ -32,7 +32,7 @@ describe('DepartementRoute Handlers', () => {
   });
 
   describe('handleGetAll', () => {
-    it('should return all departments sorted by code', async () => {
+    it('should return all departments sorted by code', async() => {
       const mockDepartments = [
         { departement: '95' },
         { departement: '01' },
@@ -54,7 +54,7 @@ describe('DepartementRoute Handlers', () => {
   });
 
   describe('handleGetDetails', () => {
-    it('should return department details', async () => {
+    it('should return department details', async() => {
       const mockDetails = {
         departement: '75',
         population: 2161000,
@@ -70,7 +70,7 @@ describe('DepartementRoute Handlers', () => {
       expect(result).toEqual(mockDetails);
     });
 
-    it('should handle single digit department codes', async () => {
+    it('should handle single digit department codes', async() => {
       const mockDetails = {
         departement: '01',
         population: 650000,
@@ -87,7 +87,7 @@ describe('DepartementRoute Handlers', () => {
   });
 
   describe('handleGetNames', () => {
-    it('should return latest names data for department', async () => {
+    it('should return latest names data for department', async() => {
       const mockNames = {
         dpt: '75',
         musulman_pct: 12.5,
@@ -105,7 +105,7 @@ describe('DepartementRoute Handlers', () => {
   });
 
   describe('handleGetNamesHistory', () => {
-    it('should return names history for department', async () => {
+    it('should return names history for department', async() => {
       const mockHistory = [
         { dpt: '75', annais: 2020, musulman_pct: 11.2 },
         { dpt: '75', annais: 2021, musulman_pct: 11.8 }
@@ -121,7 +121,7 @@ describe('DepartementRoute Handlers', () => {
   });
 
   describe('handleGetCrime', () => {
-    it('should return latest crime data for department', async () => {
+    it('should return latest crime data for department', async() => {
       const mockCrime = {
         dep: '75',
         homicides_p100k: 1.8,
@@ -139,7 +139,7 @@ describe('DepartementRoute Handlers', () => {
   });
 
   describe('handleGetCrimeHistory', () => {
-    it('should return crime history for department', async () => {
+    it('should return crime history for department', async() => {
       const mockHistory = [
         { dep: '75', annee: 2020, homicides_p100k: 1.5 },
         { dep: '75', annee: 2021, homicides_p100k: 1.6 }
@@ -155,7 +155,7 @@ describe('DepartementRoute Handlers', () => {
   });
 
   describe('handleGetPrefet', () => {
-    it('should return prefect information for department', async () => {
+    it('should return prefect information for department', async() => {
       const mockPrefect = {
         code: '75',
         prenom: 'Michel',
